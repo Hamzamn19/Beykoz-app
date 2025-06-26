@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "909400364024",
+    "project_id": "beykoz-app",
+    "storage_bucket": "beykoz-app.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:909400364024:android:d6af1faae37dd845a6fc0d",
+        "android_client_info": {
+          "package_name": "com.beykoz.app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBdfrhdYfpPxOpcT8jqt-xcJMAXIfK4xUQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:909400364024:android:5a4c000ba18cb88da6fc0d",
+        "android_client_info": {
+          "package_name": "com.beykoz.beykoz"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBdfrhdYfpPxOpcT8jqt-xcJMAXIfK4xUQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
