@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:webview_flutter/webview_flutter.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
+// Ana Ekran ve Bottom Navigation Bar mantığını içeren ana widget
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
 
@@ -11,41 +13,10 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   int _selectedIndex = 0;
 
-  // List of pages for the bottom navigation bar
-  final List<Widget> _pages = const [
-    // Home Page with improved design
-    Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(
-            Icons.school,
-            size: 100,
-            color: Colors.deepPurple,
-          ),
-          SizedBox(height: 16),
-          Text(
-            'Welcome to Beykoz App',
-            style: TextStyle(
-              fontSize: 28,
-              fontWeight: FontWeight.bold,
-              color: Colors.deepPurple,
-            ),
-          ),
-          SizedBox(height: 8),
-          Text(
-            'Access your academic resources seamlessly',
-            style: TextStyle(
-              fontSize: 16,
-              color: Colors.grey,
-            ),
-          ),
-        ],
-      ),
-    ),
-    // WebView for ois.beykoz.edu.tr
+  // Bottom Navigation Bar için sayfaların listesi
+  static final List<Widget> _pages = <Widget>[
+    const DesignedHomePage(), // ANA SAYFA TASARIMIMIZ
     WebViewPage(url: 'https://ois.beykoz.edu.tr/'),
-    // WebView for online.beykoz.edu.tr
     WebViewPage(url: 'https://online.beykoz.edu.tr'),
   ];
 
@@ -57,29 +28,9 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    // --- DEĞİŞİKLİK BURADA ---
+    // Scaffold widget'ından `appBar` parametresi tamamen kaldırıldı.
     return Scaffold(
-      appBar: AppBar(
-        title: const Text(
-          'Beykoz App',
-          style: TextStyle(
-            fontWeight: FontWeight.w600,
-            color: Colors.white,
-          ),
-        ),
-        backgroundColor: Colors.deepPurple,
-        elevation: 4,
-        actions: [
-          if (_selectedIndex != 0) // Show refresh button for WebView pages
-            IconButton(
-              icon: const Icon(Icons.refresh, color: Colors.white),
-              onPressed: () {
-                // Trigger refresh for the current WebView
-                final webViewPage = _pages[_selectedIndex] as WebViewPage;
-                webViewPage.controller?.reload();
-              },
-            ),
-        ],
-      ),
       body: IndexedStack(
         index: _selectedIndex,
         children: _pages,
@@ -88,61 +39,232 @@ class _HomeScreenState extends State<HomeScreen> {
         items: const <BottomNavigationBarItem>[
           BottomNavigationBarItem(
             icon: Icon(Icons.home),
-            label: 'Home',
-            backgroundColor: Colors.deepPurple,
+            label: 'Ana Sayfa',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.web),
             label: 'OIS',
-            backgroundColor: Colors.deepPurple,
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.login),
             label: 'Online',
-            backgroundColor: Colors.deepPurple,
           ),
         ],
         currentIndex: _selectedIndex,
         selectedItemColor: Colors.white,
         unselectedItemColor: Colors.grey[400],
-        backgroundColor: Colors.deepPurple,
-        type: BottomNavigationBarType.shifting,
+        backgroundColor: const Color(0xFF802629), // Ana renk temamızla uyumlu
+        type: BottomNavigationBarType.fixed,
         onTap: _onItemTapped,
       ),
     );
   }
 }
 
+// --- YENİ ANA SAYFA TASARIMI WIDGET'I ---
+// Görseldeki tasarımı birebir uyguladığımız kısım
+class DesignedHomePage extends StatelessWidget {
+  const DesignedHomePage({super.key});
+
+  // Tasarımda kullanılan ana renk
+  static const Color primaryColor = Color(0xFF802629);
+  static const Color cardColor = Color(0xFFECECEC);
+
+  @override
+  Widget build(BuildContext context) {
+    // Sayfanın en üstten başlaması ve durum çubuğu (saat, pil vs.) ile
+    // çakışmaması için SafeArea widget'ı ekliyoruz.
+    return SafeArea(
+      child: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              // --- ÜST BUTONLAR ("B") ---
+              _buildTopButtons(),
+              const SizedBox(height: 24),
+
+              // --- SIK KULLANILANLAR BÖLÜMÜ ---
+              _buildSectionTitle('SIK KULLANILANLAR'),
+              const SizedBox(height: 12),
+              _buildFrequentlyUsedGrid(),
+              const SizedBox(height: 16),
+
+              // --- ORTADAKİ BUTON ("B") ---
+              ElevatedButton(
+                onPressed: () {
+                  // Bu butona tıklandığında yapılacak işlem (şimdilik boş)
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: cardColor,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  padding: const EdgeInsets.symmetric(vertical: 12),
+                ),
+                child: const Text(
+                  'B',
+                  style: TextStyle(fontSize: 18, color: Colors.white),
+                ),
+              ),
+              const SizedBox(height: 24),
+
+              // --- DUYURULAR BÖLÜMÜ ---
+              _buildSectionTitle('DUYURULAR'),
+              const SizedBox(height: 12),
+              _buildAnnouncementCard(), // İlk duyuru kartı
+              const SizedBox(height: 16),
+              _buildAnnouncementCard(), // İkinci duyuru kartı
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  // --- YARDIMCI METOTLAR (WIDGET OLUŞTURUCULAR) ---
+
+  Widget _buildTopButtons() {
+    return Row(
+      children: [
+        Expanded(
+          flex: 3,
+          child: ElevatedButton(
+            onPressed: () {},
+            style: ElevatedButton.styleFrom(
+              backgroundColor: cardColor,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+              padding: const EdgeInsets.symmetric(vertical: 12),
+            ),
+            child: const Text('B', style: TextStyle(color: Colors.white)),
+          ),
+        ),
+        const SizedBox(width: 16),
+        Expanded(
+          flex: 2,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: [
+              _buildCircularButton(),
+              _buildCircularButton(),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildCircularButton() {
+    return ElevatedButton(
+      onPressed: () {},
+      style: ElevatedButton.styleFrom(
+        shape: const CircleBorder(),
+        padding: const EdgeInsets.all(16),
+        backgroundColor: cardColor,
+      ),
+      child: const Text('B', style: TextStyle(color: Colors.white)),
+    );
+  }
+
+  Widget _buildSectionTitle(String title) {
+    return Container(
+      padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
+      decoration: BoxDecoration(
+        color: primaryColor,
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: Text(
+        title,
+        style: const TextStyle(
+          color: Colors.white,
+          fontWeight: FontWeight.bold,
+          fontSize: 16,
+        ),
+      ),
+    );
+  }
+
+  Widget _buildFrequentlyUsedGrid() {
+    return GridView.builder(
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
+      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: 4,
+        crossAxisSpacing: 12,
+        mainAxisSpacing: 12,
+        childAspectRatio: 1,
+      ),
+      itemCount: 8,
+      itemBuilder: (context, index) {
+        return Container(
+          decoration: BoxDecoration(
+            color: cardColor,
+            borderRadius: BorderRadius.circular(16),
+          ),
+          child: const Center(
+            child: Text(
+              'L',
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 24,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildAnnouncementCard() {
+    return Container(
+      height: 150,
+      decoration: BoxDecoration(
+        color: cardColor,
+        borderRadius: BorderRadius.circular(16),
+      ),
+      child: const Center(
+        child: Text(
+          'L',
+          style: TextStyle(
+            color: Colors.white,
+            fontSize: 48,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+
+// --- WEBVIEW SAYFASI ---
 class WebViewPage extends StatefulWidget {
   final String url;
-  final WebViewController? controller; // Made nullable for refresh functionality
 
-  const WebViewPage({super.key, required this.url, this.controller});
+  const WebViewPage({required this.url, super.key});
 
   @override
   State<WebViewPage> createState() => _WebViewPageState();
 }
+
 
 class _WebViewPageState extends State<WebViewPage> with AutomaticKeepAliveClientMixin {
   late final WebViewController _controller;
   bool _isLoading = true;
 
   @override
-  bool get wantKeepAlive => true; // Preserve state when switching tabs
+  bool get wantKeepAlive => true;
 
   @override
   void initState() {
     super.initState();
-    _controller = widget.controller ?? WebViewController()
+    _controller = WebViewController()
       ..setJavaScriptMode(JavaScriptMode.unrestricted)
       ..setBackgroundColor(const Color(0x00000000))
       ..setNavigationDelegate(
         NavigationDelegate(
-          onProgress: (int progress) {
-            setState(() {
-              _isLoading = progress < 100;
-            });
-          },
           onPageStarted: (String url) {
             setState(() {
               _isLoading = true;
@@ -158,11 +280,8 @@ class _WebViewPageState extends State<WebViewPage> with AutomaticKeepAliveClient
               _isLoading = false;
             });
             ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text('Error loading page: ${error.description}')),
+              SnackBar(content: Text('Sayfa yüklenirken hata oluştu: ${error.description}')),
             );
-          },
-          onNavigationRequest: (NavigationRequest request) {
-            return NavigationDecision.navigate;
           },
         ),
       )
@@ -171,14 +290,14 @@ class _WebViewPageState extends State<WebViewPage> with AutomaticKeepAliveClient
 
   @override
   Widget build(BuildContext context) {
-    super.build(context); // Required for AutomaticKeepAliveClientMixin
+    super.build(context);
     return Stack(
       children: [
         WebViewWidget(controller: _controller),
         if (_isLoading)
           const Center(
             child: CircularProgressIndicator(
-              valueColor: AlwaysStoppedAnimation<Color>(Colors.deepPurple),
+              valueColor: AlwaysStoppedAnimation<Color>(Color(0xFF802629)),
             ),
           ),
       ],
