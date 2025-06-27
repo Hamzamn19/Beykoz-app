@@ -64,7 +64,7 @@ flutter:
   assets:
     - assets/images/
     - assets/images/beykoz.logo.png
-    - assets/images/yerleske.png
+    - assets/images/yerleşke.png
 
   # To add assets to your application, add an assets section, like this:
   # assets:
