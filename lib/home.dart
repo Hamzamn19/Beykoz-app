@@ -141,11 +141,17 @@ class DesignedHomePage extends StatelessWidget {
               // Örneğin bir mesaj yazdırabilir veya yeni bir sayfaya gidebilirsiniz.
               print('Görsel butona tıklandı!');
             },
-            child: Image.asset(
-              'assets/images/logo.png', // <-- 1. Adımda eklediğiniz görselin yolu
-              fit: BoxFit.contain, // Görselin alana nasıl sığacağını belirler
-              height: 50,
+            // --- DEĞİŞİKLİK BURADA BAŞLIYOR ---
+            // Image widget'ını, sola hizalamak için Align widget'ı ile sardık.
+            child: Align(
+              alignment: Alignment.centerLeft, // Bu satır, içindeki öğeyi sola yaslar.
+              child: Image.asset(
+                'assets/images/logo.png', // Görselinizin yolu
+                fit: BoxFit.contain,
+                height: 48,
+              ),
             ),
+            // --- DEĞİŞİKLİK BURADA BİTİYOR ---
           ),
         ),
         // --- Bitiş ---
@@ -159,13 +165,13 @@ class DesignedHomePage extends StatelessWidget {
             children: [
               _buildCircularButton(
                 Icons.search,       // İkon
-                Color(0xFFECECEC),   // Arka Plan Rengi
-                Color(0xFF802629),               // İkon Rengi
+                const Color(0xFFECECEC),   // Arka Plan Rengi
+                const Color(0xFF802629),   // İkon Rengi
               ),
               _buildCircularButton(
-                Icons.notifications,               // İkon
-                Color(0xFF802629),     // Arka Plan Rengi
-                Colors.white,               // İkon Rengi
+                Icons.notifications,    // İkon
+                const Color(0xFF802629),  // Arka Plan Rengi
+                Colors.white,           // İkon Rengi
               ),
             ],
           ),
