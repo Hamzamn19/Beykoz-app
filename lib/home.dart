@@ -125,6 +125,10 @@ class DesignedHomePage extends StatelessWidget {
 
   // --- YARDIMCI METOTLAR (WIDGET OLUŞTURUCULAR) ---
 
+// home.dart dosyasından
+
+// home.dart dosyasından
+
   Widget _buildTopButtons() {
     return Row(
       children: [
@@ -133,7 +137,7 @@ class DesignedHomePage extends StatelessWidget {
           child: ElevatedButton(
             onPressed: () {},
             style: ElevatedButton.styleFrom(
-              backgroundColor: cardColor,
+              backgroundColor: const Color(0xFFECECEC), // Bu butonun rengi aynı kalabilir
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
               padding: const EdgeInsets.symmetric(vertical: 12),
             ),
@@ -146,8 +150,20 @@ class DesignedHomePage extends StatelessWidget {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
-              _buildCircularButton(),
-              _buildCircularButton(),
+              // --- DEĞİŞİKLİK BURADA ---
+              // 1. Buton: Bildirim ikonu (Mavi-Gri arkaplan, Beyaz ikon)
+              _buildCircularButton(
+                Icons.search,       // İkon
+                Color(0xFFECECEC),   // Arka Plan Rengi
+                Color(0xFF802629),               // İkon Rengi
+              ),
+
+              // 2. Buton: Arama ikonu (Turuncu arkaplan, Beyaz ikon)
+              _buildCircularButton(
+                Icons.notifications,               // İkon
+                Color(0xFF802629),     // Arka Plan Rengi
+                Colors.white,               // İkon Rengi
+              ),
             ],
           ),
         ),
@@ -155,15 +171,23 @@ class DesignedHomePage extends StatelessWidget {
     );
   }
 
-  Widget _buildCircularButton() {
+  Widget _buildCircularButton(IconData icon, Color backgroundColor, Color iconColor) {
     return ElevatedButton(
       onPressed: () {},
       style: ElevatedButton.styleFrom(
         shape: const CircleBorder(),
-        padding: const EdgeInsets.all(16),
-        backgroundColor: cardColor,
+        padding: const EdgeInsets.all(10),
+        // --- DEĞİŞİKLİK BURADA ---
+        // Arka plan rengi artık sabit değil, parametreden geliyor.
+        backgroundColor: backgroundColor,
       ),
-      child: const Text('B', style: TextStyle(color: Colors.white)),
+      child: Icon(
+        icon,
+        // --- DEĞİŞİKLİK BURADA ---
+        // İkon rengi de artık sabit değil, parametreden geliyor.
+        color: iconColor,
+        size: 30,
+      ),
     );
   }
 
