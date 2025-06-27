@@ -31,24 +31,12 @@ class _HomeScreenState extends State<HomeScreen> {
     // --- DEĞİŞİKLİK BURADA ---
     // Scaffold widget'ından `appBar` parametresi tamamen kaldırıldı.
     return Scaffold(
-      body: IndexedStack(
-        index: _selectedIndex,
-        children: _pages,
-      ),
+      body: IndexedStack(index: _selectedIndex, children: _pages),
       bottomNavigationBar: BottomNavigationBar(
         items: const <BottomNavigationBarItem>[
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home),
-            label: 'Ana Sayfa',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.web),
-            label: 'OIS',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.login),
-            label: 'Online',
-          ),
+          BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Ana Sayfa'),
+          BottomNavigationBarItem(icon: Icon(Icons.web), label: 'OIS'),
+          BottomNavigationBarItem(icon: Icon(Icons.login), label: 'Online'),
         ],
         currentIndex: _selectedIndex,
         selectedItemColor: Colors.white,
@@ -125,9 +113,9 @@ class DesignedHomePage extends StatelessWidget {
 
   // --- YARDIMCI METOTLAR (WIDGET OLUŞTURUCULAR) ---
 
-// home.dart dosyasından
+  // home.dart dosyasından
 
-// home.dart dosyasından
+  // home.dart dosyasından
 
   Widget _buildTopButtons() {
     return Row(
@@ -144,7 +132,8 @@ class DesignedHomePage extends StatelessWidget {
             // --- DEĞİŞİKLİK BURADA BAŞLIYOR ---
             // Image widget'ını, sola hizalamak için Align widget'ı ile sardık.
             child: Align(
-              alignment: Alignment.centerLeft, // Bu satır, içindeki öğeyi sola yaslar.
+              alignment:
+                  Alignment.centerLeft, // Bu satır, içindeki öğeyi sola yaslar.
               child: Image.asset(
                 'assets/images/logo.png', // Görselinizin yolu
                 fit: BoxFit.contain,
@@ -154,8 +143,8 @@ class DesignedHomePage extends StatelessWidget {
             // --- DEĞİŞİKLİK BURADA BİTİYOR ---
           ),
         ),
-        // --- Bitiş ---
 
+        // --- Bitiş ---
         const SizedBox(width: 16),
 
         Expanded(
@@ -164,14 +153,14 @@ class DesignedHomePage extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
               _buildCircularButton(
-                Icons.search,       // İkon
-                const Color(0xFFECECEC),   // Arka Plan Rengi
-                const Color(0xFF802629),   // İkon Rengi
+                Icons.search, // İkon
+                const Color(0xFFECECEC), // Arka Plan Rengi
+                const Color(0xFF802629), // İkon Rengi
               ),
               _buildCircularButton(
-                Icons.notifications,    // İkon
-                const Color(0xFF802629),  // Arka Plan Rengi
-                Colors.white,           // İkon Rengi
+                Icons.notifications, // İkon
+                const Color(0xFF802629), // Arka Plan Rengi
+                Colors.white, // İkon Rengi
               ),
             ],
           ),
@@ -180,7 +169,11 @@ class DesignedHomePage extends StatelessWidget {
     );
   }
 
-  Widget _buildCircularButton(IconData icon, Color backgroundColor, Color iconColor) {
+  Widget _buildCircularButton(
+    IconData icon,
+    Color backgroundColor,
+    Color iconColor,
+  ) {
     return ElevatedButton(
       onPressed: () {},
       style: ElevatedButton.styleFrom(
@@ -271,7 +264,6 @@ class DesignedHomePage extends StatelessWidget {
   }
 }
 
-
 // --- WEBVIEW SAYFASI ---
 class WebViewPage extends StatefulWidget {
   final String url;
@@ -282,8 +274,8 @@ class WebViewPage extends StatefulWidget {
   State<WebViewPage> createState() => _WebViewPageState();
 }
 
-
-class _WebViewPageState extends State<WebViewPage> with AutomaticKeepAliveClientMixin {
+class _WebViewPageState extends State<WebViewPage>
+    with AutomaticKeepAliveClientMixin {
   late final WebViewController _controller;
   bool _isLoading = true;
 
@@ -313,7 +305,11 @@ class _WebViewPageState extends State<WebViewPage> with AutomaticKeepAliveClient
               _isLoading = false;
             });
             ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text('Sayfa yüklenirken hata oluştu: ${error.description}')),
+              SnackBar(
+                content: Text(
+                  'Sayfa yüklenirken hata oluştu: ${error.description}',
+                ),
+              ),
             );
           },
         ),

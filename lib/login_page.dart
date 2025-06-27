@@ -1,4 +1,6 @@
+import 'package:beykoz/home.dart';
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -8,7 +10,10 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
   bool _isPasswordVisible = false;
+  bool _isLoading = false;
 
   @override
   Widget build(BuildContext context) {
@@ -42,7 +47,6 @@ class _LoginPageState extends State<LoginPage> {
                 ],
               ),
             ),
-            // Dalgalı alt kısım eklendi
             const _BottomWave(),
           ],
         ),
@@ -56,9 +60,9 @@ class _LoginPageState extends State<LoginPage> {
         ClipPath(
           clipper: _DiagonalClipper(),
           child: Image.asset(
-            'assets/images/yerleşke.png', // Binanın resminin yolu
+            'assets/images/yerleşke.png',
             width: double.infinity,
-            height: 320, // Resmi büyüttük
+            height: 320,
             fit: BoxFit.cover,
           ),
         ),
@@ -85,10 +89,7 @@ class _LoginPageState extends State<LoginPage> {
               decoration: BoxDecoration(
                 color: Colors.white,
                 shape: BoxShape.circle,
-                border: Border.all(
-                  color: const Color(0xFF802629), // Kırmızı çerçeve
-                  width: 6, // Kalınlık artırıldı
-                ),
+                border: Border.all(color: const Color(0xFF802629), width: 6),
                 boxShadow: [
                   BoxShadow(
                     color: Colors.black.withOpacity(0.08),
@@ -114,6 +115,7 @@ class _LoginPageState extends State<LoginPage> {
 
   Widget _buildEmailInputField() {
     return TextField(
+      controller: _emailController,
       decoration: InputDecoration(
         labelText: 'Email 365',
         labelStyle: const TextStyle(color: Colors.grey),
@@ -130,6 +132,7 @@ class _LoginPageState extends State<LoginPage> {
 
   Widget _buildPasswordInputField() {
     return TextField(
+      controller: _passwordController,
       obscureText: !_isPasswordVisible,
       decoration: InputDecoration(
         labelText: 'Password',
@@ -138,7 +141,7 @@ class _LoginPageState extends State<LoginPage> {
           borderSide: BorderSide(color: Colors.grey.shade300),
         ),
         focusedBorder: const UnderlineInputBorder(
-          borderSide: BorderSide(color: const Color(0xFF802629)),
+          borderSide: BorderSide(color: Color(0xFF802629)),
         ),
         suffixIcon: IconButton(
           icon: Icon(
@@ -160,28 +163,100 @@ class _LoginPageState extends State<LoginPage> {
       width: double.infinity,
       height: 50,
       child: ElevatedButton(
-        onPressed: () {
-          // Giriş yapma fonksiyonu buraya gelecek
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Login button pressed!')),
-          );
-        },
+        onPressed: _isLoading ? null : _handleLogin,
         style: ElevatedButton.styleFrom(
-          backgroundColor: const Color(0xFF802629), // Kırmızı renk
+          backgroundColor: const Color(0xFF802629),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(10),
           ),
         ),
-        child: const Text(
-          'Log In',
-          style: TextStyle(
-            color: Colors.white,
-            fontSize: 18,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
+        child: _isLoading
+            ? const CircularProgressIndicator(
+                valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+              )
+            : const Text(
+                'Log In',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
       ),
     );
+  }
+
+  Future<void> _handleLogin() async {
+    if (_emailController.text.trim().isEmpty ||
+        _passwordController.text.isEmpty) {
+      _showErrorMessage('Email ve şifre alanları boş olamaz!');
+      return;
+    }
+
+    setState(() {
+      _isLoading = true;
+    });
+
+    try {
+      await FirebaseAuth.instance.signInWithEmailAndPassword(
+        email: _emailController.text.trim(),
+        password: _passwordController.text,
+      );
+
+      // Başarılı girişte ana sayfaya yönlendir
+      if (mounted) {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (context) =>
+                const HomeScreen(), // Düzeltildi: DesignedHomePage yerine HomeScreen
+          ),
+        );
+      }
+    } on FirebaseAuthException catch (e) {
+      String errorMessage;
+      switch (e.code) {
+        case 'user-not-found':
+          errorMessage = 'Bu email adresi kayıtlı değil.';
+          break;
+        case 'wrong-password':
+          errorMessage = 'Hatalı şifre.';
+          break;
+        case 'invalid-email':
+          errorMessage = 'Geçersiz email adresi.';
+          break;
+        case 'user-disabled':
+          errorMessage = 'Bu hesap devre dışı bırakılmış.';
+          break;
+        case 'too-many-requests':
+          errorMessage =
+              'Çok fazla başarısız deneme. Lütfen daha sonra tekrar deneyin.';
+          break;
+        default:
+          errorMessage = 'Giriş başarısız: ${e.message}';
+      }
+      _showErrorMessage(errorMessage);
+    } catch (e) {
+      _showErrorMessage('Beklenmeyen bir hata oluştu: ${e.toString()}');
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+      }
+    }
+  }
+
+  void _showErrorMessage(String message) {
+    if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(message),
+          backgroundColor: Colors.red,
+          behavior: SnackBarBehavior.floating,
+        ),
+      );
+    }
   }
 
   Widget _buildHelpText() {
@@ -189,10 +264,7 @@ class _LoginPageState extends State<LoginPage> {
       alignment: Alignment.center,
       child: TextButton(
         onPressed: () {
-          // Yardım fonksiyonu buraya gelecek
-          ScaffoldMessenger.of(
-            context,
-          ).showSnackBar(const SnackBar(content: Text('Help button pressed!')));
+          _showHelpDialog();
         },
         child: const Text(
           'Help ?',
@@ -205,34 +277,41 @@ class _LoginPageState extends State<LoginPage> {
       ),
     );
   }
-}
 
-// Main fonksiyonu ve uygulamanın başlangıç noktası
-void main() {
-  runApp(const MyApp());
-}
-
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+  void _showHelpDialog() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Yardım'),
+          content: const Text(
+            'Giriş yapmakta sorun yaşıyorsanız:\n\n'
+            '• Email adresinizi kontrol edin\n'
+            '• Şifrenizi kontrol edin\n'
+            '• İnternet bağlantınızı kontrol edin\n\n'
+            'Sorun devam ederse IT departmanı ile iletişime geçin.',
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: const Text('Tamam'),
+            ),
+          ],
+        );
+      },
+    );
+  }
 
   @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Login Page',
-      theme: ThemeData(
-        primaryColor: const Color(0xFF802629),
-        colorScheme: ColorScheme.fromSwatch().copyWith(
-          primary: const Color(0xFF802629),
-          secondary: const Color(0xFF802629),
-        ),
-        visualDensity: VisualDensity.adaptivePlatformDensity,
-      ),
-      home: const LoginPage(),
-    );
+  void dispose() {
+    _emailController.dispose();
+    _passwordController.dispose();
+    super.dispose();
   }
 }
 
-// Dosyanın sonuna ekle:
 class _BottomWave extends StatelessWidget {
   const _BottomWave();
 
@@ -242,10 +321,7 @@ class _BottomWave extends StatelessWidget {
       alignment: Alignment.bottomCenter,
       child: ClipPath(
         clipper: _WaveClipper(),
-        child: Container(
-          height: 280, // Yüksekliği artırdık, örn: 280
-          color: const Color(0xFFB44747), // veya 0xFF802629
-        ),
+        child: Container(height: 280, color: const Color(0xFFB44747)),
       ),
     );
   }
@@ -282,8 +358,8 @@ class _DiagonalClipper extends CustomClipper<Path> {
   @override
   Path getClip(Size size) {
     Path path = Path();
-    path.lineTo(0, size.height * 0.85); // Sol altı biraz daha aşağıya çek
-    path.lineTo(size.width, size.height * 0.65); // Sağ altı daha yukarıda bırak
+    path.lineTo(0, size.height * 0.85);
+    path.lineTo(size.width, size.height * 0.65);
     path.lineTo(size.width, 0);
     path.close();
     return path;
