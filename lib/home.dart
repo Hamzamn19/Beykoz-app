@@ -132,33 +132,36 @@ class DesignedHomePage extends StatelessWidget {
   Widget _buildTopButtons() {
     return Row(
       children: [
+        // --- DİKDÖRTGEN BUTON YERİNE TIKLANABİLİR GÖRSEL ---
         Expanded(
           flex: 3,
-          child: ElevatedButton(
-            onPressed: () {},
-            style: ElevatedButton.styleFrom(
-              backgroundColor: const Color(0xFFECECEC), // Bu butonun rengi aynı kalabilir
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-              padding: const EdgeInsets.symmetric(vertical: 12),
+          child: GestureDetector(
+            onTap: () {
+              // Görsele tıklandığında yapılacak işlemi buraya yazın.
+              // Örneğin bir mesaj yazdırabilir veya yeni bir sayfaya gidebilirsiniz.
+              print('Görsel butona tıklandı!');
+            },
+            child: Image.asset(
+              'assets/images/logo.png', // <-- 1. Adımda eklediğiniz görselin yolu
+              fit: BoxFit.contain, // Görselin alana nasıl sığacağını belirler
+              height: 50,
             ),
-            child: const Text('B', style: TextStyle(color: Colors.white)),
           ),
         ),
+        // --- Bitiş ---
+
         const SizedBox(width: 16),
+
         Expanded(
           flex: 2,
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
-              // --- DEĞİŞİKLİK BURADA ---
-              // 1. Buton: Bildirim ikonu (Mavi-Gri arkaplan, Beyaz ikon)
               _buildCircularButton(
                 Icons.search,       // İkon
                 Color(0xFFECECEC),   // Arka Plan Rengi
                 Color(0xFF802629),               // İkon Rengi
               ),
-
-              // 2. Buton: Arama ikonu (Turuncu arkaplan, Beyaz ikon)
               _buildCircularButton(
                 Icons.notifications,               // İkon
                 Color(0xFF802629),     // Arka Plan Rengi
