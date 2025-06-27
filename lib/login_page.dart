@@ -56,7 +56,7 @@ class _LoginPageState extends State<LoginPage> {
         ClipPath(
           clipper: _DiagonalClipper(),
           child: Image.asset(
-            'assets/images/yerleşke.png', // Binanın resminin yolu
+            'assets/images/yerleske.png', // Binanın resminin yolu
             width: double.infinity,
             height: 320, // Resmi büyüttük
             fit: BoxFit.cover,
