@@ -227,46 +227,48 @@ class DesignedHomePage extends StatelessWidget {
   }
 
   Widget _buildFrequentlyUsedGrid() {
-    // List of button data: label and relative URL
-    final List<Map<String, String>> frequentlyUsed = [
+    // Liste des éléments avec icônes
+    final List<Map<String, dynamic>> frequentlyUsed = [
       {
         'label': 'Transcript',
         'url': 'https://ois.beykoz.edu.tr/ogrenciler/belge/transkript',
+        'icon': Icons.assignment_turned_in,
       },
       {
         'label': 'Report Card',
         'url': 'https://ois.beykoz.edu.tr/ogrenciler/belge/ogrkarne',
+        'icon': Icons.grade,
       },
       {
         'label': 'Course Program',
         'url': 'https://ois.beykoz.edu.tr/ogrenciler/belge/ogrdersprogrami',
+        'icon': Icons.calendar_today,
       },
       {
         'label': 'Prep Transcript',
-        'url':
-        'https://ois.beykoz.edu.tr/hazirlik/hazirliksinav/ogrpreptranskript',
+        'url': 'https://ois.beykoz.edu.tr/hazirlik/hazirliksinav/ogrpreptranskript',
+        'icon': Icons.school,
       },
       {
         'label': 'Approval Certificate',
         'url': 'https://ois.beykoz.edu.tr/ogrenciler/belge/dersdanismanonay',
+        'icon': Icons.verified_user,
       },
       {
         'label': 'Final Registration',
         'url': 'https://ois.beykoz.edu.tr/ogrenciler/belge/kesinkayitbelgesi',
+        'icon': Icons.how_to_reg,
       },
       {
         'label': 'Document Request',
         'url': 'https://ois.beykoz.edu.tr/ogrenciler/belgetalep/duzenle2',
+        'icon': Icons.description,
       },
       {
         'label': 'Exam Schedule',
         'url': 'https://ois.beykoz.edu.tr/ogrenciler/belge/sinavprogrami',
+        'icon': Icons.schedule,
       },
-      // If you want to add "Exam Result" as a 9th button, add here.
-      // {
-      //   'label': 'Exam Result',
-      //   'url': 'https://ois.beykoz.edu.tr/ogrenciler/belge/ogrsinavsonuc',
-      // },
     ];
 
     return GridView.builder(
@@ -276,7 +278,7 @@ class DesignedHomePage extends StatelessWidget {
         crossAxisCount: 4,
         crossAxisSpacing: 12,
         mainAxisSpacing: 12,
-        childAspectRatio: 1,
+        childAspectRatio: 0.8, // أقل من 1 ليظهر النص أسفل الأيقونة
       ),
       itemCount: frequentlyUsed.length,
       itemBuilder: (context, index) {
@@ -288,29 +290,54 @@ class DesignedHomePage extends StatelessWidget {
               MaterialPageRoute(
                 builder: (context) => WebViewPage(
                   url: item['url']!,
-                  username: null, // Or pass username if needed
-                  password: null, // Or pass password if needed
+                  username: null,
+                  password: null,
                 ),
               ),
             );
           },
           borderRadius: BorderRadius.circular(16),
-          child: Container(
-            decoration: BoxDecoration(
-              color: cardColor,
-              borderRadius: BorderRadius.circular(16),
-            ),
-            child: Center(
-              child: Text(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                width: 54,
+                height: 54,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  gradient: const LinearGradient(
+                    colors: [
+                      Color(0xFF802629),
+                      Color(0xFFB2453C),
+                    ],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                  ),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black12,
+                      blurRadius: 6,
+                      offset: Offset(0, 2),
+                    ),
+                  ],
+                ),
+                child: Icon(
+                  item['icon'],
+                  color: Colors.white,
+                  size: 30,
+                ),
+              ),
+              const SizedBox(height: 8),
+              Text(
                 item['label']!,
                 textAlign: TextAlign.center,
                 style: const TextStyle(
-                  color: Colors.white,
-                  fontSize: 13,
+                  color: Color(0xFF802629),
+                  fontSize: 12,
                   fontWeight: FontWeight.bold,
                 ),
               ),
-            ),
+            ],
           ),
         );
       },
