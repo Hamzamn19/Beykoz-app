@@ -1,6 +1,6 @@
+import 'package:beykoz/Pages/AttendancePage.dart';
+import 'package:beykoz/Pages/HomePage.dart';
 import 'package:flutter/material.dart';
-import 'home.dart';
-import 'attendance.dart';
 import 'NewsPage.dart';
 import 'ProfilePage.dart';
 

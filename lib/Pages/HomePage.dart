@@ -1,6 +1,6 @@
+import 'package:beykoz/Pages/AttendancePage.dart';
 import 'package:flutter/material.dart';
 import 'package:webview_flutter/webview_flutter.dart';
-import 'attendance.dart';
 
 // Ana Ekran ve Bottom Navigation Bar mantığını içeren ana widget
 class HomeScreen extends StatefulWidget {

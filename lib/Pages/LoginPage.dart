@@ -1,8 +1,10 @@
-import 'package:beykoz/home.dart';
+
+import 'package:beykoz/Pages/HomePage.dart';
+import 'package:beykoz/Services/auth_service.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:provider/provider.dart';
-import 'auth_service.dart';
+
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});

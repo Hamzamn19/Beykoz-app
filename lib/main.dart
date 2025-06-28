@@ -1,11 +1,12 @@
-import 'package:beykoz/RootScreen.dart';
+
+import 'package:beykoz/Pages/LoginPage.dart';
+import 'package:beykoz/Pages/RootPage.dart';
+import 'package:beykoz/Services/auth_service.dart';
+import 'package:beykoz/Services/firebase_options.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:provider/provider.dart';
-import 'firebase_options.dart';
-import 'home.dart'; // Eğer 'home.dart' dosyan varsa kalsın, yoksa silebilirsin.
-import 'login_page.dart'; // LoginPage'i import etmeyi unutma!
-import 'auth_service.dart';
+
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
