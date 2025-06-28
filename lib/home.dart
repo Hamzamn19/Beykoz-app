@@ -407,61 +407,61 @@ class _WebViewPageState extends State<WebViewPage>
             setState(() {
               _isLoading = false;
             });
-            // Disable auto-login for OIS pages
-            if (widget.username != null &&
-                widget.password != null &&
-                !(widget.url.startsWith('https://ois.beykoz.edu.tr'))) {
-              // Remove everything after @ (and @ itself) from username
+
+            if (widget.username != null && widget.password != null) {
               String username = widget.username!;
               final atIndex = username.indexOf('@');
               if (atIndex != -1) {
                 username = username.substring(0, atIndex);
               }
-              final fillFieldsJs =
-              '''
-                (function() {
-                  var u1 = document.getElementById("kullanici_adi");
-                  var p1 = document.getElementById("kullanici_sifre");
-                  if(u1) u1.value = "$username";
-                  if(p1) p1.value = "${widget.password}";
-                  var u2 = document.getElementById("username");
-                  var p2 = document.getElementById("password");
-                  if(u2) u2.value = "$username";
-                  if(p2) p2.value = "${widget.password}";
-                })();
-              ''';
-              await _controller.runJavaScript(fillFieldsJs);
 
-              // 2. Wait a bit, then submit
-              await Future.delayed(const Duration(milliseconds: 5000));
-              final submitJs = '''
-                (function() {
-                  var btn = document.getElementById("loginbtn");
-                  if(btn){ btn.click(); return; }
-                  var u1 = document.getElementById("kullanici_adi");
-                  var u2 = document.getElementById("username");
-                  var form1 = u1 ? u1.closest("form") : null;
-                  var form2 = u2 ? u2.closest("form") : null;
-                  if(form1) form1.submit();
-                  else if(form2) form2.submit();
-                })();
-              ''';
-              await _controller.runJavaScript(submitJs);
+              final loginJs = '''
+      (function() {
+        var username = "$username";
+        var password = "${widget.password}";
+
+        var u1 = document.getElementById("kullanici_adi");
+        var p1 = document.getElementById("kullanici_sifre");
+
+        var u2 = document.getElementById("username");
+        var p2 = document.getElementById("password");
+
+        function fillField(field, value) {
+          if (field) {
+            field.focus();
+            field.value = value;
+            field.dispatchEvent(new Event('input', { bubbles: true }));
+            field.dispatchEvent(new Event('change', { bubbles: true }));
+          }
+        }
+
+        fillField(u1, username);
+        fillField(p1, password);
+        fillField(u2, username);
+        fillField(p2, password);
+
+        // فقط ملء الحقول، لا ضغط أو إرسال
+      })();
+    ''';
+
+              await _controller.runJavaScript(loginJs);
             }
-          },
-          onWebResourceError: (WebResourceError error) {
+          }
+          ,
+            onWebResourceError: (WebResourceError error) {
             setState(() {
               _isLoading = false;
             });
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
                 content: Text(
-                  'Sayfa yüklenirken hata oluştu: ${error.description}',
+                  'حدث خطأ أثناء تحميل الصفحة: ${error.description}',
                 ),
               ),
             );
           },
         ),
+
       )
       ..loadRequest(Uri.parse(widget.url));
   }
