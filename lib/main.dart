@@ -1,3 +1,4 @@
+import 'package:beykoz/RootScreen.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:provider/provider.dart';
@@ -13,7 +14,7 @@ void main() async {
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+  const MyApp({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -22,15 +23,8 @@ class MyApp extends StatelessWidget {
       child: MaterialApp(
         debugShowCheckedModeBanner: false, // Debug bandını kaldırır
         title: 'Beykoz App',
-        theme: ThemeData(
-          primaryColor: const Color(0xFF802629),
-          colorScheme: ColorScheme.fromSwatch().copyWith(
-            primary: const Color(0xFF802629),
-            secondary: const Color(0xFF802629),
-          ),
-          visualDensity: VisualDensity.adaptivePlatformDensity,
-        ),
-        home: const AuthWrapper(),
+        theme: ThemeData.light(),
+        home: const RootScreen(),
       ),
     );
   }
@@ -44,7 +38,7 @@ class AuthWrapper extends StatelessWidget {
     return Consumer<AuthService>(
       builder: (context, authService, child) {
         if (authService.isSignedIn) {
-          return const HomeScreen();
+          return const RootScreen();
         } else {
           return const LoginPage();
         }

@@ -113,6 +113,7 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
   }
 
   void _addDebugLog(String message) {
+    if (!mounted) return;
     setState(() {
       _debugLogs.add('${DateTime.now().toString().substring(11, 19)}: $message');
       if (_debugLogs.length > 10) {
@@ -126,16 +127,16 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
       // Generate a random 6-digit session code
       final code = (Random().nextInt(900000) + 100000).toString();
       _addDebugLog('Starting advertising with code: $code');
-      
+      if (!mounted) return;
       setState(() {
         _sessionCode = code;
         _isAdvertising = true;
       });
-      
       await BleAdvertisingService.startAdvertising(code);
       _addDebugLog('Advertising started successfully');
     } catch (e) {
       _addDebugLog('Error starting advertising: $e');
+      if (!mounted) return;
       setState(() {
         _isAdvertising = false;
         _sessionCode = null;
@@ -147,6 +148,7 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
     try {
       await BleAdvertisingService.stopAdvertising();
       _addDebugLog('Advertising stopped');
+      if (!mounted) return;
       setState(() {
         _isAdvertising = false;
         _sessionCode = null;
@@ -158,6 +160,7 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
 
   void _scanForTeacher() async {
     if (!_permissionsGranted) {
+      if (!mounted) return;
       setState(() {
         _scanResultMessage = 'Gerekli izinler verilmedi. Lütfen uygulama ayarlarından izinleri kontrol edin.';
       });
@@ -167,6 +170,7 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
     
     final code = _sessionCodeController.text.trim();
     if (code.length != 6) {
+      if (!mounted) return;
       setState(() {
         _scanResultMessage = 'Lütfen 6 haneli bir oturum kodu girin.';
       });
@@ -174,6 +178,7 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
     }
     
     _addDebugLog('Starting scan for code: $code');
+    if (!mounted) return;
     setState(() {
       _isScanning = true;
       _scanResultMessage = null;
@@ -209,6 +214,7 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
             
             if (codeStr == code) {
               found = true;
+              if (!mounted) return;
               setState(() {
                 _isScanning = false;
                 _scanResultMessage = 'Yoklama başarıyla bulundu!';
@@ -229,6 +235,7 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
       }
     }, onError: (e) {
       _addDebugLog('Scan error: $e');
+      if (!mounted) return;
       setState(() {
         _isScanning = false;
         _scanResultMessage = 'Tarama sırasında hata oluştu: $e';
@@ -239,6 +246,7 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
     await Future.delayed(const Duration(seconds: 15));
     if (!found) {
       await subscription.cancel();
+      if (!mounted) return;
       setState(() {
         _isScanning = false;
         _scanResultMessage = 'Yakındaki öğretmen bulunamadı.';
@@ -254,21 +262,35 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
   @override
   Widget build(BuildContext context) {
     return SafeArea(
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            _buildRoleSelector(),
-            const SizedBox(height: 16),
-            _buildPermissionStatus(),
-            const SizedBox(height: 16),
-            if (_role == 'teacher') _buildTeacherUI(),
-            if (_role == 'student') _buildStudentUI(),
-            const SizedBox(height: 16),
-            _buildDebugLogs(),
-          ],
-        ),
+      child: Column(
+        children: [
+          SizedBox(height: 24),
+          Center(
+            child: Image.asset(
+              'assets/images/logo.png',
+              height: 64,
+            ),
+          ),
+          SizedBox(height: 16),
+          Expanded(
+            child: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  _buildRoleSelector(),
+                  const SizedBox(height: 16),
+                  _buildPermissionStatus(),
+                  const SizedBox(height: 16),
+                  if (_role == 'teacher') _buildTeacherUI(),
+                  if (_role == 'student') _buildStudentUI(),
+                  const SizedBox(height: 16),
+                  _buildDebugLogs(),
+                ],
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
