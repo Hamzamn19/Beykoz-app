@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:webview_flutter/webview_flutter.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'attendance.dart';
 
 // Ana Ekran ve Bottom Navigation Bar mantığını içeren ana widget
 class HomeScreen extends StatefulWidget {
@@ -18,6 +18,7 @@ class _HomeScreenState extends State<HomeScreen> {
     const DesignedHomePage(), // ANA SAYFA TASARIMIMIZ
     WebViewPage(url: 'https://ois.beykoz.edu.tr/'),
     WebViewPage(url: 'https://online.beykoz.edu.tr'),
+    AttendanceScreen(),
   ];
 
   void _onItemTapped(int index) {
@@ -48,6 +49,10 @@ class _HomeScreenState extends State<HomeScreen> {
           BottomNavigationBarItem(
             icon: Icon(Icons.login),
             label: 'Online',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.bluetooth),
+            label: 'Yoklama',
           ),
         ],
         currentIndex: _selectedIndex,

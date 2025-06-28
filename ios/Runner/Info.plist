@@ -45,5 +45,9 @@
 	<true/>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
+	<key>NSBluetoothAlwaysUsageDescription</key>
+	<string>Bu uygulama Bluetooth ile yoklama başlatmak için Bluetooth erişimi ister.</string>
+	<key>NSBluetoothPeripheralUsageDescription</key>
+	<string>Bu uygulama Bluetooth ile yoklama başlatmak için Bluetooth erişimi ister.</string>
 </dict>
 </plist>

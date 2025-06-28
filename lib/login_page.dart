@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:provider/provider.dart';
+import 'auth_service.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -9,6 +12,83 @@ class LoginPage extends StatefulWidget {
 
 class _LoginPageState extends State<LoginPage> {
   bool _isPasswordVisible = false;
+  bool _isLoading = false;
+  final _formKey = GlobalKey<FormState>();
+  final _emailController = TextEditingController();
+  final _passwordController = TextEditingController();
+
+  @override
+  void dispose() {
+    _emailController.dispose();
+    _passwordController.dispose();
+    super.dispose();
+  }
+
+  Future<void> _signIn() async {
+    if (!_formKey.currentState!.validate()) {
+      return;
+    }
+
+    setState(() {
+      _isLoading = true;
+    });
+
+    try {
+      final authService = Provider.of<AuthService>(context, listen: false);
+      await authService.signInWithEmailAndPassword(
+        _emailController.text.trim(),
+        _passwordController.text,
+      );
+      // Navigation will be handled automatically by AuthWrapper
+    } on FirebaseAuthException catch (e) {
+      String errorMessage = 'An error occurred during login.';
+      
+      switch (e.code) {
+        case 'user-not-found':
+          errorMessage = 'No user found with this email address.';
+          break;
+        case 'wrong-password':
+          errorMessage = 'Wrong password provided.';
+          break;
+        case 'invalid-email':
+          errorMessage = 'Invalid email address.';
+          break;
+        case 'user-disabled':
+          errorMessage = 'This user account has been disabled.';
+          break;
+        case 'too-many-requests':
+          errorMessage = 'Too many failed login attempts. Please try again later.';
+          break;
+        case 'network-request-failed':
+          errorMessage = 'Network error. Please check your internet connection.';
+          break;
+      }
+
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(errorMessage),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('An unexpected error occurred: $e'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -20,26 +100,29 @@ class _LoginPageState extends State<LoginPage> {
             _buildHeader(),
             Padding(
               padding: const EdgeInsets.all(24.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Text(
-                    'Login',
-                    style: TextStyle(
-                      fontSize: 32,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.black,
+              child: Form(
+                key: _formKey,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text(
+                      'Login',
+                      style: TextStyle(
+                        fontSize: 32,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black,
+                      ),
                     ),
-                  ),
-                  const SizedBox(height: 40),
-                  _buildEmailInputField(),
-                  const SizedBox(height: 20),
-                  _buildPasswordInputField(),
-                  const SizedBox(height: 40),
-                  _buildLoginButton(),
-                  const SizedBox(height: 20),
-                  _buildHelpText(),
-                ],
+                    const SizedBox(height: 40),
+                    _buildEmailInputField(),
+                    const SizedBox(height: 20),
+                    _buildPasswordInputField(),
+                    const SizedBox(height: 40),
+                    _buildLoginButton(),
+                    const SizedBox(height: 20),
+                    _buildHelpText(),
+                  ],
+                ),
               ),
             ),
             // Dalgalı alt kısım eklendi
@@ -113,7 +196,8 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   Widget _buildEmailInputField() {
-    return TextField(
+    return TextFormField(
+      controller: _emailController,
       decoration: InputDecoration(
         labelText: 'Email 365',
         labelStyle: const TextStyle(color: Colors.grey),
@@ -123,13 +207,29 @@ class _LoginPageState extends State<LoginPage> {
         focusedBorder: const UnderlineInputBorder(
           borderSide: BorderSide(color: Color(0xFF802629)),
         ),
+        errorBorder: const UnderlineInputBorder(
+          borderSide: BorderSide(color: Colors.red),
+        ),
+        focusedErrorBorder: const UnderlineInputBorder(
+          borderSide: BorderSide(color: Colors.red),
+        ),
       ),
       keyboardType: TextInputType.emailAddress,
+      validator: (value) {
+        if (value == null || value.isEmpty) {
+          return 'Please enter your email';
+        }
+        if (!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(value)) {
+          return 'Please enter a valid email address';
+        }
+        return null;
+      },
     );
   }
 
   Widget _buildPasswordInputField() {
-    return TextField(
+    return TextFormField(
+      controller: _passwordController,
       obscureText: !_isPasswordVisible,
       decoration: InputDecoration(
         labelText: 'Password',
@@ -138,7 +238,13 @@ class _LoginPageState extends State<LoginPage> {
           borderSide: BorderSide(color: Colors.grey.shade300),
         ),
         focusedBorder: const UnderlineInputBorder(
-          borderSide: BorderSide(color: const Color(0xFF802629)),
+          borderSide: BorderSide(color: Color(0xFF802629)),
+        ),
+        errorBorder: const UnderlineInputBorder(
+          borderSide: BorderSide(color: Colors.red),
+        ),
+        focusedErrorBorder: const UnderlineInputBorder(
+          borderSide: BorderSide(color: Colors.red),
         ),
         suffixIcon: IconButton(
           icon: Icon(
@@ -152,6 +258,15 @@ class _LoginPageState extends State<LoginPage> {
           },
         ),
       ),
+      validator: (value) {
+        if (value == null || value.isEmpty) {
+          return 'Please enter your password';
+        }
+        if (value.length < 6) {
+          return 'Password must be at least 6 characters';
+        }
+        return null;
+      },
     );
   }
 
@@ -160,26 +275,30 @@ class _LoginPageState extends State<LoginPage> {
       width: double.infinity,
       height: 50,
       child: ElevatedButton(
-        onPressed: () {
-          // Giriş yapma fonksiyonu buraya gelecek
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Login button pressed!')),
-          );
-        },
+        onPressed: _isLoading ? null : _signIn,
         style: ElevatedButton.styleFrom(
           backgroundColor: const Color(0xFF802629), // Kırmızı renk
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(10),
           ),
         ),
-        child: const Text(
-          'Log In',
-          style: TextStyle(
-            color: Colors.white,
-            fontSize: 18,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
+        child: _isLoading
+            ? const SizedBox(
+                height: 20,
+                width: 20,
+                child: CircularProgressIndicator(
+                  strokeWidth: 2,
+                  valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                ),
+              )
+            : const Text(
+                'Log In',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
       ),
     );
   }
@@ -203,31 +322,6 @@ class _LoginPageState extends State<LoginPage> {
           ),
         ),
       ),
-    );
-  }
-}
-
-// Main fonksiyonu ve uygulamanın başlangıç noktası
-void main() {
-  runApp(const MyApp());
-}
-
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Login Page',
-      theme: ThemeData(
-        primaryColor: const Color(0xFF802629),
-        colorScheme: ColorScheme.fromSwatch().copyWith(
-          primary: const Color(0xFF802629),
-          secondary: const Color(0xFF802629),
-        ),
-        visualDensity: VisualDensity.adaptivePlatformDensity,
-      ),
-      home: const LoginPage(),
     );
   }
 }
