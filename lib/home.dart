@@ -107,8 +107,8 @@ class DesignedHomePage extends StatelessWidget {
                   padding: const EdgeInsets.symmetric(vertical: 12),
                 ),
                 child: const Text(
-                  'B',
-                  style: TextStyle(fontSize: 18, color: Colors.white),
+                  'TÜMÜ',
+                  style: TextStyle(fontSize: 18, color: Color(0xFF802629)),
                 ),
               ),
               const SizedBox(height: 24),
@@ -230,42 +230,42 @@ class DesignedHomePage extends StatelessWidget {
     // Liste des éléments avec icônes
     final List<Map<String, dynamic>> frequentlyUsed = [
       {
-        'label': 'Transcript',
+        'label': 'Transkript',
         'url': 'https://ois.beykoz.edu.tr/ogrenciler/belge/transkript',
         'icon': Icons.assignment_turned_in,
       },
       {
-        'label': 'Report Card',
+        'label': 'Karne',
         'url': 'https://ois.beykoz.edu.tr/ogrenciler/belge/ogrkarne',
         'icon': Icons.grade,
       },
       {
-        'label': 'Course Program',
+        'label': 'Ders Programı',
         'url': 'https://ois.beykoz.edu.tr/ogrenciler/belge/ogrdersprogrami',
         'icon': Icons.calendar_today,
       },
       {
-        'label': 'Prep Transcript',
+        'label': 'Hazırlık Karne',
         'url': 'https://ois.beykoz.edu.tr/hazirlik/hazirliksinav/ogrpreptranskript',
         'icon': Icons.school,
       },
       {
-        'label': 'Approval Certificate',
+        'label': 'Ders Onay Belgesi',
         'url': 'https://ois.beykoz.edu.tr/ogrenciler/belge/dersdanismanonay',
         'icon': Icons.verified_user,
       },
       {
-        'label': 'Final Registration',
+        'label': 'Kesin Kayıt Belgesi',
         'url': 'https://ois.beykoz.edu.tr/ogrenciler/belge/kesinkayitbelgesi',
         'icon': Icons.how_to_reg,
       },
       {
-        'label': 'Document Request',
+        'label': 'Online Belge Talep',
         'url': 'https://ois.beykoz.edu.tr/ogrenciler/belgetalep/duzenle2',
         'icon': Icons.description,
       },
       {
-        'label': 'Exam Schedule',
+        'label': 'Sınav Programı',
         'url': 'https://ois.beykoz.edu.tr/ogrenciler/belge/sinavprogrami',
         'icon': Icons.schedule,
       },
@@ -278,7 +278,7 @@ class DesignedHomePage extends StatelessWidget {
         crossAxisCount: 4,
         crossAxisSpacing: 12,
         mainAxisSpacing: 12,
-        childAspectRatio: 0.8, // أقل من 1 ليظهر النص أسفل الأيقونة
+        childAspectRatio: 0.8,
       ),
       itemCount: frequentlyUsed.length,
       itemBuilder: (context, index) {
@@ -301,10 +301,12 @@ class DesignedHomePage extends StatelessWidget {
             mainAxisSize: MainAxisSize.min,
             children: [
               Container(
-                width: 54,
-                height: 54,
+                width: 56.75,
+                height: 56.75,
                 decoration: BoxDecoration(
-                  shape: BoxShape.circle,
+                  // --- DEĞİŞİKLİK BURADA ---
+                  // "shape: BoxShape.circle" yerine "borderRadius" kullanıldı.
+                  borderRadius: BorderRadius.circular(12),
                   gradient: const LinearGradient(
                     colors: [
                       Color(0xFF802629),
@@ -317,7 +319,7 @@ class DesignedHomePage extends StatelessWidget {
                     BoxShadow(
                       color: Colors.black12,
                       blurRadius: 6,
-                      offset: Offset(0, 2),
+                      offset: const Offset(0, 2),
                     ),
                   ],
                 ),
