@@ -7,12 +7,8 @@ import 'login_page.dart'; // LoginPage'i import etmeyi unutma!
 import 'auth_service.dart';
 
 void main() async {
-  // Flutter binding'lerinin Firebase'den önce başlatıldığından emin ol.
   WidgetsFlutterBinding.ensureInitialized();
-
-  // Firebase'i başlat.
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
-
   runApp(const MyApp());
 }
 

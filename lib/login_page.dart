@@ -1,3 +1,4 @@
+import 'package:beykoz/home.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:provider/provider.dart';
@@ -11,6 +12,8 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
   bool _isPasswordVisible = false;
   bool _isLoading = false;
   final _formKey = GlobalKey<FormState>();
@@ -125,7 +128,6 @@ class _LoginPageState extends State<LoginPage> {
                 ),
               ),
             ),
-            // Dalgalı alt kısım eklendi
             const _BottomWave(),
           ],
         ),
@@ -139,9 +141,9 @@ class _LoginPageState extends State<LoginPage> {
         ClipPath(
           clipper: _DiagonalClipper(),
           child: Image.asset(
-            'assets/images/yerleske.png', // Binanın resminin yolu
+            'assets/images/yerleşke.png',
             width: double.infinity,
-            height: 320, // Resmi büyüttük
+            height: 320,
             fit: BoxFit.cover,
           ),
         ),
@@ -168,10 +170,7 @@ class _LoginPageState extends State<LoginPage> {
               decoration: BoxDecoration(
                 color: Colors.white,
                 shape: BoxShape.circle,
-                border: Border.all(
-                  color: const Color(0xFF802629), // Kırmızı çerçeve
-                  width: 6, // Kalınlık artırıldı
-                ),
+                border: Border.all(color: const Color(0xFF802629), width: 6),
                 boxShadow: [
                   BoxShadow(
                     color: Colors.black.withOpacity(0.08),
@@ -277,7 +276,7 @@ class _LoginPageState extends State<LoginPage> {
       child: ElevatedButton(
         onPressed: _isLoading ? null : _signIn,
         style: ElevatedButton.styleFrom(
-          backgroundColor: const Color(0xFF802629), // Kırmızı renk
+          backgroundColor: const Color(0xFF802629),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(10),
           ),
@@ -303,15 +302,87 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 
+  Future<void> _handleLogin() async {
+    if (_emailController.text.trim().isEmpty ||
+        _passwordController.text.isEmpty) {
+      _showErrorMessage('Email ve şifre alanları boş olamaz!');
+      return;
+    }
+
+    setState(() {
+      _isLoading = true;
+    });
+
+    try {
+      await FirebaseAuth.instance.signInWithEmailAndPassword(
+        email: _emailController.text.trim(),
+        password: _passwordController.text,
+      );
+
+      // Başarılı girişte ana sayfaya yönlendir
+      if (mounted) {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (context) => HomeScreen(
+              username: _emailController.text.trim(),
+              password: _passwordController.text,
+            ),
+          ),
+        );
+      }
+    } on FirebaseAuthException catch (e) {
+      String errorMessage;
+      switch (e.code) {
+        case 'user-not-found':
+          errorMessage = 'Bu email adresi kayıtlı değil.';
+          break;
+        case 'wrong-password':
+          errorMessage = 'Hatalı şifre.';
+          break;
+        case 'invalid-email':
+          errorMessage = 'Geçersiz email adresi.';
+          break;
+        case 'user-disabled':
+          errorMessage = 'Bu hesap devre dışı bırakılmış.';
+          break;
+        case 'too-many-requests':
+          errorMessage =
+              'Çok fazla başarısız deneme. Lütfen daha sonra tekrar deneyin.';
+          break;
+        default:
+          errorMessage = 'Giriş başarısız: ${e.message}';
+      }
+      _showErrorMessage(errorMessage);
+    } catch (e) {
+      _showErrorMessage('Beklenmeyen bir hata oluştu: ${e.toString()}');
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+      }
+    }
+  }
+
+  void _showErrorMessage(String message) {
+    if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(message),
+          backgroundColor: Colors.red,
+          behavior: SnackBarBehavior.floating,
+        ),
+      );
+    }
+  }
+
   Widget _buildHelpText() {
     return Align(
       alignment: Alignment.center,
       child: TextButton(
         onPressed: () {
-          // Yardım fonksiyonu buraya gelecek
-          ScaffoldMessenger.of(
-            context,
-          ).showSnackBar(const SnackBar(content: Text('Help button pressed!')));
+          _showHelpDialog();
         },
         child: const Text(
           'Help ?',
@@ -324,9 +395,41 @@ class _LoginPageState extends State<LoginPage> {
       ),
     );
   }
+
+  void _showHelpDialog() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Yardım'),
+          content: const Text(
+            'Giriş yapmakta sorun yaşıyorsanız:\n\n'
+            '• Email adresinizi kontrol edin\n'
+            '• Şifrenizi kontrol edin\n'
+            '• İnternet bağlantınızı kontrol edin\n\n'
+            'Sorun devam ederse IT departmanı ile iletişime geçin.',
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: const Text('Tamam'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  @override
+  void dispose() {
+    _emailController.dispose();
+    _passwordController.dispose();
+    super.dispose();
+  }
 }
 
-// Dosyanın sonuna ekle:
 class _BottomWave extends StatelessWidget {
   const _BottomWave();
 
@@ -336,10 +439,7 @@ class _BottomWave extends StatelessWidget {
       alignment: Alignment.bottomCenter,
       child: ClipPath(
         clipper: _WaveClipper(),
-        child: Container(
-          height: 280, // Yüksekliği artırdık, örn: 280
-          color: const Color(0xFFB44747), // veya 0xFF802629
-        ),
+        child: Container(height: 280, color: const Color(0xFFB44747)),
       ),
     );
   }
@@ -376,8 +476,8 @@ class _DiagonalClipper extends CustomClipper<Path> {
   @override
   Path getClip(Size size) {
     Path path = Path();
-    path.lineTo(0, size.height * 0.85); // Sol altı biraz daha aşağıya çek
-    path.lineTo(size.width, size.height * 0.65); // Sağ altı daha yukarıda bırak
+    path.lineTo(0, size.height * 0.85);
+    path.lineTo(size.width, size.height * 0.65);
     path.lineTo(size.width, 0);
     path.close();
     return path;
