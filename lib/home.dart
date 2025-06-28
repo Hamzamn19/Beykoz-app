@@ -387,8 +387,13 @@ class _WebViewPageState extends State<WebViewPage>
   late final WebViewController _controller;
   bool _isLoading = true;
 
+  // --- YENİ EKLENEN DURUM DEĞİŞKENLERİ ---
+  // Geri ve ileri butonlarının etkin olup olmadığını takip etmek için.
+  bool _canGoBack = false;
+  bool _canGoForward = false;
+
   @override
-  bool get wantKeepAlive => true;
+  bool get wantKeepAlive => true; // Sekmeler arası geçişte durumu korur
 
   @override
   void initState() {
@@ -404,10 +409,14 @@ class _WebViewPageState extends State<WebViewPage>
             });
           },
           onPageFinished: (String url) async {
+            // Buton durumlarını her sayfa yüklendiğinde güncelle
+            _updateNavigationState();
+
             setState(() {
               _isLoading = false;
             });
 
+            // --- OTOMATİK GİRİŞ İÇİN JAVASCRIPT KODUNUZ KORUNDU ---
             if (widget.username != null && widget.password != null) {
               String username = widget.username!;
               final atIndex = username.indexOf('@');
@@ -416,69 +425,155 @@ class _WebViewPageState extends State<WebViewPage>
               }
 
               final loginJs = '''
-      (function() {
-        var username = "$username";
-        var password = "${widget.password}";
-
-        var u1 = document.getElementById("kullanici_adi");
-        var p1 = document.getElementById("kullanici_sifre");
-
-        var u2 = document.getElementById("username");
-        var p2 = document.getElementById("password");
-
-        function fillField(field, value) {
-          if (field) {
-            field.focus();
-            field.value = value;
-            field.dispatchEvent(new Event('input', { bubbles: true }));
-            field.dispatchEvent(new Event('change', { bubbles: true }));
-          }
-        }
-
-        fillField(u1, username);
-        fillField(p1, password);
-        fillField(u2, username);
-        fillField(p2, password);
-
-        // فقط ملء الحقول، لا ضغط أو إرسال
-      })();
-    ''';
-
+                (function() {
+                  var username = "$username";
+                  var password = "${widget.password}";
+                  var u1 = document.getElementById("kullanici_adi");
+                  var p1 = document.getElementById("kullanici_sifre");
+                  var u2 = document.getElementById("username");
+                  var p2 = document.getElementById("password");
+                  function fillField(field, value) {
+                    if (field) {
+                      field.focus();
+                      field.value = value;
+                      field.dispatchEvent(new Event('input', { bubbles: true }));
+                      field.dispatchEvent(new Event('change', { bubbles: true }));
+                    }
+                  }
+                  fillField(u1, username);
+                  fillField(p1, password);
+                  fillField(u2, username);
+                  fillField(p2, password);
+                })();
+              ''';
               await _controller.runJavaScript(loginJs);
             }
-          }
-          ,
-            onWebResourceError: (WebResourceError error) {
+          },
+          onWebResourceError: (WebResourceError error) {
             setState(() {
               _isLoading = false;
             });
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text(
-                  'حدث خطأ أثناء تحميل الصفحة: ${error.description}',
+            if(mounted) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text('Sayfa yüklenemedi: ${error.description}'),
                 ),
-              ),
-            );
+              );
+            }
           },
         ),
-
       )
       ..loadRequest(Uri.parse(widget.url));
   }
 
+  // --- YENİ EKLENEN YARDIMCI METOT ---
+  // WebView'in geri/ileri gidip gidemeyeceğini kontrol eder ve butonları günceller.
+  Future<void> _updateNavigationState() async {
+    final canGoBack = await _controller.canGoBack();
+    final canGoForward = await _controller.canGoForward();
+    if (mounted) {
+      setState(() {
+        _canGoBack = canGoBack;
+        _canGoForward = canGoForward;
+      });
+    }
+  }
+
+  // --- TAMAMEN YENİLENEN build METODU ---
   @override
   Widget build(BuildContext context) {
     super.build(context);
-    return Stack(
-      children: [
-        WebViewWidget(controller: _controller),
-        if (_isLoading)
-          const Center(
-            child: CircularProgressIndicator(
-              valueColor: AlwaysStoppedAnimation<Color>(Color(0xFF802629)),
-            ),
+    // Hem sistem geri tuşu hem de arayüz butonları için tam kontrol
+    return PopScope(
+      canPop: false,
+      onPopInvoked: (bool didPop) async {
+        if (didPop) return;
+        if (await _controller.canGoBack()) {
+          await _controller.goBack();
+          _updateNavigationState(); // Buton durumunu da güncelle
+        } else {
+          // Bu kısım, BottomNavBar yapısında olduğumuz için genellikle çalışmaz,
+          // ama Sık Kullanılanlar'dan gelindiğinde sayfanın kapanmasını sağlar.
+          if (mounted && Navigator.of(context).canPop()) {
+            Navigator.of(context).pop();
+          }
+        }
+      },
+      child: Scaffold(
+        body: SafeArea(
+          child: Column(
+            children: [
+              // WebView'in kendisini içeren ve dikeyde tüm boş alanı kaplayan bölüm
+              Expanded(
+                child: Stack(
+                  children: [
+                    WebViewWidget(controller: _controller),
+                    if (_isLoading)
+                      const Center(
+                        child: CircularProgressIndicator(
+                          valueColor:
+                          AlwaysStoppedAnimation<Color>(Color(0xFF802629)),
+                        ),
+                      ),
+                  ],
+                ),
+              ),
+
+              // --- YENİ EKLENEN KONTROL ÇUBUĞU ---
+              Container(
+                padding: const EdgeInsets.symmetric(vertical: 2.0),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  border: Border(top: BorderSide(color: Colors.grey[300]!)),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.05),
+                      spreadRadius: 1,
+                      blurRadius: 3,
+                      offset: const Offset(0, -1),
+                    ),
+                  ],
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: <Widget>[
+                    // Geri Butonu
+                    IconButton(
+                      icon: const Icon(Icons.arrow_back),
+                      color: const Color(0xFF802629),
+                      onPressed: _canGoBack
+                          ? () async {
+                        await _controller.goBack();
+                        _updateNavigationState();
+                      }
+                          : null, // Pasif ise tıklanamaz
+                    ),
+                    // İleri Butonu
+                    IconButton(
+                      icon: const Icon(Icons.arrow_forward),
+                      color: const Color(0xFF802629),
+                      onPressed: _canGoForward
+                          ? () async {
+                        await _controller.goForward();
+                        _updateNavigationState();
+                      }
+                          : null, // Pasif ise tıklanamaz
+                    ),
+                    // Yenile Butonu
+                    IconButton(
+                      icon: const Icon(Icons.refresh),
+                      color: const Color(0xFF802629),
+                      onPressed: () {
+                        _controller.reload();
+                      },
+                    ),
+                  ],
+                ),
+              ),
+            ],
           ),
-      ],
+        ),
+      ),
     );
   }
 }
