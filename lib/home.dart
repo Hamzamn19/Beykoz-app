@@ -32,6 +32,7 @@ class _HomeScreenState extends State<HomeScreen> {
         username: widget.username,
         password: widget.password,
       ),
+      AttendanceScreen(),
     ];
   }
 
@@ -43,8 +44,6 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    // --- DEĞİŞİKLİK BURADA ---
-    // Scaffold widget'ından `appBar` parametresi tamamen kaldırıldı.
     return Scaffold(
       body: IndexedStack(index: _selectedIndex, children: _pages),
       bottomNavigationBar: BottomNavigationBar(
@@ -52,11 +51,12 @@ class _HomeScreenState extends State<HomeScreen> {
           BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Ana Sayfa'),
           BottomNavigationBarItem(icon: Icon(Icons.web), label: 'OIS'),
           BottomNavigationBarItem(icon: Icon(Icons.login), label: 'Online'),
+          BottomNavigationBarItem(icon: Icon(Icons.check_circle), label: 'Yoklama'),
         ],
         currentIndex: _selectedIndex,
         selectedItemColor: Colors.white,
-        unselectedItemColor: Colors.grey[400],
-        backgroundColor: const Color(0xFF802629), // Ana renk temamızla uyumlu
+        unselectedItemColor: Colors.grey,
+        backgroundColor: Color(0xFF802629),
         type: BottomNavigationBarType.fixed,
         onTap: _onItemTapped,
       ),
