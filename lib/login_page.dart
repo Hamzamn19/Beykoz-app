@@ -208,8 +208,10 @@ class _LoginPageState extends State<LoginPage> {
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(
-            builder: (context) =>
-                const HomeScreen(), // Düzeltildi: DesignedHomePage yerine HomeScreen
+            builder: (context) => HomeScreen(
+              username: _emailController.text.trim(),
+              password: _passwordController.text,
+            ),
           ),
         );
       }

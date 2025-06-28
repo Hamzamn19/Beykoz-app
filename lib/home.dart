@@ -4,7 +4,9 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 // Ana Ekran ve Bottom Navigation Bar mantığını içeren ana widget
 class HomeScreen extends StatefulWidget {
-  const HomeScreen({super.key});
+  final String? username;
+  final String? password;
+  const HomeScreen({super.key, this.username, this.password});
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
@@ -13,12 +15,25 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   int _selectedIndex = 0;
 
-  // Bottom Navigation Bar için sayfaların listesi
-  static final List<Widget> _pages = <Widget>[
-    const DesignedHomePage(), // ANA SAYFA TASARIMIMIZ
-    WebViewPage(url: 'https://ois.beykoz.edu.tr/'),
-    WebViewPage(url: 'https://online.beykoz.edu.tr'),
-  ];
+  late final List<Widget> _pages;
+
+  @override
+  void initState() {
+    super.initState();
+    _pages = <Widget>[
+      const DesignedHomePage(),
+      WebViewPage(
+        url: 'https://ois.beykoz.edu.tr/',
+        username: widget.username,
+        password: widget.password,
+      ),
+      WebViewPage(
+        url: 'https://online.beykoz.edu.tr',
+        username: widget.username,
+        password: widget.password,
+      ),
+    ];
+  }
 
   void _onItemTapped(int index) {
     setState(() {
@@ -133,7 +148,7 @@ class DesignedHomePage extends StatelessWidget {
             // Image widget'ını, sola hizalamak için Align widget'ı ile sardık.
             child: Align(
               alignment:
-                  Alignment.centerLeft, // Bu satır, içindeki öğeyi sola yaslar.
+              Alignment.centerLeft, // Bu satır, içindeki öğeyi sola yaslar.
               child: Image.asset(
                 'assets/images/logo.png', // Görselinizin yolu
                 fit: BoxFit.contain,
@@ -170,10 +185,10 @@ class DesignedHomePage extends StatelessWidget {
   }
 
   Widget _buildCircularButton(
-    IconData icon,
-    Color backgroundColor,
-    Color iconColor,
-  ) {
+      IconData icon,
+      Color backgroundColor,
+      Color iconColor,
+      ) {
     return ElevatedButton(
       onPressed: () {},
       style: ElevatedButton.styleFrom(
@@ -212,6 +227,48 @@ class DesignedHomePage extends StatelessWidget {
   }
 
   Widget _buildFrequentlyUsedGrid() {
+    // List of button data: label and relative URL
+    final List<Map<String, String>> frequentlyUsed = [
+      {
+        'label': 'Transcript',
+        'url': 'https://ois.beykoz.edu.tr/ogrenciler/belge/transkript',
+      },
+      {
+        'label': 'Report Card',
+        'url': 'https://ois.beykoz.edu.tr/ogrenciler/belge/ogrkarne',
+      },
+      {
+        'label': 'Course Program',
+        'url': 'https://ois.beykoz.edu.tr/ogrenciler/belge/ogrdersprogrami',
+      },
+      {
+        'label': 'Prep Transcript',
+        'url':
+        'https://ois.beykoz.edu.tr/hazirlik/hazirliksinav/ogrpreptranskript',
+      },
+      {
+        'label': 'Approval Certificate',
+        'url': 'https://ois.beykoz.edu.tr/ogrenciler/belge/dersdanismanonay',
+      },
+      {
+        'label': 'Final Registration',
+        'url': 'https://ois.beykoz.edu.tr/ogrenciler/belge/kesinkayitbelgesi',
+      },
+      {
+        'label': 'Document Request',
+        'url': 'https://ois.beykoz.edu.tr/ogrenciler/belgetalep/duzenle2',
+      },
+      {
+        'label': 'Exam Schedule',
+        'url': 'https://ois.beykoz.edu.tr/ogrenciler/belge/sinavprogrami',
+      },
+      // If you want to add "Exam Result" as a 9th button, add here.
+      // {
+      //   'label': 'Exam Result',
+      //   'url': 'https://ois.beykoz.edu.tr/ogrenciler/belge/ogrsinavsonuc',
+      // },
+    ];
+
     return GridView.builder(
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
@@ -221,20 +278,37 @@ class DesignedHomePage extends StatelessWidget {
         mainAxisSpacing: 12,
         childAspectRatio: 1,
       ),
-      itemCount: 8,
+      itemCount: frequentlyUsed.length,
       itemBuilder: (context, index) {
-        return Container(
-          decoration: BoxDecoration(
-            color: cardColor,
-            borderRadius: BorderRadius.circular(16),
-          ),
-          child: const Center(
-            child: Text(
-              'L',
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
+        final item = frequentlyUsed[index];
+        return InkWell(
+          onTap: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => WebViewPage(
+                  url: item['url']!,
+                  username: null, // Or pass username if needed
+                  password: null, // Or pass password if needed
+                ),
+              ),
+            );
+          },
+          borderRadius: BorderRadius.circular(16),
+          child: Container(
+            decoration: BoxDecoration(
+              color: cardColor,
+              borderRadius: BorderRadius.circular(16),
+            ),
+            child: Center(
+              child: Text(
+                item['label']!,
+                textAlign: TextAlign.center,
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 13,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
             ),
           ),
@@ -267,8 +341,15 @@ class DesignedHomePage extends StatelessWidget {
 // --- WEBVIEW SAYFASI ---
 class WebViewPage extends StatefulWidget {
   final String url;
+  final String? username;
+  final String? password;
 
-  const WebViewPage({required this.url, super.key});
+  const WebViewPage({
+    required this.url,
+    this.username,
+    this.password,
+    super.key,
+  });
 
   @override
   State<WebViewPage> createState() => _WebViewPageState();
@@ -287,7 +368,7 @@ class _WebViewPageState extends State<WebViewPage>
     super.initState();
     _controller = WebViewController()
       ..setJavaScriptMode(JavaScriptMode.unrestricted)
-      ..setBackgroundColor(const Color(0x00000000))
+      ..setBackgroundColor(const Color(0xFFFFFFFF))
       ..setNavigationDelegate(
         NavigationDelegate(
           onPageStarted: (String url) {
@@ -295,10 +376,51 @@ class _WebViewPageState extends State<WebViewPage>
               _isLoading = true;
             });
           },
-          onPageFinished: (String url) {
+          onPageFinished: (String url) async {
             setState(() {
               _isLoading = false;
             });
+            // Disable auto-login for OIS pages
+            if (widget.username != null &&
+                widget.password != null &&
+                !(widget.url.startsWith('https://ois.beykoz.edu.tr'))) {
+              // Remove everything after @ (and @ itself) from username
+              String username = widget.username!;
+              final atIndex = username.indexOf('@');
+              if (atIndex != -1) {
+                username = username.substring(0, atIndex);
+              }
+              final fillFieldsJs =
+              '''
+                (function() {
+                  var u1 = document.getElementById("kullanici_adi");
+                  var p1 = document.getElementById("kullanici_sifre");
+                  if(u1) u1.value = "$username";
+                  if(p1) p1.value = "${widget.password}";
+                  var u2 = document.getElementById("username");
+                  var p2 = document.getElementById("password");
+                  if(u2) u2.value = "$username";
+                  if(p2) p2.value = "${widget.password}";
+                })();
+              ''';
+              await _controller.runJavaScript(fillFieldsJs);
+
+              // 2. Wait a bit, then submit
+              await Future.delayed(const Duration(milliseconds: 5000));
+              final submitJs = '''
+                (function() {
+                  var btn = document.getElementById("loginbtn");
+                  if(btn){ btn.click(); return; }
+                  var u1 = document.getElementById("kullanici_adi");
+                  var u2 = document.getElementById("username");
+                  var form1 = u1 ? u1.closest("form") : null;
+                  var form2 = u2 ? u2.closest("form") : null;
+                  if(form1) form1.submit();
+                  else if(form2) form2.submit();
+                })();
+              ''';
+              await _controller.runJavaScript(submitJs);
+            }
           },
           onWebResourceError: (WebResourceError error) {
             setState(() {
