@@ -288,7 +288,7 @@ class _WebViewPageState extends State<WebViewPage> {
     // No need to call _solveAndFillCaptcha here, it will be done on page load
   }
 
-  Future<String?> solveCaptchaBase64(String base64) async {
+  Future<String?> solveCaptchaBase64(String base64, {int retry = 0}) async {
     const String ngrokUrl = 'https://7386-94-103-124-251.ngrok-free.app';
     try {
       final response = await http.post(
@@ -299,7 +299,19 @@ class _WebViewPageState extends State<WebViewPage> {
       print('Captcha server response: ${response.statusCode} ${response.body}');
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
-        return data['captcha'];
+        final captcha = data['captcha'];
+        // تحقق من أن الكابتشا 4 خانات أو أكثر
+        if (captcha != null && captcha is String && captcha.length >= 4) {
+          return captcha;
+        } else if (retry < 3) {
+          print('Captcha too short, retrying... (attempt ${retry + 2})');
+          // أعد المحاولة بعد فترة قصيرة
+          await Future.delayed(Duration(milliseconds: 700));
+          return await solveCaptchaBase64(base64, retry: retry + 1);
+        } else {
+          print('Captcha too short after retries.');
+          return null;
+        }
       } else {
         // Show error details in a SnackBar for debugging
         if (mounted) {
