@@ -1,6 +1,9 @@
 import 'package:beykoz/Pages/AttendancePage.dart';
 import 'package:beykoz/Pages/HomePage.dart';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'package:webview_flutter/webview_flutter.dart';
+import 'dart:convert';
 import 'NewsPage.dart';
 import 'ProfilePage.dart';
 
@@ -129,7 +132,9 @@ class CustomNavBar extends StatelessWidget {
                   height: 64,
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
-                    color: selectedIndex == 2 ? Color(0xFF802629) : Colors.white,
+                    color: selectedIndex == 2
+                        ? Color(0xFF802629)
+                        : Colors.white,
                     border: Border.all(color: Colors.white, width: 4),
                   ),
                   child: Icon(
@@ -187,12 +192,7 @@ class WebviewPageSelector extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               SizedBox(height: 48),
-              Center(
-                child: Image.asset(
-                  'assets/images/logo.png',
-                  height: 80,
-                ),
-              ),
+              Center(child: Image.asset('assets/images/logo.png', height: 80)),
               SizedBox(height: 24),
               Text(
                 'Web Portals',
@@ -211,7 +211,8 @@ class WebviewPageSelector extends StatelessWidget {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => WebViewPage(url: 'https://online.beykoz.edu.tr'),
+                      builder: (context) =>
+                          WebViewPage(url: 'https://online.beykoz.edu.tr'),
                     ),
                   );
                 },
@@ -223,7 +224,8 @@ class WebviewPageSelector extends StatelessWidget {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => WebViewPage(url: 'https://ois.beykoz.edu.tr/'),
+                      builder: (context) =>
+                          WebViewPage(url: 'https://ois.beykoz.edu.tr/'),
                     ),
                   );
                 },
@@ -266,4 +268,170 @@ class _MinimalButton extends StatelessWidget {
       ),
     );
   }
-} 
+}
+
+class WebViewPage extends StatefulWidget {
+  final String url;
+
+  const WebViewPage({Key? key, required this.url}) : super(key: key);
+
+  @override
+  _WebViewPageState createState() => _WebViewPageState();
+}
+
+class _WebViewPageState extends State<WebViewPage> {
+  late WebViewController _webViewController;
+
+  @override
+  void initState() {
+    super.initState();
+    // No need to call _solveAndFillCaptcha here, it will be done on page load
+  }
+
+  Future<String?> solveCaptchaBase64(String base64) async {
+    const String ngrokUrl = 'https://7386-94-103-124-251.ngrok-free.app';
+    try {
+      final response = await http.post(
+        Uri.parse('$ngrokUrl/solve_captcha_base64'),
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({'image_base64': base64}),
+      );
+      print('Captcha server response: ${response.statusCode} ${response.body}');
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        return data['captcha'];
+      } else {
+        // Show error details in a SnackBar for debugging
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(
+                'Server error: ${response.statusCode}\n${response.body}',
+              ),
+              backgroundColor: Colors.red,
+              duration: Duration(seconds: 5),
+            ),
+          );
+        }
+        print(
+          'Failed to solve CAPTCHA: ${response.statusCode} ${response.body}',
+        );
+        return null;
+      }
+    } catch (e) {
+      print('Error solving CAPTCHA: $e');
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Exception while connecting to server: $e'),
+            backgroundColor: Colors.red,
+            duration: Duration(seconds: 5),
+          ),
+        );
+      }
+      return null;
+    }
+  }
+
+  void _extractAndSolveCaptcha() async {
+    String js = """
+      (function() {
+        var img = document.getElementById('img_captcha');
+        if (!img) {
+          if (window.Flutter) window.Flutter.postMessage("NO_IMG_FOUND");
+          return;
+        }
+        function sendImage() {
+          try {
+            var canvas = document.createElement('canvas');
+            canvas.width = img.naturalWidth || img.width;
+            canvas.height = img.naturalHeight || img.height;
+            var ctx = canvas.getContext('2d');
+            ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+            var dataURL = canvas.toDataURL('image/png');
+            if (window.Flutter) window.Flutter.postMessage(dataURL.replace(/^data:image\\/png;base64,/, ''));
+          } catch (e) {
+            if (window.Flutter) window.Flutter.postMessage("CAPTCHA_CAPTURE_ERROR:" + e);
+          }
+        }
+        if (!img.complete || img.naturalWidth === 0) {
+          img.onload = function() { sendImage(); };
+          return;
+        }
+        sendImage();
+      })();
+    """;
+    await _webViewController.runJavaScript(js);
+  }
+
+  void _fillCaptchaField(String captcha) async {
+    String js = "document.getElementById('captcha').value = '$captcha';";
+    await _webViewController.runJavaScript(js);
+    if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('CAPTCHA sent successfully!'),
+          backgroundColor: Colors.green,
+        ),
+      );
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(widget.url.contains('ois') ? 'OIS' : 'OnlineBeykoz'),
+      ),
+      body: WebViewWidget(
+        controller: _webViewController = WebViewController()
+          ..setJavaScriptMode(JavaScriptMode.unrestricted)
+          ..setNavigationDelegate(
+            NavigationDelegate(
+              onPageFinished: (String url) {
+                if (widget.url == 'https://ois.beykoz.edu.tr/') {
+                  _extractAndSolveCaptcha();
+                }
+              },
+            ),
+          )
+          ..addJavaScriptChannel(
+            'Flutter',
+            onMessageReceived: (JavaScriptMessage message) async {
+              print("Received from JS: ${message.message}");
+              if (message.message == "NO_IMG_FOUND") {
+                if (mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text('CAPTCHA image not found on the page!'),
+                      backgroundColor: Colors.red,
+                    ),
+                  );
+                }
+                return;
+              }
+              String base64 = message.message;
+              String? captcha = await solveCaptchaBase64(base64);
+              if (captcha != null) {
+                _fillCaptchaField(captcha);
+              } else if (mounted) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text('Failed to solve CAPTCHA!'),
+                    backgroundColor: Colors.red,
+                  ),
+                );
+              }
+            },
+          )
+          ..setOnConsoleMessage((message) {
+            print('WebView Console: ${message.message}');
+          })
+          ..setUserAgent(
+            'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
+          )
+          ..loadRequest(Uri.parse(widget.url)),
+      ),
+    );
+  }
+}
