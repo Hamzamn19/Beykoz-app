@@ -182,3 +182,17 @@ def solve_captcha_base64():
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000)
+    #to run captcha solving service, use:
+    #run python server.py
+    # then run ngrok http 5000
+    # then copy the URL and paste it in root page at 292 line
+# Note: Ensure you have the required libraries installed:
+# pip install Flask requests Pillow opencv-python numpy paddleocr
+# Make sure to have PaddleOCR installed with the necessary models
+# You can install PaddleOCR with:
+# pip install paddleocr
+# and download the models as per the PaddleOCR documentation
+# Ensure you have the necessary environment for PaddleOCR, including PaddlePaddle
+# You can install PaddlePaddle with:
+# pip install paddlepaddle  
+
