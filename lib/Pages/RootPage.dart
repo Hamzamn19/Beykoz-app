@@ -354,6 +354,26 @@ class _WebViewPageState extends State<WebViewPage> {
             if (window.Flutter) window.Flutter.postMessage("CAPTCHA_CAPTURE_ERROR:" + e);
           }
         }
+        // مراقبة تغيّر src للصورة
+        var lastSrc = img.src;
+        var observer = new MutationObserver(function(mutations) {
+          mutations.forEach(function(mutation) {
+            if (mutation.type === 'attributes' && mutation.attributeName === 'src') {
+              if (img.src !== lastSrc) {
+                lastSrc = img.src;
+                // انتظر حتى يتم تحميل الصورة الجديدة
+                if (!img.complete || img.naturalWidth === 0) {
+                  img.onload = function() { sendImage(); };
+                  return;
+                }
+                sendImage();
+              }
+            }
+          });
+        });
+        observer.observe(img, { attributes: true, attributeFilter: ['src'] });
+
+        // إرسال الصورة أول مرة
         if (!img.complete || img.naturalWidth === 0) {
           img.onload = function() { sendImage(); };
           return;
