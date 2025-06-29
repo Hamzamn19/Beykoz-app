@@ -1,6 +1,8 @@
-import 'package:beykoz/Pages/AttendancePage.dart';
 import 'package:flutter/material.dart';
 import 'package:webview_flutter/webview_flutter.dart';
+import 'package:beykoz/Pages/AttendancePage.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:beykoz/Pages/AllFeaturesPage.dart';
 
 // Ana Ekran ve Bottom Navigation Bar mantığını içeren ana widget
 class HomeScreen extends StatefulWidget {
@@ -98,9 +100,22 @@ class DesignedHomePage extends StatelessWidget {
               ElevatedButton(
                 onPressed: () {
                   // Bu butona tıklandığında yapılacak işlem (şimdilik boş)
+                  // --- DOĞRU UYGULAMA BURADA ---
+                  // Bu kod, 'AllFeaturesSheet' widget'ını alttan açılır bir
+                  // modal sayfa olarak gösterir.
+                  showModalBottomSheet(
+                    context: context,
+                    // Bu ayar, DraggableScrollableSheet'in tam ekran
+                    // olabilmesini sağlar.
+                    isScrollControlled: true,
+                    // Arka planı şeffaf yaparak AllFeaturesSheet'in kendi
+                    // yuvarlak köşelerinin görünmesini sağlıyoruz.
+                    backgroundColor: Colors.transparent,
+                    builder: (context) => const AllFeaturesSheet(),
+                  );
                 },
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: cardColor,
+                  backgroundColor: cardColor, // const Color(0xFFECECEC)
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(8),
                   ),
