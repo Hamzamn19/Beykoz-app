@@ -86,8 +86,7 @@ class _AllFeaturesSheetState extends State<AllFeaturesSheet> {
               }
             });
           }
-        }
-        else if (notification.extent < 0.55) {
+        } else if (notification.extent < 0.55) {
           WidgetsBinding.instance.addPostFrameCallback((_) {
             if (mounted && Navigator.of(context).canPop()) {
               Navigator.of(context).pop();
@@ -140,135 +139,153 @@ class _AllFeaturesSheetState extends State<AllFeaturesSheet> {
                   ),
                 ),
                 Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 0, horizontal: 17.0),
-                  // DEĞİŞİKLİK: Konteynerin boyut değişimini canlandırmak için
-                  // AnimatedSize widget'ı eklendi.
-                  child: AnimatedSize(
-                    duration: const Duration(milliseconds: 300),
-                    curve: Curves.easeInOut,
-                    child: Container(
-                      clipBehavior: Clip.antiAlias,
-                      decoration: BoxDecoration(
-                        color: const Color(0xFFECECEC),
-                        borderRadius: BorderRadius.circular(20.0),
-                      ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          const Padding(
-                            padding: EdgeInsets.only(top: 16.0, left: 16.0, bottom: 8.0),
-                            child: Text(
-                              'Belgeler',
-                              style: TextStyle(
-                                color: Color(0xFF802629),
-                                fontSize: 16,
-                                fontWeight: FontWeight.bold,
+                  padding:
+                  const EdgeInsets.symmetric(vertical: 0, horizontal: 17.0),
+                  // YENİ: AnimatedSize'ı ClipRRect ile sarmaladık.
+                  // Bu, animasyon sırasında yuvarlak köşelerin korunmasını sağlar.
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(20.0),
+                    child: AnimatedSize(
+                      duration: const Duration(milliseconds: 300),
+                      curve: Curves.easeInOut,
+                      child: Container(
+                        // DEĞİŞİKLİK: borderRadius ve clipBehavior buradan kaldırıldı,
+                        // çünkü artık üstteki ClipRRect bu görevi yapıyor.
+                        decoration: const BoxDecoration(
+                          color: Color(0xFFECECEC),
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const Padding(
+                              padding: EdgeInsets.only(
+                                  top: 16.0, left: 16.0, bottom: 8.0),
+                              child: Text(
+                                'Belgeler',
+                                style: TextStyle(
+                                  color: Color(0xFF802629),
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                ),
                               ),
                             ),
-                          ),
-                          AnimationLimiter(
-                            key: _animationLimiterKey,
-                            child: GridView.builder(
-                              shrinkWrap: true,
-                              physics: const NeverScrollableScrollPhysics(),
-                              padding: const EdgeInsets.only(left: 16.0, right: 16.0, bottom: 8.0),
-                              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                                crossAxisCount: 4,
-                                crossAxisSpacing: 12,
-                                mainAxisSpacing: 12,
-                                childAspectRatio: 0.8,
-                              ),
-                              itemCount: _isExpanded ? allFeatures.length : 4,
-                              itemBuilder: (context, index) {
-                                final item = allFeatures[index];
-                                return AnimationConfiguration.staggeredGrid(
-                                  position: index,
-                                  duration: const Duration(milliseconds: 375),
-                                  columnCount: 4,
-                                  child: ScaleAnimation(
-                                    child: FadeInAnimation(
-                                      child: InkWell(
-                                        onTap: () {
-                                          Navigator.push(
-                                            context,
-                                            MaterialPageRoute(
-                                              builder: (context) => WebViewPage(
-                                                url: item['url']!,
-                                                username: null,
-                                                password: null,
+                            AnimationLimiter(
+                              key: _animationLimiterKey,
+                              child: GridView.builder(
+                                shrinkWrap: true,
+                                physics: const NeverScrollableScrollPhysics(),
+                                padding: const EdgeInsets.only(
+                                    left: 16.0, right: 16.0, bottom: 8.0),
+                                gridDelegate:
+                                const SliverGridDelegateWithFixedCrossAxisCount(
+                                  crossAxisCount: 4,
+                                  crossAxisSpacing: 12,
+                                  mainAxisSpacing: 12,
+                                  childAspectRatio: 0.8,
+                                ),
+                                itemCount:
+                                _isExpanded ? allFeatures.length : 4,
+                                itemBuilder: (context, index) {
+                                  final item = allFeatures[index];
+                                  return AnimationConfiguration.staggeredGrid(
+                                    position: index,
+                                    duration:
+                                    const Duration(milliseconds: 375),
+                                    columnCount: 4,
+                                    child: ScaleAnimation(
+                                      child: FadeInAnimation(
+                                        child: InkWell(
+                                          onTap: () {
+                                            Navigator.push(
+                                              context,
+                                              MaterialPageRoute(
+                                                builder: (context) =>
+                                                    WebViewPage(
+                                                      url: item['url']!,
+                                                      username: null,
+                                                      password: null,
+                                                    ),
                                               ),
-                                            ),
-                                          );
-                                        },
-                                        borderRadius: BorderRadius.circular(16),
-                                        child: Column(
-                                          mainAxisSize: MainAxisSize.min,
-                                          children: [
-                                            Container(
-                                              width: 56.75,
-                                              height: 56.75,
-                                              decoration: BoxDecoration(
-                                                borderRadius: BorderRadius.circular(12),
-                                                gradient: const LinearGradient(
-                                                  colors: [
-                                                    Color(0xFF802629),
-                                                    Color(0xFFB2453C),
-                                                  ],
-                                                  begin: Alignment.topLeft,
-                                                  end: Alignment.bottomRight,
-                                                ),
-                                                boxShadow: [
-                                                  BoxShadow(
-                                                    color: Colors.black12,
-                                                    blurRadius: 6,
-                                                    offset: const Offset(0, 2),
+                                            );
+                                          },
+                                          borderRadius:
+                                          BorderRadius.circular(16),
+                                          child: Column(
+                                            mainAxisSize: MainAxisSize.min,
+                                            children: [
+                                              Container(
+                                                width: 56.75,
+                                                height: 56.75,
+                                                decoration: BoxDecoration(
+                                                  borderRadius:
+                                                  BorderRadius.circular(
+                                                      12),
+                                                  gradient:
+                                                  const LinearGradient(
+                                                    colors: [
+                                                      Color(0xFF802629),
+                                                      Color(0xFFB2453C),
+                                                    ],
+                                                    begin: Alignment.topLeft,
+                                                    end: Alignment.bottomRight,
                                                   ),
-                                                ],
-                                              ),
-                                              child: Icon(
-                                                item['icon'],
-                                                color: Colors.white,
-                                                size: 30,
-                                              ),
-                                            ),
-                                            const SizedBox(height: 5),
-                                            Flexible(
-                                              child: Text(
-                                                item['label']!,
-                                                textAlign: TextAlign.center,
-                                                style: const TextStyle(
-                                                  color: Color(0xFF802629),
-                                                  fontSize: 12,
-                                                  fontWeight: FontWeight.bold,
-                                                  height: 1.1,
+                                                  boxShadow: [
+                                                    BoxShadow(
+                                                      color: Colors.black12,
+                                                      blurRadius: 6,
+                                                      offset:
+                                                      const Offset(0, 2),
+                                                    ),
+                                                  ],
+                                                ),
+                                                child: Icon(
+                                                  item['icon'],
+                                                  color: Colors.white,
+                                                  size: 30,
                                                 ),
                                               ),
-                                            ),
-                                          ],
+                                              const SizedBox(height: 5),
+                                              Flexible(
+                                                child: Text(
+                                                  item['label']!,
+                                                  textAlign: TextAlign.center,
+                                                  style: const TextStyle(
+                                                    color: Color(0xFF802629),
+                                                    fontSize: 12,
+                                                    fontWeight:
+                                                    FontWeight.bold,
+                                                    height: 1.1,
+                                                  ),
+                                                ),
+                                              ),
+                                            ],
+                                          ),
                                         ),
                                       ),
                                     ),
-                                  ),
-                                );
-                              },
-                            ),
-                          ),
-                          if (allFeatures.length > 4)
-                            Center(
-                              child: IconButton(
-                                icon: Icon(
-                                  _isExpanded ? Icons.keyboard_arrow_up : Icons.keyboard_arrow_down,
-                                  color: const Color(0xFF802629),
-                                ),
-                                onPressed: () {
-                                  setState(() {
-                                    _isExpanded = !_isExpanded;
-                                    _animationLimiterKey = UniqueKey();
-                                  });
+                                  );
                                 },
                               ),
                             ),
-                        ],
+                            if (allFeatures.length > 4)
+                              Center(
+                                child: IconButton(
+                                  icon: Icon(
+                                    _isExpanded
+                                        ? Icons.keyboard_arrow_up
+                                        : Icons.keyboard_arrow_down,
+                                    color: const Color(0xFF802629),
+                                  ),
+                                  onPressed: () {
+                                    setState(() {
+                                      _isExpanded = !_isExpanded;
+                                      _animationLimiterKey = UniqueKey();
+                                    });
+                                  },
+                                ),
+                              ),
+                          ],
+                        ),
                       ),
                     ),
                   ),
