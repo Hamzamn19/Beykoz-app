@@ -220,29 +220,26 @@ class _AllFeaturesSheetState extends State<AllFeaturesSheet> {
               children: [
                 Center(
                   child: Container(
-                    width: 80,
+                    width: 85,
                     height: 5,
                     margin: const EdgeInsets.symmetric(vertical: 12.0),
                     decoration: BoxDecoration(
-                      color: const Color(0xFF802629).withOpacity(0.8),
+                      color: const Color(0xFFECECEC), // Kaydırma çubuğunun rengi
                       borderRadius: BorderRadius.circular(10),
                     ),
                   ),
                 ),
-                const Padding(
-                  padding: EdgeInsets.only(bottom: 16.0),
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 16.0, top: 5.0), // Üst ve alt boşlukları ayarladık.
                   child: Center(
-                    child: Text(
-                      'TÜMÜ',
-                      style: TextStyle(
-                        color: Color(0xFF802629),
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                      ),
+                    child: Image.asset(
+                      'assets/images/logo.png',
+                      height: 46, // Logonun yüksekliğini buradan ayarlayabilirsiniz.
+                      fit: BoxFit.contain, // Resmin alana sığmasını sağlar.
                     ),
                   ),
                 ),
-                const SizedBox(height: 16),
+                const SizedBox(height: 5),
                 _buildFeatureSection(
                   title: 'Ders İşlemleri',
                   features: dersIslemleriFeatures,

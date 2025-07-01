@@ -132,7 +132,14 @@ class DesignedHomePage extends StatelessWidget {
           flex: 3,
           child: GestureDetector(
             onTap: () {
-              print('Görsel butona tıklandı!');
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const WebViewPage(
+                    url: 'https://www.beykoz.edu.tr/',
+                  ),
+                ),
+              );
             },
             child: Align(
               alignment: Alignment.centerLeft,
