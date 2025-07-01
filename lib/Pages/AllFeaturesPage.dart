@@ -301,7 +301,6 @@ class _AllFeaturesSheetState extends State<AllFeaturesSheet> {
     required bool isExpanded,
     required VoidCallback onToggle,
   }) {
-    // DEĞİŞİKLİK: animationKey parametresi artık gerekli değil.
     final bool canExpand = features.length > 4;
 
     return ClipRRect(
@@ -309,9 +308,13 @@ class _AllFeaturesSheetState extends State<AllFeaturesSheet> {
       child: AnimatedSize(
         duration: const Duration(milliseconds: 300),
         curve: Curves.easeInOut,
+        // DEĞİŞİKLİK BURADA: Animasyonun hizalamasını üst-merkez olarak ayarlıyoruz.
+        // Bu, kutunun üst kenarını sabit tutar ve genişlemenin aşağı doğru olmasını sağlar.
+        alignment: Alignment.topCenter,
         child: Container(
-          decoration: const BoxDecoration(
-            color: Color(0xFFECECEC),
+          decoration: BoxDecoration(
+            color: const Color(0xFFECECEC),
+            borderRadius: BorderRadius.circular(20.0),
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -345,9 +348,6 @@ class _AllFeaturesSheetState extends State<AllFeaturesSheet> {
                       : (canExpand ? 4 : features.length),
                   itemBuilder: (context, index) {
                     final item = features[index];
-
-                    // AÇIKLAMA: Bu, `GridView` içindeki her bir öğenin temel widget'ıdır.
-                    // Animasyonlu veya animasyonsuz olarak sarmalanacaktır.
                     Widget featureItem = InkWell(
                       onTap: () {
                         Navigator.push(
@@ -386,9 +386,8 @@ class _AllFeaturesSheetState extends State<AllFeaturesSheet> {
                                 ),
                               ],
                             ),
-                            // İKON BURADA KULLANILIYOR
                             child: Icon(
-                              item['icon'], // Veri listesinden gelen ikonu kullanır
+                              item['icon'],
                               color: Colors.white,
                               size: 30,
                             ),
@@ -412,13 +411,9 @@ class _AllFeaturesSheetState extends State<AllFeaturesSheet> {
                       ),
                     );
 
-                    // DEĞİŞİKLİK: Animasyonun uygulanıp uygulanmayacağını belirleyen koşul.
-                    // Koşul: Sayfa tam ekran DEĞİLSE veya öğenin indeksi 4'ten BÜYÜK veya EŞİTSE animasyon uygula.
                     final bool shouldAnimate = !_isFullyExpanded || index >= 4;
 
                     if (shouldAnimate) {
-                      // AÇIKLAMA: Koşul sağlandığında, öğeyi animasyon widget'ları ile sarmala.
-                      // Bu, ilk açılışta ve sayfa genişlediğinde yeni gelen öğeler için çalışır.
                       return AnimationConfiguration.staggeredGrid(
                         position: index,
                         duration: const Duration(milliseconds: 375),
@@ -430,8 +425,6 @@ class _AllFeaturesSheetState extends State<AllFeaturesSheet> {
                         ),
                       );
                     } else {
-                      // AÇIKLAMA: Sayfa tam ekran olduğunda ilk 4 öğe için bu blok çalışır.
-                      // Öğeyi animasyonsuz, doğrudan döndürür.
                       return featureItem;
                     }
                   },
