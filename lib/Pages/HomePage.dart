@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 import 'package:beykoz/Pages/AttendancePage.dart';
-import 'package:beykoz/Pages/ProfilePage.dart'; // Make sure this path is correct
+import 'package:beykoz/Pages/ProfilePage.dart';
 import 'package:beykoz/Pages/AllFeaturesPage.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart'; // will be used for the logo
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 // Main widget containing the home screen and Bottom Navigation Bar logic
 class HomeScreen extends StatefulWidget {
@@ -90,8 +90,9 @@ class DesignedHomePage extends StatelessWidget {
               _buildSectionTitle('SIK KULLANILANLAR'),
               const SizedBox(height: 12),
               _buildFrequentlyUsedGrid(),
-              const SizedBox(height: 16),
-              ElevatedButton(
+              const SizedBox(height: 5),
+              Center(
+              child :ElevatedButton(
                 onPressed: () {
                   showModalBottomSheet(
                     context: context,
@@ -103,21 +104,33 @@ class DesignedHomePage extends StatelessWidget {
                 style: ElevatedButton.styleFrom(
                   backgroundColor: cardColor,
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8),
+                    borderRadius: BorderRadius.circular(20),
                   ),
-                  padding: const EdgeInsets.symmetric(vertical: 12),
+                  padding: const EdgeInsets.symmetric(vertical: 0, horizontal: 150),
                 ),
                 child: const Text(
                   'TÜMÜ',
-                  style: TextStyle(fontSize: 18, color: Color(0xFF802629)),
+                  style: TextStyle(fontSize: 15, color: Color(0xFF802629)),
                 ),
               ),
-              const SizedBox(height: 24),
+              ),
+              const SizedBox(height: 15),
               _buildSectionTitle('DUYURULAR'),
               const SizedBox(height: 12),
-              _buildAnnouncementCard(),
+
+              // DEĞİŞİKLİK 1: Kartlar artık tıklanabilir ve ilgili linklere yönlendirir
+              _buildAnnouncementCard(
+                context: context,
+                imagePath: 'assets/images/mezuniyettoreni.jpg',
+                url: 'https://www.beykoz.edu.tr/haber/5581-2025-mezuniyet-toreni',
+              ),
               const SizedBox(height: 16),
-              _buildAnnouncementCard(),
+              _buildAnnouncementCard(
+                context: context,
+                imagePath: 'assets/images/yazogretimi.jpg',
+                url: 'https://www.beykoz.edu.tr/haber/5616-2024-2025-yaz-ogretiminde-acilabilecek-dersler-duyurusu',
+              ),
+              const SizedBox(height: 90),
             ],
           ),
         ),
@@ -217,6 +230,7 @@ class DesignedHomePage extends StatelessWidget {
   }
 
   Widget _buildFrequentlyUsedGrid() {
+    // ... (This part of the code is unchanged)
     final List<Map<String, dynamic>> frequentlyUsed = [
       {
         'label': 'Transkript',
@@ -259,14 +273,13 @@ class DesignedHomePage extends StatelessWidget {
         'icon': FontAwesomeIcons.calendarCheck, // DEĞİŞTİRİLDİ
       },
     ];
-
     return GridView.builder(
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
       gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: 4,
         crossAxisSpacing: 12,
-        mainAxisSpacing: 12,
+        mainAxisSpacing: 0,
         childAspectRatio: 0.8,
       ),
       itemCount: frequentlyUsed.length,
@@ -327,20 +340,33 @@ class DesignedHomePage extends StatelessWidget {
     );
   }
 
-  Widget _buildAnnouncementCard() {
-    return Container(
-      height: 150,
-      decoration: BoxDecoration(
-        color: cardColor,
-        borderRadius: BorderRadius.circular(16),
-      ),
-      child: const Center(
-        child: Text(
-          'L',
-          style: TextStyle(
-            color: Colors.white,
-            fontSize: 48,
-            fontWeight: FontWeight.bold,
+  // DEĞİŞİKLİK 2: _buildAnnouncementCard metodu artık tıklanabilir ve dinamik.
+  Widget _buildAnnouncementCard({
+    required BuildContext context,
+    required String imagePath,
+    required String url,
+  }) {
+    return InkWell(
+      onTap: () {
+        // Tıklandığında WebViewPage'i aç ve ilgili URL'i gönder.
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => WebViewPage(
+              url: url,
+            ),
+          ),
+        );
+      },
+      borderRadius: BorderRadius.circular(16), // Tıklama efektinin köşelerini yuvarlak yapar
+      child: Container(
+        height: 150,
+        decoration: BoxDecoration(
+          color: cardColor, // Resim yüklenemezse görünecek arka plan rengi
+          borderRadius: BorderRadius.circular(16),
+          image: DecorationImage(
+            image: AssetImage(imagePath), // Gösterilecek resim
+            fit: BoxFit.cover, // Resmin tüm alanı kaplamasını sağlar
           ),
         ),
       ),
@@ -349,6 +375,7 @@ class DesignedHomePage extends StatelessWidget {
 }
 
 // --- WEBVIEW PAGE ---
+// ... (This part of the code is unchanged)
 class WebViewPage extends StatefulWidget {
   final String url;
   final String? username;
@@ -360,7 +387,6 @@ class WebViewPage extends StatefulWidget {
     this.password,
     super.key,
   });
-
   @override
   State<WebViewPage> createState() => _WebViewPageState();
 }
@@ -371,10 +397,8 @@ class _WebViewPageState extends State<WebViewPage>
   bool _isLoading = true;
   bool _canGoBack = false;
   bool _canGoForward = false;
-
   @override
   bool get wantKeepAlive => true;
-
   @override
   void initState() {
     super.initState();
@@ -384,7 +408,6 @@ class _WebViewPageState extends State<WebViewPage>
       ..setNavigationDelegate(
         NavigationDelegate(
           onPageStarted: (String url) {
-            // FIX: Safely update state after the build frame is complete
             WidgetsBinding.instance.addPostFrameCallback((_) {
               if (mounted) {
                 setState(() {
@@ -394,7 +417,6 @@ class _WebViewPageState extends State<WebViewPage>
             });
           },
           onPageFinished: (String url) async {
-            // FIX: Safely update state after the build frame
             WidgetsBinding.instance.addPostFrameCallback((_) async {
               await _updateNavigationState();
               if (mounted) {
@@ -411,7 +433,7 @@ class _WebViewPageState extends State<WebViewPage>
                 username = username.substring(0, atIndex);
               }
               final loginJs =
-                  '''
+              '''
                 (function() {
                   var username = "$username";
                   var password = "${widget.password}";
@@ -437,7 +459,6 @@ class _WebViewPageState extends State<WebViewPage>
             }
           },
           onWebResourceError: (WebResourceError error) {
-            // FIX: Safely update state and show SnackBar after the build frame
             WidgetsBinding.instance.addPostFrameCallback((_) {
               if (mounted) {
                 setState(() {
