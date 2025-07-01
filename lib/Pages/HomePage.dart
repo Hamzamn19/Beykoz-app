@@ -90,8 +90,9 @@ class DesignedHomePage extends StatelessWidget {
               _buildSectionTitle('SIK KULLANILANLAR'),
               const SizedBox(height: 12),
               _buildFrequentlyUsedGrid(),
-              const SizedBox(height: 16),
-              ElevatedButton(
+              const SizedBox(height: 5),
+              Center(
+              child :ElevatedButton(
                 onPressed: () {
                   showModalBottomSheet(
                     context: context,
@@ -103,16 +104,17 @@ class DesignedHomePage extends StatelessWidget {
                 style: ElevatedButton.styleFrom(
                   backgroundColor: cardColor,
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8),
+                    borderRadius: BorderRadius.circular(20),
                   ),
-                  padding: const EdgeInsets.symmetric(vertical: 12),
+                  padding: const EdgeInsets.symmetric(vertical: 0, horizontal: 150),
                 ),
                 child: const Text(
                   'TÜMÜ',
-                  style: TextStyle(fontSize: 18, color: Color(0xFF802629)),
+                  style: TextStyle(fontSize: 15, color: Color(0xFF802629)),
                 ),
               ),
-              const SizedBox(height: 24),
+              ),
+              const SizedBox(height: 15),
               _buildSectionTitle('DUYURULAR'),
               const SizedBox(height: 12),
 
@@ -128,6 +130,7 @@ class DesignedHomePage extends StatelessWidget {
                 imagePath: 'assets/images/yazogretimi.jpg',
                 url: 'https://www.beykoz.edu.tr/haber/5616-2024-2025-yaz-ogretiminde-acilabilecek-dersler-duyurusu',
               ),
+              const SizedBox(height: 90),
             ],
           ),
         ),
