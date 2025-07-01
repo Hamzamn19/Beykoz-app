@@ -47,27 +47,35 @@ class _ProfilePageState extends State<ProfilePage> {
   final Color universityColor = const Color(0xFF802629);
   final Color lightUniversityColor = const Color(0xFFB85A5E);
 
-  // CHANGED: Using manual state management instead of a Future
   Student? _student;
   bool _isLoading = true;
   String? _error;
 
+  // Simple in-memory cache
+  static Student? _cachedStudent;
+
   @override
   void initState() {
     super.initState();
-    // Use addPostFrameCallback to safely navigate after the first build
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _fetchDataAndSetState();
     });
   }
 
-  // This function now handles the entire data flow and state updates
-  Future<void> _fetchDataAndSetState() async {
-    // Ensure we show loading indicator and clear previous errors
+  Future<void> _fetchDataAndSetState({bool forceRefresh = false}) async {
     setState(() {
       _isLoading = true;
       _error = null;
     });
+
+    // Use cache if available and not forced to refresh
+    if (!forceRefresh && _cachedStudent != null) {
+      setState(() {
+        _student = _cachedStudent;
+        _isLoading = false;
+      });
+      return;
+    }
 
     try {
       final result = await Navigator.push<Map<String, dynamic>>(
@@ -75,24 +83,34 @@ class _ProfilePageState extends State<ProfilePage> {
         MaterialPageRoute(builder: (context) => ProfileDataScraper()),
       );
 
-      if (!mounted) return; // Exit if the widget is no longer in the tree
+      if (!mounted) return;
 
       if (result != null) {
+        final student = Student.fromJson(result);
+        _cachedStudent = student; // Cache the student data
         setState(() {
-          _student = Student.fromJson(result);
+          _student = student;
           _isLoading = false;
         });
       } else {
-        // Handle case where user navigates back without data
         setState(() {
-          _error = 'Data fetching was cancelled.';
+          _error = 'Data fetching was cancelled by the user.';
           _isLoading = false;
         });
       }
     } catch (e) {
       if (!mounted) return;
+      String errorMsg = e.toString();
+      if (errorMsg.contains('login')) {
+        errorMsg = 'Login failed. Please check your credentials.';
+      } else if (errorMsg.contains('session')) {
+        errorMsg = 'Session expired. Please log in again.';
+      } else if (errorMsg.contains('network') ||
+          errorMsg.contains('SocketException')) {
+        errorMsg = 'No internet connection.';
+      }
       setState(() {
-        _error = e.toString();
+        _error = errorMsg;
         _isLoading = false;
       });
     }
@@ -120,33 +138,60 @@ class _ProfilePageState extends State<ProfilePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // The body is now decided by our state variables
-      body: _buildBody(),
+      body: RefreshIndicator(
+        color: universityColor,
+        onRefresh: () async {
+          await _fetchDataAndSetState(forceRefresh: true);
+        },
+        child: _buildBody(),
+      ),
     );
   }
 
   // This new build method decides what to show based on the state
   Widget _buildBody() {
     if (_isLoading) {
-      return Center(child: CircularProgressIndicator(color: universityColor));
+      return const Center(
+        child: CircularProgressIndicator(
+          valueColor: AlwaysStoppedAnimation<Color>(Color(0xFF802629)),
+        ),
+      );
     }
 
     if (_error != null) {
-      return Center(
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text('An error occurred:\n$_error', textAlign: TextAlign.center),
-              const SizedBox(height: 20),
-              ElevatedButton(
-                onPressed: _fetchDataAndSetState,
-                child: const Text('Retry'),
-              ),
-            ],
+      return ListView(
+        physics: const AlwaysScrollableScrollPhysics(),
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(32.0),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(Icons.error_outline, color: Colors.red, size: 48),
+                const SizedBox(height: 16),
+                Text(
+                  _error!,
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(fontSize: 16, color: Colors.red),
+                ),
+                const SizedBox(height: 24),
+                ElevatedButton.icon(
+                  onPressed: () => _fetchDataAndSetState(forceRefresh: true),
+                  icon: const Icon(Icons.refresh),
+                  label: const Text('Retry'),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: universityColor,
+                    foregroundColor: Colors.white,
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 32,
+                      vertical: 12,
+                    ),
+                  ),
+                ),
+              ],
+            ),
           ),
-        ),
+        ],
       );
     }
 
@@ -479,6 +524,8 @@ class ProfileDataScraper extends StatefulWidget {
 class _ProfileDataScraperState extends State<ProfileDataScraper> {
   late final WebViewController _controller;
   bool _isLoading = true;
+  bool _hasError = false;
+  String? _errorMessage;
 
   @override
   void initState() {
@@ -490,7 +537,11 @@ class _ProfileDataScraperState extends State<ProfileDataScraper> {
           onPageStarted: (String url) {
             WidgetsBinding.instance.addPostFrameCallback((_) {
               if (mounted) {
-                setState(() => _isLoading = true);
+                setState(() {
+                  _isLoading = true;
+                  _hasError = false;
+                  _errorMessage = null;
+                });
               }
             });
           },
@@ -502,7 +553,21 @@ class _ProfileDataScraperState extends State<ProfileDataScraper> {
             });
             if (url.contains('ogrenci/kisisel')) {
               _scrapeData();
+            } else if (url.contains('login') || url.contains('giris')) {
+              // Login page detected
+              setState(() {
+                _hasError = true;
+                _errorMessage = 'Login failed. Please check your credentials.';
+              });
             }
+          },
+          onWebResourceError: (error) {
+            setState(() {
+              _isLoading = false;
+              _hasError = true;
+              _errorMessage =
+                  'No internet connection or failed to load the page.';
+            });
           },
         ),
       )
@@ -531,9 +596,9 @@ class _ProfileDataScraperState extends State<ProfileDataScraper> {
         const studentId = findElementTextByLabelText('Student ID');
         const facultyText = findElementTextByLabelText('Faculty Code');
         const departmentText = findElementTextByLabelText('Department');
-        const email = document.querySelector('input[name="iletisim_416287"]').value;
-        const phone = document.querySelector('input[name="iletisim_416286"]').value;
-        const profileImageUrl = document.querySelector('img[width="120"]').src;
+        const email = document.querySelector('input[name="iletisim_416287"]')?.value || '';
+        const phone = document.querySelector('input[name="iletisim_416286"]')?.value || '';
+        const profileImageUrl = document.querySelector('img[width="120"]')?.src || '';
         
         const faculty = facultyText.includes('-') ? facultyText.split('-')[1].trim() : facultyText;
         const department = departmentText.includes('-') ? departmentText.split('-')[1].trim() : departmentText;
@@ -554,15 +619,22 @@ class _ProfileDataScraperState extends State<ProfileDataScraper> {
         final decodedResult =
             jsonDecode(result.toString()) as Map<String, dynamic>;
         if (mounted) {
-          Navigator.pop(context, decodedResult);
+          Navigator.pop(
+            context,
+            decodedResult,
+          ); // Return to ProfilePage with data
         }
+      } else {
+        setState(() {
+          _hasError = true;
+          _errorMessage = 'Failed to fetch data from the page.';
+        });
       }
     } catch (e) {
       if (mounted) {
-        WidgetsBinding.instance.addPostFrameCallback((_) {
-          ScaffoldMessenger.of(
-            context,
-          ).showSnackBar(SnackBar(content: Text('Failed to scrape data: $e')));
+        setState(() {
+          _hasError = true;
+          _errorMessage = 'An error occurred while fetching data: $e';
         });
       }
     }
@@ -572,13 +644,57 @@ class _ProfileDataScraperState extends State<ProfileDataScraper> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Login & Fetch Data'),
+        title: const Text('Fetch Profile Data'),
         backgroundColor: const Color(0xFF802629),
       ),
       body: Stack(
         children: [
           WebViewWidget(controller: _controller),
-          if (_isLoading) const Center(child: CircularProgressIndicator()),
+          if (_isLoading)
+            const Center(
+              child: CircularProgressIndicator(
+                valueColor: AlwaysStoppedAnimation<Color>(Color(0xFF802629)),
+              ),
+            ),
+          if (_hasError)
+            Center(
+              child: Padding(
+                padding: const EdgeInsets.all(24.0),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(Icons.error_outline, color: Colors.red, size: 48),
+                    const SizedBox(height: 16),
+                    Text(
+                      _errorMessage ?? 'An unknown error occurred.',
+                      textAlign: TextAlign.center,
+                      style: const TextStyle(fontSize: 16, color: Colors.red),
+                    ),
+                    const SizedBox(height: 24),
+                    ElevatedButton.icon(
+                      onPressed: () {
+                        setState(() {
+                          _isLoading = true;
+                          _hasError = false;
+                          _errorMessage = null;
+                        });
+                        _controller.reload();
+                      },
+                      icon: const Icon(Icons.refresh),
+                      label: const Text('Retry'),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color(0xFF802629),
+                        foregroundColor: Colors.white,
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 32,
+                          vertical: 12,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
         ],
       ),
     );
