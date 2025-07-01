@@ -279,7 +279,7 @@ class DesignedHomePage extends StatelessWidget {
       gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: 4,
         crossAxisSpacing: 12,
-        mainAxisSpacing: 12,
+        mainAxisSpacing: 0,
         childAspectRatio: 0.8,
       ),
       itemCount: frequentlyUsed.length,
