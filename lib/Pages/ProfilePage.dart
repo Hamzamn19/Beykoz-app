@@ -196,7 +196,7 @@ class _ProfilePageState extends State<ProfilePage> {
                       child: _buildActionButton(
                         'Settings',
                         Icons.settings,
-                        () {
+                            () {
                           // Settings butonu için örnek fonksiyon
                           ScaffoldMessenger.of(context).showSnackBar(
                             const SnackBar(content: Text('Settings pressed')),
@@ -210,7 +210,7 @@ class _ProfilePageState extends State<ProfilePage> {
                         await FirebaseAuth.instance.signOut();
                         Navigator.of(context).pushAndRemoveUntil(
                           MaterialPageRoute(builder: (context) => LoginPage()),
-                          (Route<dynamic> route) => false,
+                              (Route<dynamic> route) => false,
                         );
                       }, isDestructive: true),
                     ),
@@ -372,7 +372,7 @@ class _ProfilePageState extends State<ProfilePage> {
                     child: _buildActionButton(
                       'Settings',
                       Icons.settings,
-                      () {},
+                          () {},
                     ),
                   ),
                   const SizedBox(width: 15),
@@ -381,7 +381,7 @@ class _ProfilePageState extends State<ProfilePage> {
                       await FirebaseAuth.instance.signOut();
                       Navigator.of(context).pushAndRemoveUntil(
                         MaterialPageRoute(builder: (context) => LoginPage()),
-                        (Route<dynamic> route) => false,
+                            (Route<dynamic> route) => false,
                       );
                     }, isDestructive: true),
                   ),
@@ -398,11 +398,11 @@ class _ProfilePageState extends State<ProfilePage> {
   }
 
   Widget _buildStatCard(
-    String title,
-    String value,
-    IconData icon,
-    Color color,
-  ) {
+      String title,
+      String value,
+      IconData icon,
+      Color color,
+      ) {
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
@@ -512,11 +512,11 @@ class _ProfilePageState extends State<ProfilePage> {
   }
 
   Widget _buildActionButton(
-    String title,
-    IconData icon,
-    VoidCallback onPressed, {
-    bool isDestructive = false,
-  }) {
+      String title,
+      IconData icon,
+      VoidCallback onPressed, {
+        bool isDestructive = false,
+      }) {
     return SizedBox(
       height: 55,
       child: ElevatedButton(
@@ -602,7 +602,7 @@ class _ProfileDataScraperState extends State<ProfileDataScraper> {
               _isLoading = false;
               _hasError = true;
               _errorMessage =
-                  'No internet connection or failed to load the page.';
+              'No internet connection or failed to load the page.';
             });
           },
         ),
@@ -623,7 +623,7 @@ class _ProfileDataScraperState extends State<ProfileDataScraper> {
               _hasError = true;
               _isLoading = false;
               _errorMessage =
-                  'Fetching data took too long. Please try again or check your connection.';
+              'Fetching data took too long. Please try again or check your connection.';
             });
           }
         },
@@ -640,12 +640,20 @@ class _ProfileDataScraperState extends State<ProfileDataScraper> {
   }
 
   Future<void> _scrapeData() async {
+    /// 💡 **Explanation of Changes**
+    /// The `findElementTextByLabelText` function is updated.
+    /// Instead of a single `labelText`, it now accepts an array `labelTexts`.
+    /// It iterates through all `<label>` elements and checks if their text matches *any* of the labels in the provided array.
+    /// This makes the scraper bilingual, as it can find data using either English or Turkish labels.
     const String jsCode = """
       (function() {
-        function findElementTextByLabelText(labelText) {
+        // This function now accepts an array of possible labels (e.g., ['Name', 'Adı'])
+        function findElementTextByLabelText(labelTexts) {
           const allLabels = document.querySelectorAll('label');
           for (let i = 0; i < allLabels.length; i++) {
-            if (allLabels[i].innerText.trim() === labelText) {
+            const currentLabelText = allLabels[i].innerText.trim();
+            // Check if the current label's text is in our array of possible labels
+            if (labelTexts.includes(currentLabelText)) {
               const element = allLabels[i].parentElement.nextElementSibling;
               if (element && element.classList.contains('element')) {
                 return element.innerText.trim();
@@ -654,17 +662,25 @@ class _ProfileDataScraperState extends State<ProfileDataScraper> {
           }
           return 'Not Available';
         }
-        const name = findElementTextByLabelText('Name');
-        const surname = findElementTextByLabelText('Surname');
-        const studentId = findElementTextByLabelText('Student ID');
-        const facultyText = findElementTextByLabelText('Faculty Code');
-        const departmentText = findElementTextByLabelText('Department');
+        
+        // We now pass arrays with both English and Turkish labels to the function.
+        const name = findElementTextByLabelText(['Name', 'Adı']);
+        const surname = findElementTextByLabelText(['Surname', 'Soyadı']);
+        const studentId = findElementTextByLabelText(['Student ID', 'Öğrenci No']);
+        const facultyText = findElementTextByLabelText(['Faculty Code', 'Fakülte/Enstitü Kodu']);
+        const departmentText = findElementTextByLabelText(['Department', 'Bölüm/Anabilim D. Kodu']);
+
+        // Contact info is more reliably found using input names which are language-independent.
         const email = document.querySelector('input[name="iletisim_416287"]')?.value || '';
         const phone = document.querySelector('input[name="iletisim_416286"]')?.value || '';
+        
+        // The image selector remains the same and should work for both versions.
         const profileImageUrl = document.querySelector('img[width="120"]')?.src || '';
         
+        // Clean up faculty and department text which may contain codes.
         const faculty = facultyText.includes('-') ? facultyText.split('-')[1].trim() : facultyText;
         const department = departmentText.includes('-') ? departmentText.split('-')[1].trim() : departmentText;
+
         return {
           'nameSurname': name + ' ' + surname,
           'studentId': studentId,
@@ -693,7 +709,7 @@ class _ProfileDataScraperState extends State<ProfileDataScraper> {
         });
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Profil verisi bulunamadı.'))
+              SnackBar(content: Text('Profil verisi bulunamadı.'))
           );
         }
       }
