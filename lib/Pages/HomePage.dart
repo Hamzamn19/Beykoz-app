@@ -4,6 +4,11 @@ import 'package:beykoz/Pages/AttendancePage.dart';
 import 'package:beykoz/Pages/ProfilePage.dart';
 import 'package:beykoz/Pages/AllFeaturesPage.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart'; // will be used for the logo
+import 'package:beykoz/Pages/SettingsPage.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 
 // Main widget containing the home screen and Bottom Navigation Bar logic
 class HomeScreen extends StatefulWidget {
@@ -18,10 +23,61 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   int _selectedIndex = 0;
   late final List<Widget> _pages;
+  String? _userRole;
+  bool _isLoadingRole = true;
 
   @override
   void initState() {
     super.initState();
+    _fetchUserRole();
+  }
+
+  Future<void> _fetchUserRole() async {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user == null) {
+      setState(() {
+        _userRole = null;
+        _isLoadingRole = false;
+      });
+      return;
+    }
+    final doc = await FirebaseFirestore.instance
+        .collection('students')
+        .doc(user.email)
+        .get();
+    if (doc.exists) {
+      setState(() {
+        _userRole = doc.data()?['role'] as String?;
+        _isLoadingRole = false;
+      });
+    } else {
+      setState(() {
+        _userRole = null;
+        _isLoadingRole = false;
+      });
+    }
+  }
+
+  void _onItemTapped(int index) {
+    setState(() {
+      _selectedIndex = index;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    if (_isLoadingRole) {
+      return const Scaffold(
+        body: Center(child: CircularProgressIndicator()),
+      );
+    }
+    // Student: yoklama sekmesi sadece öğrenci, ayar çarkı yok
+    // Teacher: yoklama sekmesi sadece öğretmen, ayar çarkı yok
+    // Developer: hepsi açık
+    final isStudent = _userRole == 'Student';
+    final isTeacher = _userRole == 'Teacher';
+    final isDeveloper = _userRole == 'Developer';
+
     _pages = <Widget>[
       const DesignedHomePage(),
       WebViewPage(
@@ -34,18 +90,15 @@ class _HomeScreenState extends State<HomeScreen> {
         username: widget.username,
         password: widget.password,
       ),
-      AttendanceScreen(),
+      // Yoklama sekmesi:
+      if (isStudent)
+        AttendanceScreen(role: 'student')
+      else if (isTeacher)
+        AttendanceScreen(role: 'teacher')
+      else
+        AttendanceScreen(role: 'developer'),
     ];
-  }
 
-  void _onItemTapped(int index) {
-    setState(() {
-      _selectedIndex = index;
-    });
-  }
-
-  @override
-  Widget build(BuildContext context) {
     return Scaffold(
       body: IndexedStack(index: _selectedIndex, children: _pages),
       bottomNavigationBar: BottomNavigationBar(
@@ -64,6 +117,28 @@ class _HomeScreenState extends State<HomeScreen> {
         backgroundColor: const Color(0xFF802629),
         type: BottomNavigationBarType.fixed,
         onTap: _onItemTapped,
+      ),
+      // Ayar çarkı sadece developer için
+      floatingActionButton: isDeveloper
+          ? _buildSettingsButton(context)
+          : null,
+      floatingActionButtonLocation: FloatingActionButtonLocation.endTop,
+    );
+  }
+
+  Widget _buildSettingsButton(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(top: 40.0, right: 16.0),
+      child: FloatingActionButton(
+        backgroundColor: const Color(0xFFECECEC),
+        foregroundColor: const Color(0xFF802629),
+        onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => SettingsPage()),
+          );
+        },
+        child: const Icon(Icons.settings),
       ),
     );
   }
@@ -171,13 +246,13 @@ class DesignedHomePage extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
               _buildCircularButton(
-                icon: Icons.person,
+                icon: Icons.settings,
                 backgroundColor: const Color(0xFFECECEC),
                 iconColor: const Color(0xFF802629),
                 onPressed: () {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => ProfilePage()),
+                    MaterialPageRoute(builder: (context) => SettingsPage()),
                   );
                 },
               ),

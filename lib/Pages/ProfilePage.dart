@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 import 'dart:developer' as developer;
+import 'package:beykoz/Pages/LoginPage.dart';
 
 // Student data model (no changes)
 class Student {
@@ -188,6 +189,34 @@ class _ProfilePageState extends State<ProfilePage> {
                     ),
                   ),
                 ),
+                const SizedBox(height: 24),
+                Row(
+                  children: [
+                    Expanded(
+                      child: _buildActionButton(
+                        'Settings',
+                        Icons.settings,
+                        () {
+                          // Settings butonu için örnek fonksiyon
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(content: Text('Settings pressed')),
+                          );
+                        },
+                      ),
+                    ),
+                    const SizedBox(width: 15),
+                    Expanded(
+                      child: _buildActionButton('Logout', Icons.logout, () async {
+                        await FirebaseAuth.instance.signOut();
+                        Navigator.of(context).pushAndRemoveUntil(
+                          MaterialPageRoute(builder: (context) => LoginPage()),
+                          (Route<dynamic> route) => false,
+                        );
+                      }, isDestructive: true),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 80),
               ],
             ),
           ),
@@ -350,8 +379,8 @@ class _ProfilePageState extends State<ProfilePage> {
                   Expanded(
                     child: _buildActionButton('Logout', Icons.logout, () async {
                       await FirebaseAuth.instance.signOut();
-                      Navigator.of(context).pushNamedAndRemoveUntil(
-                        '/login',
+                      Navigator.of(context).pushAndRemoveUntil(
+                        MaterialPageRoute(builder: (context) => LoginPage()),
                         (Route<dynamic> route) => false,
                       );
                     }, isDestructive: true),
@@ -359,6 +388,7 @@ class _ProfilePageState extends State<ProfilePage> {
                 ],
               ),
               const SizedBox(height: 20),
+              const SizedBox(height: 80), // Extra space for bottom navbar
             ]),
           ),
         ),
@@ -615,9 +645,8 @@ class _ProfileDataScraperState extends State<ProfileDataScraper> {
     """;
     try {
       final result = await _controller.runJavaScriptReturningResult(jsCode);
-      if (result != null) {
-        final decodedResult =
-            jsonDecode(result.toString()) as Map<String, dynamic>;
+      if (result != null && result.toString() != 'null') {
+        final decodedResult = jsonDecode(result.toString()) as Map<String, dynamic>;
         if (mounted) {
           Navigator.pop(
             context,
@@ -629,6 +658,11 @@ class _ProfileDataScraperState extends State<ProfileDataScraper> {
           _hasError = true;
           _errorMessage = 'Failed to fetch data from the page.';
         });
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Profil verisi bulunamadı.'))
+          );
+        }
       }
     } catch (e) {
       if (mounted) {
