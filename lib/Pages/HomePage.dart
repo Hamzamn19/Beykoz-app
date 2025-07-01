@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 import 'package:beykoz/Pages/AttendancePage.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:beykoz/Pages/ProfilePage.dart'; // Make sure this path is correct
 import 'package:beykoz/Pages/AllFeaturesPage.dart';
 
-// Ana Ekran ve Bottom Navigation Bar mantığını içeren ana widget
+// Main widget containing the home screen and Bottom Navigation Bar logic
 class HomeScreen extends StatefulWidget {
   final String? username;
   final String? password;
@@ -16,7 +16,6 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   int _selectedIndex = 0;
-
   late final List<Widget> _pages;
 
   @override
@@ -50,15 +49,18 @@ class _HomeScreenState extends State<HomeScreen> {
       body: IndexedStack(index: _selectedIndex, children: _pages),
       bottomNavigationBar: BottomNavigationBar(
         items: const <BottomNavigationBarItem>[
-          BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Ana Sayfa'),
+          BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
           BottomNavigationBarItem(icon: Icon(Icons.web), label: 'OIS'),
           BottomNavigationBarItem(icon: Icon(Icons.login), label: 'Online'),
-          BottomNavigationBarItem(icon: Icon(Icons.check_circle), label: 'Yoklama'),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.check_circle),
+            label: 'Attendance',
+          ),
         ],
         currentIndex: _selectedIndex,
         selectedItemColor: Colors.white,
         unselectedItemColor: Colors.grey,
-        backgroundColor: Color(0xFF802629),
+        backgroundColor: const Color(0xFF802629),
         type: BottomNavigationBarType.fixed,
         onTap: _onItemTapped,
       ),
@@ -66,19 +68,15 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 }
 
-// --- YENİ ANA SAYFA TASARIMI WIDGET'I ---
-// Görseldeki tasarımı birebir uyguladığımız kısım
+// --- NEW HOME PAGE DESIGN WIDGET ---
 class DesignedHomePage extends StatelessWidget {
   const DesignedHomePage({super.key});
 
-  // Tasarımda kullanılan ana renk
   static const Color primaryColor = Color(0xFF802629);
   static const Color cardColor = Color(0xFFECECEC);
 
   @override
   Widget build(BuildContext context) {
-    // Sayfanın en üstten başlaması ve durum çubuğu (saat, pil vs.) ile
-    // çakışmaması için SafeArea widget'ı ekliyoruz.
     return SafeArea(
       child: SingleChildScrollView(
         child: Padding(
@@ -86,54 +84,39 @@ class DesignedHomePage extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              // --- ÜST BUTONLAR ("B") ---
-              _buildTopButtons(),
+              _buildTopButtons(context),
               const SizedBox(height: 24),
-
-              // --- SIK KULLANILANLAR BÖLÜMÜ ---
-              _buildSectionTitle('SIK KULLANILANLAR'),
+              _buildSectionTitle('FREQUENTLY USED'),
               const SizedBox(height: 12),
               _buildFrequentlyUsedGrid(),
               const SizedBox(height: 16),
-
-              // --- ORTADAKİ BUTON ("B") ---
               ElevatedButton(
                 onPressed: () {
-                  // Bu butona tıklandığında yapılacak işlem (şimdilik boş)
-                  // --- DOĞRU UYGULAMA BURADA ---
-                  // Bu kod, 'AllFeaturesSheet' widget'ını alttan açılır bir
-                  // modal sayfa olarak gösterir.
                   showModalBottomSheet(
                     context: context,
-                    // Bu ayar, DraggableScrollableSheet'in tam ekran
-                    // olabilmesini sağlar.
                     isScrollControlled: true,
-                    // Arka planı şeffaf yaparak AllFeaturesSheet'in kendi
-                    // yuvarlak köşelerinin görünmesini sağlıyoruz.
                     backgroundColor: Colors.transparent,
                     builder: (context) => const AllFeaturesSheet(),
                   );
                 },
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: cardColor, // const Color(0xFFECECEC)
+                  backgroundColor: cardColor,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(8),
                   ),
                   padding: const EdgeInsets.symmetric(vertical: 12),
                 ),
                 child: const Text(
-                  'TÜMÜ',
+                  'ALL',
                   style: TextStyle(fontSize: 18, color: Color(0xFF802629)),
                 ),
               ),
               const SizedBox(height: 24),
-
-              // --- DUYURULAR BÖLÜMÜ ---
-              _buildSectionTitle('DUYURULAR'),
+              _buildSectionTitle('ANNOUNCEMENTS'),
               const SizedBox(height: 12),
-              _buildAnnouncementCard(), // İlk duyuru kartı
+              _buildAnnouncementCard(),
               const SizedBox(height: 16),
-              _buildAnnouncementCard(), // İkinci duyuru kartı
+              _buildAnnouncementCard(),
             ],
           ),
         ),
@@ -141,56 +124,47 @@ class DesignedHomePage extends StatelessWidget {
     );
   }
 
-  // --- YARDIMCI METOTLAR (WIDGET OLUŞTURUCULAR) ---
-
-  // home.dart dosyasından
-
-  // home.dart dosyasından
-
-  Widget _buildTopButtons() {
+  Widget _buildTopButtons(BuildContext context) {
     return Row(
       children: [
-        // --- DİKDÖRTGEN BUTON YERİNE TIKLANABİLİR GÖRSEL ---
         Expanded(
           flex: 3,
           child: GestureDetector(
             onTap: () {
-              // Görsele tıklandığında yapılacak işlemi buraya yazın.
-              // Örneğin bir mesaj yazdırabilir veya yeni bir sayfaya gidebilirsiniz.
-              print('Görsel butona tıklandı!');
+              print('Logo tapped!');
             },
-            // --- DEĞİŞİKLİK BURADA BAŞLIYOR ---
-            // Image widget'ını, sola hizalamak için Align widget'ı ile sardık.
             child: Align(
-              alignment:
-              Alignment.centerLeft, // Bu satır, içindeki öğeyi sola yaslar.
+              alignment: Alignment.centerLeft,
               child: Image.asset(
-                'assets/images/logo.png', // Görselinizin yolu
+                'assets/images/logo.png',
                 fit: BoxFit.contain,
                 height: 48,
               ),
             ),
-            // --- DEĞİŞİKLİK BURADA BİTİYOR ---
           ),
         ),
-
-        // --- Bitiş ---
         const SizedBox(width: 16),
-
         Expanded(
           flex: 2,
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
               _buildCircularButton(
-                Icons.search, // İkon
-                const Color(0xFFECECEC), // Arka Plan Rengi
-                const Color(0xFF802629), // İkon Rengi
+                icon: Icons.person,
+                backgroundColor: const Color(0xFFECECEC),
+                iconColor: const Color(0xFF802629),
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => ProfilePage()),
+                  );
+                },
               ),
               _buildCircularButton(
-                Icons.notifications, // İkon
-                const Color(0xFF802629), // Arka Plan Rengi
-                Colors.white, // İkon Rengi
+                icon: Icons.notifications,
+                backgroundColor: const Color(0xFF802629),
+                iconColor: Colors.white,
+                onPressed: () {},
               ),
             ],
           ),
@@ -199,27 +173,20 @@ class DesignedHomePage extends StatelessWidget {
     );
   }
 
-  Widget _buildCircularButton(
-      IconData icon,
-      Color backgroundColor,
-      Color iconColor,
-      ) {
+  Widget _buildCircularButton({
+    required IconData icon,
+    required Color backgroundColor,
+    required Color iconColor,
+    required VoidCallback onPressed,
+  }) {
     return ElevatedButton(
-      onPressed: () {},
+      onPressed: onPressed,
       style: ElevatedButton.styleFrom(
         shape: const CircleBorder(),
         padding: const EdgeInsets.all(10),
-        // --- DEĞİŞİKLİK BURADA ---
-        // Arka plan rengi artık sabit değil, parametreden geliyor.
         backgroundColor: backgroundColor,
       ),
-      child: Icon(
-        icon,
-        // --- DEĞİŞİKLİK BURADA ---
-        // İkon rengi de artık sabit değil, parametreden geliyor.
-        color: iconColor,
-        size: 30,
-      ),
+      child: Icon(icon, color: iconColor, size: 30),
     );
   }
 
@@ -242,45 +209,45 @@ class DesignedHomePage extends StatelessWidget {
   }
 
   Widget _buildFrequentlyUsedGrid() {
-    // Liste des éléments avec icônes
     final List<Map<String, dynamic>> frequentlyUsed = [
       {
-        'label': 'Transkript',
+        'label': 'Transcript',
         'url': 'https://ois.beykoz.edu.tr/ogrenciler/belge/transkript',
         'icon': Icons.assignment_turned_in,
       },
       {
-        'label': 'Karne',
+        'label': 'Report Card',
         'url': 'https://ois.beykoz.edu.tr/ogrenciler/belge/ogrkarne',
         'icon': Icons.grade,
       },
       {
-        'label': 'Ders Programı',
+        'label': 'Course Schedule',
         'url': 'https://ois.beykoz.edu.tr/ogrenciler/belge/ogrdersprogrami',
         'icon': Icons.calendar_today,
       },
       {
-        'label': 'Hazırlık Karne',
-        'url': 'https://ois.beykoz.edu.tr/hazirlik/hazirliksinav/ogrpreptranskript',
+        'label': 'Prep Transcript',
+        'url':
+            'https://ois.beykoz.edu.tr/hazirlik/hazirliksinav/ogrpreptranskript',
         'icon': Icons.school,
       },
       {
-        'label': 'Ders Onay Belgesi',
+        'label': 'Approval Certificate',
         'url': 'https://ois.beykoz.edu.tr/ogrenciler/belge/dersdanismanonay',
         'icon': Icons.verified_user,
       },
       {
-        'label': 'Kesin Kayıt Belgesi',
+        'label': 'Registration Doc',
         'url': 'https://ois.beykoz.edu.tr/ogrenciler/belge/kesinkayitbelgesi',
         'icon': Icons.how_to_reg,
       },
       {
-        'label': 'Online Belge Talep',
+        'label': 'Online Document',
         'url': 'https://ois.beykoz.edu.tr/ogrenciler/belgetalep/duzenle2',
         'icon': Icons.description,
       },
       {
-        'label': 'Sınav Programı',
+        'label': 'Exam Schedule',
         'url': 'https://ois.beykoz.edu.tr/ogrenciler/belge/sinavprogrami',
         'icon': Icons.schedule,
       },
@@ -319,14 +286,9 @@ class DesignedHomePage extends StatelessWidget {
                 width: 56.75,
                 height: 56.75,
                 decoration: BoxDecoration(
-                  // --- DEĞİŞİKLİK BURADA ---
-                  // "shape: BoxShape.circle" yerine "borderRadius" kullanıldı.
                   borderRadius: BorderRadius.circular(12),
                   gradient: const LinearGradient(
-                    colors: [
-                      Color(0xFF802629),
-                      Color(0xFFB2453C),
-                    ],
+                    colors: [Color(0xFF802629), Color(0xFFB2453C)],
                     begin: Alignment.topLeft,
                     end: Alignment.bottomRight,
                   ),
@@ -338,11 +300,7 @@ class DesignedHomePage extends StatelessWidget {
                     ),
                   ],
                 ),
-                child: Icon(
-                  item['icon'],
-                  color: Colors.white,
-                  size: 30,
-                ),
+                child: Icon(item['icon'], color: Colors.white, size: 30),
               ),
               const SizedBox(height: 8),
               Text(
@@ -382,7 +340,7 @@ class DesignedHomePage extends StatelessWidget {
   }
 }
 
-// --- WEBVIEW SAYFASI ---
+// --- WEBVIEW PAGE ---
 class WebViewPage extends StatefulWidget {
   final String url;
   final String? username;
@@ -403,14 +361,11 @@ class _WebViewPageState extends State<WebViewPage>
     with AutomaticKeepAliveClientMixin {
   late final WebViewController _controller;
   bool _isLoading = true;
-
-  // --- YENİ EKLENEN DURUM DEĞİŞKENLERİ ---
-  // Geri ve ileri butonlarının etkin olup olmadığını takip etmek için.
   bool _canGoBack = false;
   bool _canGoForward = false;
 
   @override
-  bool get wantKeepAlive => true; // Sekmeler arası geçişte durumu korur
+  bool get wantKeepAlive => true;
 
   @override
   void initState() {
@@ -421,27 +376,34 @@ class _WebViewPageState extends State<WebViewPage>
       ..setNavigationDelegate(
         NavigationDelegate(
           onPageStarted: (String url) {
-            setState(() {
-              _isLoading = true;
+            // FIX: Safely update state after the build frame is complete
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              if (mounted) {
+                setState(() {
+                  _isLoading = true;
+                });
+              }
             });
           },
           onPageFinished: (String url) async {
-            // Buton durumlarını her sayfa yüklendiğinde güncelle
-            _updateNavigationState();
-
-            setState(() {
-              _isLoading = false;
+            // FIX: Safely update state after the build frame
+            WidgetsBinding.instance.addPostFrameCallback((_) async {
+              await _updateNavigationState();
+              if (mounted) {
+                setState(() {
+                  _isLoading = false;
+                });
+              }
             });
 
-            // --- OTOMATİK GİRİŞ İÇİN JAVASCRIPT KODUNUZ KORUNDU ---
             if (widget.username != null && widget.password != null) {
               String username = widget.username!;
               final atIndex = username.indexOf('@');
               if (atIndex != -1) {
                 username = username.substring(0, atIndex);
               }
-
-              final loginJs = '''
+              final loginJs =
+                  '''
                 (function() {
                   var username = "$username";
                   var password = "${widget.password}";
@@ -467,24 +429,25 @@ class _WebViewPageState extends State<WebViewPage>
             }
           },
           onWebResourceError: (WebResourceError error) {
-            setState(() {
-              _isLoading = false;
+            // FIX: Safely update state and show SnackBar after the build frame
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              if (mounted) {
+                setState(() {
+                  _isLoading = false;
+                });
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text('Could not load page: ${error.description}'),
+                  ),
+                );
+              }
             });
-            if(mounted) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text('Sayfa yüklenemedi: ${error.description}'),
-                ),
-              );
-            }
           },
         ),
       )
       ..loadRequest(Uri.parse(widget.url));
   }
 
-  // --- YENİ EKLENEN YARDIMCI METOT ---
-  // WebView'in geri/ileri gidip gidemeyeceğini kontrol eder ve butonları günceller.
   Future<void> _updateNavigationState() async {
     final canGoBack = await _controller.canGoBack();
     final canGoForward = await _controller.canGoForward();
@@ -496,21 +459,17 @@ class _WebViewPageState extends State<WebViewPage>
     }
   }
 
-  // --- TAMAMEN YENİLENEN build METODU ---
   @override
   Widget build(BuildContext context) {
     super.build(context);
-    // Hem sistem geri tuşu hem de arayüz butonları için tam kontrol
     return PopScope(
       canPop: false,
       onPopInvoked: (bool didPop) async {
         if (didPop) return;
         if (await _controller.canGoBack()) {
           await _controller.goBack();
-          _updateNavigationState(); // Buton durumunu da güncelle
+          _updateNavigationState();
         } else {
-          // Bu kısım, BottomNavBar yapısında olduğumuz için genellikle çalışmaz,
-          // ama Sık Kullanılanlar'dan gelindiğinde sayfanın kapanmasını sağlar.
           if (mounted && Navigator.of(context).canPop()) {
             Navigator.of(context).pop();
           }
@@ -520,7 +479,6 @@ class _WebViewPageState extends State<WebViewPage>
         body: SafeArea(
           child: Column(
             children: [
-              // WebView'in kendisini içeren ve dikeyde tüm boş alanı kaplayan bölüm
               Expanded(
                 child: Stack(
                   children: [
@@ -528,15 +486,14 @@ class _WebViewPageState extends State<WebViewPage>
                     if (_isLoading)
                       const Center(
                         child: CircularProgressIndicator(
-                          valueColor:
-                          AlwaysStoppedAnimation<Color>(Color(0xFF802629)),
+                          valueColor: AlwaysStoppedAnimation<Color>(
+                            Color(0xFF802629),
+                          ),
                         ),
                       ),
                   ],
                 ),
               ),
-
-              // --- YENİ EKLENEN KONTROL ÇUBUĞU ---
               Container(
                 padding: const EdgeInsets.symmetric(vertical: 2.0),
                 decoration: BoxDecoration(
@@ -554,29 +511,26 @@ class _WebViewPageState extends State<WebViewPage>
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: <Widget>[
-                    // Geri Butonu
                     IconButton(
                       icon: const Icon(Icons.arrow_back),
                       color: const Color(0xFF802629),
                       onPressed: _canGoBack
                           ? () async {
-                        await _controller.goBack();
-                        _updateNavigationState();
-                      }
-                          : null, // Pasif ise tıklanamaz
+                              await _controller.goBack();
+                              _updateNavigationState();
+                            }
+                          : null,
                     ),
-                    // İleri Butonu
                     IconButton(
                       icon: const Icon(Icons.arrow_forward),
                       color: const Color(0xFF802629),
                       onPressed: _canGoForward
                           ? () async {
-                        await _controller.goForward();
-                        _updateNavigationState();
-                      }
-                          : null, // Pasif ise tıklanamaz
+                              await _controller.goForward();
+                              _updateNavigationState();
+                            }
+                          : null,
                     ),
-                    // Yenile Butonu
                     IconButton(
                       icon: const Icon(Icons.refresh),
                       color: const Color(0xFF802629),

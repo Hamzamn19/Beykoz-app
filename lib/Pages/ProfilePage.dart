@@ -1,6 +1,42 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_core/firebase_core.dart';
+import 'package:webview_flutter/webview_flutter.dart';
+import 'dart:developer' as developer;
+
+// Student data model (no changes)
+class Student {
+  final String studentId;
+  final String nameSurname;
+  final String department;
+  final String faculty;
+  final String email;
+  final String phoneNumber;
+  String profileImageUrl;
+
+  Student({
+    required this.studentId,
+    required this.nameSurname,
+    required this.department,
+    required this.faculty,
+    required this.email,
+    required this.phoneNumber,
+    this.profileImageUrl = '',
+  });
+
+  factory Student.fromJson(Map<String, dynamic> json) {
+    return Student(
+      nameSurname: json['nameSurname'] ?? 'Not Available',
+      studentId: json['studentId'] ?? 'Not Available',
+      faculty: json['faculty'] ?? 'Not Available',
+      department: json['department'] ?? 'Not Available',
+      email: json['email'] ?? 'Not Available',
+      phoneNumber: json['phoneNumber'] ?? 'Not Available',
+      profileImageUrl: json['profileImageUrl'] ?? '',
+    );
+  }
+}
 
 class ProfilePage extends StatefulWidget {
   @override
@@ -8,342 +44,283 @@ class ProfilePage extends StatefulWidget {
 }
 
 class _ProfilePageState extends State<ProfilePage> {
-  // Üniversite rengini tanımlıyoruz
   final Color universityColor = const Color(0xFF802629);
   final Color lightUniversityColor = const Color(0xFFB85A5E);
 
-  // Dil seçimi için değişken
-  // İşlev kaldırıldığı için bu değişkenin değeri değişmeyecek.
-  String selectedLanguage = 'TR'; // Varsayılan dil Türkçe
+  // CHANGED: Using manual state management instead of a Future
+  Student? _student;
+  bool _isLoading = true;
+  String? _error;
 
-  // Çoklu dil desteği için map
-  Map<String, Map<String, String>> translations = {
-    'TR': {
-      'profile': 'Profil',
-      'personal_info': 'Kişisel Bilgiler',
-      'student_number': 'Öğrenci Numarası',
-      'faculty': 'Fakülte',
-      'email': 'E-posta',
-      'phone': 'Telefon Numarası',
-      'settings': 'Ayarlar',
-      'logout': 'Çıkış Yap',
-      'active_period': 'Aktif Dönem',
-      'language': 'Dil',
-      'select_language': 'Dil Seçin',
-      'turkish': 'Türkçe',
-      'english': 'İngilizce',
-      'logout_error': 'Çıkış yapılırken hata oluştu',
-      'email_not_found': 'E-posta bulunamadı',
-    },
-  };
-
-  // Örnek kullanıcı verileri
-  final String studentId = '202112345';
-  final String nameSurname = 'Ayşe Yılmaz';
-  final String department = 'Bilgisayar Mühendisliği';
-  final String faculty = 'Mühendislik ve Mimarlık Fakültesi';
-  final String phoneNumber = '+90 5XX XXX XX XX';
-  final String profileImageUrl = 'https://via.placeholder.com/150';
-
-  // Çeviri fonksiyonu
-  // selectedLanguage varsayılan değerini koruyacağı için hep TR çevirisini döndürecektir.
-  String getText(String key) {
-    return translations[selectedLanguage]?[key] ?? key;
+  @override
+  void initState() {
+    super.initState();
+    // Use addPostFrameCallback to safely navigate after the first build
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _fetchDataAndSetState();
+    });
   }
 
-  // Dil seçim dialogu
-  void _showLanguageDialog() {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text(getText('select_language')),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              ListTile(
-                leading: const Text('🇹🇷', style: TextStyle(fontSize: 24)),
-                title: Text(getText('turkish')),
-                onTap: () {
-                  // setState çağrısı kaldırıldı, dil değişimi gerçekleşmeyecek
-                  Navigator.of(context).pop(); // Sadece dialog kapanacak
-                },
-                trailing: selectedLanguage == 'TR'
-                    ? Icon(Icons.check, color: universityColor)
-                    : null,
-              ),
-              ListTile(
-                leading: const Text('🇺🇸', style: TextStyle(fontSize: 24)),
-                title: Text(getText('english')),
-                onTap: () {
-                  // setState çağrısı kaldırıldı, dil değişimi gerçekleşmeyecek
-                  Navigator.of(context).pop(); // Sadece dialog kapanacak
-                },
-                trailing: selectedLanguage == 'EN'
-                    ? Icon(Icons.check, color: universityColor)
-                    : null,
-              ),
-            ],
-          ),
+  // This function now handles the entire data flow and state updates
+  Future<void> _fetchDataAndSetState() async {
+    // Ensure we show loading indicator and clear previous errors
+    setState(() {
+      _isLoading = true;
+      _error = null;
+    });
+
+    try {
+      final result = await Navigator.push<Map<String, dynamic>>(
+        context,
+        MaterialPageRoute(builder: (context) => ProfileDataScraper()),
+      );
+
+      if (!mounted) return; // Exit if the widget is no longer in the tree
+
+      if (result != null) {
+        setState(() {
+          _student = Student.fromJson(result);
+          _isLoading = false;
+        });
+      } else {
+        // Handle case where user navigates back without data
+        setState(() {
+          _error = 'Data fetching was cancelled.';
+          _isLoading = false;
+        });
+      }
+    } catch (e) {
+      if (!mounted) return;
+      setState(() {
+        _error = e.toString();
+        _isLoading = false;
+      });
+    }
+  }
+
+  // Helper function to handle the Base64 profile image
+  ImageProvider _getProfileImage(String imageUrl) {
+    if (imageUrl.startsWith('data:image')) {
+      try {
+        final parts = imageUrl.split(',');
+        if (parts.length == 2) {
+          final imageBytes = base64Decode(parts[1]);
+          return MemoryImage(imageBytes);
+        }
+      } catch (e) {
+        developer.log(
+          "Error decoding Base64 image: $e",
+          name: 'ImageProcessing',
         );
-      },
-    );
+      }
+    }
+    return const AssetImage('assets/images/default_avatar.png');
   }
 
   @override
   Widget build(BuildContext context) {
-    // Firebase'den şu anki kullanıcıyı al
-    final User? user = FirebaseAuth.instance.currentUser;
-    // userEmail hala getText kullanıyor, selectedLanguage 'TR' olduğu için hep Türkçe olacak
-    final String userEmail = user?.email ?? getText('email_not_found');
-
     return Scaffold(
-      body: CustomScrollView(
-        slivers: [
-          // Modern SliverAppBar (Başlık ve Profil Resmi Bölümü)
-          SliverAppBar(
-            expandedHeight: 280,
-            floating: false,
-            pinned: true,
-            elevation: 0,
-            backgroundColor: universityColor,
-            flexibleSpace: FlexibleSpaceBar(
-              background: Container(
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    begin: Alignment.topCenter,
-                    end: Alignment.bottomCenter,
-                    colors: [universityColor, lightUniversityColor],
-                  ),
-                ),
-                child: SafeArea(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      const SizedBox(height: 60),
-                      // Profil resmi ile modern shadow
-                      Container(
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.black.withOpacity(0.3),
-                              blurRadius: 20,
-                              offset: const Offset(0, 10),
-                            ),
-                          ],
-                        ),
-                        child: CircleAvatar(
-                          radius: 60,
-                          backgroundColor: Colors.white,
-                          child: CircleAvatar(
-                            radius: 55,
-                            backgroundImage: NetworkImage(profileImageUrl),
-                            backgroundColor: Colors.grey[200],
-                          ),
-                        ),
-                      ),
-                      const SizedBox(height: 20),
-                      // İsim
-                      Text(
-                        nameSurname,
-                        style: const TextStyle(
-                          fontSize: 28,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white,
-                        ),
-                      ),
-                      const SizedBox(height: 8),
-                      Text(
-                        department,
-                        style: TextStyle(
-                          fontSize: 16,
-                          color: Colors.white.withOpacity(0.9),
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ),
-            // Sol tarafta dil seçimi ve geri buton
-            leading: IconButton(
-              // Row kaldırıldı, IconButton direkt leading oldu
-              icon: Container(
-                padding: const EdgeInsets.all(6),
-                decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(0.2),
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: Icon(Icons.language, color: Colors.white, size: 20),
-              ),
-              onPressed: _showLanguageDialog,
-            ),
-            // Sağ tarafta düzenleme butonu
-            actions: [
-              IconButton(
-                icon: Container(
-                  padding: const EdgeInsets.all(8),
-                  decoration: BoxDecoration(
-                    color: Colors.white.withOpacity(0.2),
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: const Icon(Icons.edit, color: Colors.white),
-                ),
-                onPressed: () {
-                  // Düzenleme sayfasına git
-                },
+      // The body is now decided by our state variables
+      body: _buildBody(),
+    );
+  }
+
+  // This new build method decides what to show based on the state
+  Widget _buildBody() {
+    if (_isLoading) {
+      return Center(child: CircularProgressIndicator(color: universityColor));
+    }
+
+    if (_error != null) {
+      return Center(
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text('An error occurred:\n$_error', textAlign: TextAlign.center),
+              const SizedBox(height: 20),
+              ElevatedButton(
+                onPressed: _fetchDataAndSetState,
+                child: const Text('Retry'),
               ),
             ],
           ),
+        ),
+      );
+    }
 
-          // İçerik (Kişisel Bilgiler ve Butonlar)
-          SliverToBoxAdapter(
-            child: Container(
-              decoration: const BoxDecoration(color: Color(0xFFF8F9FA)),
-              child: Padding(
-                padding: const EdgeInsets.all(20.0),
+    if (_student != null) {
+      return _buildProfileView(_student!);
+    }
+
+    // Fallback case (e.g., user cancelled)
+    return const Center(child: Text('Could not load profile data.'));
+  }
+
+  // This widget builds the main profile screen layout (no changes from before)
+  Widget _buildProfileView(Student student) {
+    return CustomScrollView(
+      slivers: [
+        SliverAppBar(
+          expandedHeight: 280,
+          floating: false,
+          pinned: true,
+          elevation: 0,
+          backgroundColor: universityColor,
+          flexibleSpace: FlexibleSpaceBar(
+            background: Container(
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  colors: [universityColor, lightUniversityColor],
+                ),
+              ),
+              child: SafeArea(
                 child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    // İstatistik kartları
-                    Row(
-                      children: [
-                        Expanded(
-                          child: _buildStatCard(
-                            getText('active_period'),
-                            '2024-2025',
-                            Icons.calendar_today,
-                            universityColor,
+                    const SizedBox(height: 60),
+                    Container(
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.3),
+                            blurRadius: 20,
+                            offset: const Offset(0, 10),
                           ),
-                        ),
-                        const SizedBox(width: 15),
-                        Expanded(
-                          child: _buildStatCard(
-                            'GPA',
-                            '3.45',
-                            Icons.trending_up,
-                            lightUniversityColor,
+                        ],
+                      ),
+                      child: CircleAvatar(
+                        radius: 60,
+                        backgroundColor: Colors.white,
+                        child: CircleAvatar(
+                          radius: 55,
+                          backgroundImage: _getProfileImage(
+                            student.profileImageUrl,
                           ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 25),
-
-                    // Bilgi başlığı
-                    Align(
-                      alignment: Alignment.centerLeft,
-                      child: Text(
-                        getText('personal_info'),
-                        style: TextStyle(
-                          fontSize: 22,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.grey[800],
+                          backgroundColor: Colors.grey[200],
                         ),
                       ),
                     ),
-                    const SizedBox(height: 15),
-
-                    // Bilgi kartları
-                    _buildModernInfoCard(
-                      icon: Icons.badge_outlined,
-                      label: getText('student_number'),
-                      value: studentId,
-                      color: universityColor,
+                    const SizedBox(height: 20),
+                    Text(
+                      student.nameSurname,
+                      style: const TextStyle(
+                        fontSize: 15,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                      ),
                     ),
-                    _buildModernInfoCard(
-                      icon: Icons.apartment_outlined,
-                      label: getText('faculty'),
-                      value: faculty,
-                      color: universityColor,
+                    const SizedBox(height: 8),
+                    Text(
+                      student.department,
+                      style: TextStyle(
+                        fontSize: 16,
+                        color: Colors.white.withOpacity(0.9),
+                        fontWeight: FontWeight.w500,
+                      ),
                     ),
-                    _buildModernInfoCard(
-                      icon: Icons.mail_outline,
-                      label: getText('email'),
-                      value: userEmail,
-                      color: universityColor,
-                    ),
-                    _buildModernInfoCard(
-                      icon: Icons.phone_outlined,
-                      label: getText('phone'),
-                      value: phoneNumber,
-                      color: universityColor,
-                    ),
-
-                    const SizedBox(height: 30),
-
-                    // Alt butonlar
-                    Row(
-                      children: [
-                        Expanded(
-                          child: _buildActionButton(
-                            getText('settings'),
-                            Icons.settings,
-                            () {},
-                          ),
-                        ),
-                        const SizedBox(width: 15),
-                        Expanded(
-                          child: _buildActionButton(
-                            getText('logout'),
-                            Icons.logout,
-                            () async {
-                              // Loading dialog göster
-                              showDialog(
-                                context: context,
-                                barrierDismissible: false,
-                                builder: (BuildContext context) {
-                                  return const Center(
-                                    child: CircularProgressIndicator(),
-                                  );
-                                },
-                              );
-
-                              try {
-                                // Firebase'den çıkış yap
-                                await FirebaseAuth.instance.signOut();
-
-                                // Loading dialog'u kapat
-                                Navigator.of(context).pop();
-
-                                // Login sayfasına git ve tüm önceki sayfaları temizle
-                                Navigator.of(context).pushNamedAndRemoveUntil(
-                                  '/login',
-                                  (Route<dynamic> route) => false,
-                                );
-                              } catch (e) {
-                                // Hata durumunda loading dialog'u kapat
-                                Navigator.of(context).pop();
-
-                                // Hata mesajı göster
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  SnackBar(
-                                    content: Text(
-                                      '${getText('logout_error')}: $e',
-                                    ),
-                                    backgroundColor: Colors.red,
-                                  ),
-                                );
-                              }
-                            },
-                            isDestructive: true,
-                          ),
-                        ),
-                      ],
-                    ),
-
-                    const SizedBox(height: 50),
                   ],
                 ),
               ),
             ),
           ),
-        ],
-      ),
+        ),
+        SliverPadding(
+          padding: const EdgeInsets.all(20.0),
+          sliver: SliverList(
+            delegate: SliverChildListDelegate([
+              Row(
+                children: [
+                  Expanded(
+                    child: _buildStatCard(
+                      'Active Semester',
+                      '2024-2025',
+                      Icons.calendar_today,
+                      universityColor,
+                    ),
+                  ),
+                  const SizedBox(width: 15),
+                  Expanded(
+                    child: _buildStatCard(
+                      'GPA',
+                      '3.45',
+                      Icons.trending_up,
+                      lightUniversityColor,
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 25),
+              Align(
+                alignment: Alignment.centerLeft,
+                child: Text(
+                  'Personal Information',
+                  style: TextStyle(
+                    fontSize: 22,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.grey[800],
+                  ),
+                ),
+              ),
+              const SizedBox(height: 15),
+              _buildModernInfoCard(
+                icon: Icons.badge_outlined,
+                label: 'Student ID',
+                value: student.studentId,
+                color: universityColor,
+              ),
+              _buildModernInfoCard(
+                icon: Icons.apartment_outlined,
+                label: 'Faculty',
+                value: student.faculty,
+                color: universityColor,
+              ),
+              _buildModernInfoCard(
+                icon: Icons.mail_outline,
+                label: 'Email',
+                value: student.email,
+                color: universityColor,
+              ),
+              _buildModernInfoCard(
+                icon: Icons.phone_outlined,
+                label: 'Phone Number',
+                value: student.phoneNumber,
+                color: universityColor,
+              ),
+              const SizedBox(height: 30),
+              Row(
+                children: [
+                  Expanded(
+                    child: _buildActionButton(
+                      'Settings',
+                      Icons.settings,
+                      () {},
+                    ),
+                  ),
+                  const SizedBox(width: 15),
+                  Expanded(
+                    child: _buildActionButton('Logout', Icons.logout, () async {
+                      await FirebaseAuth.instance.signOut();
+                      Navigator.of(context).pushNamedAndRemoveUntil(
+                        '/login',
+                        (Route<dynamic> route) => false,
+                      );
+                    }, isDestructive: true),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 20),
+            ]),
+          ),
+        ),
+      ],
     );
   }
 
-  // İstatistik kartı (Değişiklik yok)
   Widget _buildStatCard(
     String title,
     String value,
@@ -396,7 +373,6 @@ class _ProfilePageState extends State<ProfilePage> {
     );
   }
 
-  // Modern bilgi kartı (Değişiklik yok)
   Widget _buildModernInfoCard({
     required IconData icon,
     required String label,
@@ -459,7 +435,6 @@ class _ProfilePageState extends State<ProfilePage> {
     );
   }
 
-  // Aksiyon butonu (Değişiklik yok)
   Widget _buildActionButton(
     String title,
     IconData icon,
@@ -496,26 +471,116 @@ class _ProfilePageState extends State<ProfilePage> {
   }
 }
 
-// LoginPage ve main() fonksiyonu
-class LoginPage extends StatelessWidget {
+class ProfileDataScraper extends StatefulWidget {
+  @override
+  _ProfileDataScraperState createState() => _ProfileDataScraperState();
+}
+
+class _ProfileDataScraperState extends State<ProfileDataScraper> {
+  late final WebViewController _controller;
+  bool _isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = WebViewController()
+      ..setJavaScriptMode(JavaScriptMode.unrestricted)
+      ..setNavigationDelegate(
+        NavigationDelegate(
+          onPageStarted: (String url) {
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              if (mounted) {
+                setState(() => _isLoading = true);
+              }
+            });
+          },
+          onPageFinished: (String url) {
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              if (mounted) {
+                setState(() => _isLoading = false);
+              }
+            });
+            if (url.contains('ogrenci/kisisel')) {
+              _scrapeData();
+            }
+          },
+        ),
+      )
+      ..loadRequest(
+        Uri.parse('https://ois.beykoz.edu.tr/ogrenciler/ogrenci/kisisel'),
+      );
+  }
+
+  void _scrapeData() async {
+    const String jsCode = """
+      (function() {
+        function findElementTextByLabelText(labelText) {
+          const allLabels = document.querySelectorAll('label');
+          for (let i = 0; i < allLabels.length; i++) {
+            if (allLabels[i].innerText.trim() === labelText) {
+              const element = allLabels[i].parentElement.nextElementSibling;
+              if (element && element.classList.contains('element')) {
+                return element.innerText.trim();
+              }
+            }
+          }
+          return 'Not Available';
+        }
+        const name = findElementTextByLabelText('Name');
+        const surname = findElementTextByLabelText('Surname');
+        const studentId = findElementTextByLabelText('Student ID');
+        const facultyText = findElementTextByLabelText('Faculty Code');
+        const departmentText = findElementTextByLabelText('Department');
+        const email = document.querySelector('input[name="iletisim_416287"]').value;
+        const phone = document.querySelector('input[name="iletisim_416286"]').value;
+        const profileImageUrl = document.querySelector('img[width="120"]').src;
+        
+        const faculty = facultyText.includes('-') ? facultyText.split('-')[1].trim() : facultyText;
+        const department = departmentText.includes('-') ? departmentText.split('-')[1].trim() : departmentText;
+        return {
+          'nameSurname': name + ' ' + surname,
+          'studentId': studentId,
+          'faculty': faculty,
+          'department': department,
+          'email': email,
+          'phoneNumber': phone,
+          'profileImageUrl': profileImageUrl
+        };
+      })();
+    """;
+    try {
+      final result = await _controller.runJavaScriptReturningResult(jsCode);
+      if (result != null) {
+        final decodedResult =
+            jsonDecode(result.toString()) as Map<String, dynamic>;
+        if (mounted) {
+          Navigator.pop(context, decodedResult);
+        }
+      }
+    } catch (e) {
+      if (mounted) {
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(SnackBar(content: Text('Failed to scrape data: $e')));
+        });
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Giriş Yap')),
-      body: const Center(child: Text('Login Page')),
+      appBar: AppBar(
+        title: const Text('Login & Fetch Data'),
+        backgroundColor: const Color(0xFF802629),
+      ),
+      body: Stack(
+        children: [
+          WebViewWidget(controller: _controller),
+          if (_isLoading) const Center(child: CircularProgressIndicator()),
+        ],
+      ),
     );
   }
-}
-
-void main() async {
-  WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp();
-  runApp(
-    MaterialApp(
-      title: 'Profil Sayfası',
-      theme: ThemeData(primarySwatch: Colors.blue),
-      home: ProfilePage(),
-      routes: {'/login': (context) => LoginPage()},
-    ),
-  );
 }

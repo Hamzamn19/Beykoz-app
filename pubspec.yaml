@@ -43,6 +43,7 @@ dependencies:
   font_awesome_flutter: ^10.8.0
   flutter_reactive_ble: ^5.4.0
   http: ^1.4.0
+  html: ^0.15.6
 
 dev_dependencies:
   flutter_test:
