@@ -9,6 +9,9 @@ import 'package:beykoz/Pages/TeacherAttendancePage.dart';
 import 'package:beykoz/Pages/StudentAttendancePage.dart';
 
 class AttendanceScreen extends StatefulWidget {
+  final String? role;
+  const AttendanceScreen({Key? key, this.role}) : super(key: key);
+
   @override
   _AttendanceScreenState createState() => _AttendanceScreenState();
 }
