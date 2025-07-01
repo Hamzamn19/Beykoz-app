@@ -1,5 +1,5 @@
-
 import 'package:beykoz/Pages/HomePage.dart';
+import 'package:beykoz/Pages/RootPage.dart';
 import 'package:beykoz/Services/auth_service.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -42,7 +42,7 @@ class _LoginPageState extends State<LoginPage> {
         _emailController.text.trim(),
         _passwordController.text,
       );
-      // Navigation will be handled automatically by AuthWrapper
+      // Navigation yok! AuthWrapper otomatik yönlendirecek.
     } on FirebaseAuthException catch (e) {
       String errorMessage = 'An error occurred during login.';
       
@@ -274,7 +274,7 @@ class _LoginPageState extends State<LoginPage> {
       width: double.infinity,
       height: 50,
       child: ElevatedButton(
-        onPressed: _isLoading ? null : _signIn,
+        onPressed: _isLoading ? null : _handleLogin,
         style: ElevatedButton.styleFrom(
           backgroundColor: const Color(0xFF802629),
           shape: RoundedRectangleBorder(
@@ -324,9 +324,7 @@ class _LoginPageState extends State<LoginPage> {
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(
-            builder: (context) => HomeScreen(
-              username: _emailController.text.trim(),
-              password: _passwordController.text,
+            builder: (context) => RootScreen(
             ),
           ),
         );

@@ -22,9 +22,28 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   int _selectedIndex = 0;
-  late final List<Widget> _pages;
   String? _userRole;
   bool _isLoadingRole = true;
+
+  List<Widget> get _pages => [
+    DesignedHomePage(userRole: _userRole),
+    WebViewPage(
+      url: 'https://ois.beykoz.edu.tr/',
+      username: widget.username,
+      password: widget.password,
+    ),
+    WebViewPage(
+      url: 'https://online.beykoz.edu.tr',
+      username: widget.username,
+      password: widget.password,
+    ),
+    if (_userRole == 'Student')
+      AttendanceScreen(role: 'student')
+    else if (_userRole == 'Teacher')
+      AttendanceScreen(role: 'teacher')
+    else
+      AttendanceScreen(role: 'developer'),
+  ];
 
   @override
   void initState() {
@@ -78,27 +97,6 @@ class _HomeScreenState extends State<HomeScreen> {
     final isTeacher = _userRole == 'Teacher';
     final isDeveloper = _userRole == 'Developer';
 
-    _pages = <Widget>[
-      const DesignedHomePage(),
-      WebViewPage(
-        url: 'https://ois.beykoz.edu.tr/',
-        username: widget.username,
-        password: widget.password,
-      ),
-      WebViewPage(
-        url: 'https://online.beykoz.edu.tr',
-        username: widget.username,
-        password: widget.password,
-      ),
-      // Yoklama sekmesi:
-      if (isStudent)
-        AttendanceScreen(role: 'student')
-      else if (isTeacher)
-        AttendanceScreen(role: 'teacher')
-      else
-        AttendanceScreen(role: 'developer'),
-    ];
-
     return Scaffold(
       body: IndexedStack(index: _selectedIndex, children: _pages),
       bottomNavigationBar: BottomNavigationBar(
@@ -146,7 +144,8 @@ class _HomeScreenState extends State<HomeScreen> {
 
 // --- NEW HOME PAGE DESIGN WIDGET ---
 class DesignedHomePage extends StatelessWidget {
-  const DesignedHomePage({super.key});
+  final String? userRole;
+  const DesignedHomePage({super.key, this.userRole});
 
   static const Color primaryColor = Color(0xFF802629);
   static const Color cardColor = Color(0xFFECECEC);

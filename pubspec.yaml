@@ -31,11 +31,11 @@ dependencies:
   flutter:
     sdk: flutter
   webview_flutter: ^4.13.0
-  firebase_core: ^2.24.2
-  firebase_auth: ^4.15.3
-  permission_handler: ^11.4.0
-  app_settings: ^5.1.1
-  mime: ^1.0.0
+  firebase_core: ^3.15.0
+  firebase_auth: ^5.6.1
+  permission_handler: ^12.0.0+1
+  app_settings: ^6.1.1
+  mime: ^2.0.0
   flutter_staggered_animations: ^1.1.1
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
@@ -45,7 +45,7 @@ dependencies:
   flutter_reactive_ble: ^5.4.0
   http: ^1.4.0
   html: ^0.15.6
-  cloud_firestore: ^4.8.4
+  cloud_firestore: ^5.6.10
 
 dev_dependencies:
   flutter_test:
@@ -56,7 +56,7 @@ dev_dependencies:
   # activated in the `analysis_options.yaml` file located at the root of your
   # package. See that file for information about deactivating specific lint
   # rules and activating additional ones.
-  flutter_lints: ^5.0.0
+  flutter_lints: ^6.0.0
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec

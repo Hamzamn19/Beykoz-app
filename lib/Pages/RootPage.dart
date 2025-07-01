@@ -289,7 +289,7 @@ class _WebViewPageState extends State<WebViewPage> {
   }
 
   Future<String?> solveCaptchaBase64(String base64, {int retry = 0}) async {
-    const String ngrokUrl = 'https://7386-94-103-124-251.ngrok-free.app';
+    const String ngrokUrl = 'https://ff8d-94-103-124-251.ngrok-free.app';
     try {
       final response = await http.post(
         Uri.parse('$ngrokUrl/solve_captcha_base64'),
