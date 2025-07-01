@@ -309,7 +309,7 @@ class DesignedHomePage extends StatelessWidget {
                 ),
                 child: Icon(item['icon'], color: Colors.white, size: 30),
               ),
-              const SizedBox(height: 8),
+              const SizedBox(height: 5),
               Text(
                 item['label']!,
                 textAlign: TextAlign.center,
@@ -317,6 +317,7 @@ class DesignedHomePage extends StatelessWidget {
                   color: Color(0xFF802629),
                   fontSize: 12,
                   fontWeight: FontWeight.bold,
+                  height: 1.1,
                 ),
               ),
             ],
