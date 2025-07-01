@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:beykoz/Pages/HomePage.dart'; // WebViewPage'inizin doğru yolda olduğundan emin olun
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class AllFeaturesSheet extends StatefulWidget {
   const AllFeaturesSheet({super.key});
@@ -23,27 +24,27 @@ class _AllFeaturesSheetState extends State<AllFeaturesSheet> {
     {
       'label': 'Slotlar',
       'url': 'https://ois.beykoz.edu.tr/ogrenciler/ogrenci/slot',
-      'icon': ,
+      'icon': FontAwesomeIcons.calendarAlt,
     },
     {
       'label': 'Ders Seçme',
       'url': 'https://ois.beykoz.edu.tr/ogrenciler/derssecme/ogrindex',
-      'icon': ,
+      'icon': FontAwesomeIcons.tasks,
     },
     {
       'label': 'Uygulamalı Eğitim Başvurusu',
       'url': 'https://ois.beykoz.edu.tr/ogrenciler/staj/basvuruliste',
-      'icon': ,
+      'icon': FontAwesomeIcons.briefcase,
     },
     {
       'label': 'Sınav İtirazları',
       'url': 'https://ois.beykoz.edu.tr/ogrenciler/sinavitiraz/liste',
-      'icon': ,
+      'icon': FontAwesomeIcons.gavel,
     },
     {
       'label': 'Tek Ders Sınavı Başvurusu',
       'url': 'https://ois.beykoz.edu.tr/ogrenciler/derssecme/tekderssinavi',
-      'icon': ,
+      'icon': FontAwesomeIcons.fileSignature,
     },
   ];
 
@@ -51,47 +52,47 @@ class _AllFeaturesSheetState extends State<AllFeaturesSheet> {
     {
       'label': 'Transkript',
       'url': 'https://ois.beykoz.edu.tr/ogrenciler/belge/transkript',
-      'icon': ,
+      'icon': FontAwesomeIcons.fileInvoice,
     },
     {
       'label': 'Karne',
       'url': 'https://ois.beykoz.edu.tr/ogrenciler/belge/ogrkarne',
-      'icon': ,
+      'icon': FontAwesomeIcons.award,
     },
     {
       'label': 'Ders Programı',
       'url': 'https://ois.beykoz.edu.tr/ogrenciler/belge/ogrdersprogrami',
-      'icon': ,
+      'icon': FontAwesomeIcons.calendarWeek,
     },
     {
       'label': 'Hazırlık Karne',
       'url': 'https://ois.beykoz.edu.tr/hazirlik/hazirliksinav/ogrpreptranskript',
-      'icon': ,
+      'icon': FontAwesomeIcons.bookReader,
     },
     {
       'label': 'Ders Onay Belgesi',
       'url': 'https://ois.beykoz.edu.tr/ogrenciler/belge/dersdanismanonay',
-      'icon': ,
+      'icon': FontAwesomeIcons.stamp,
     },
     {
-      'label': 'kesin Kayıt belgesi',
+      'label': 'Kesin Kayıt Belgesi',
       'url': 'https://ois.beykoz.edu.tr/ogrenciler/belge/kesinkayitbelgesi',
-      'icon': ,
+      'icon': FontAwesomeIcons.idCard,
     },
     {
       'label': 'Online Belge Talep',
       'url': 'https://ois.beykoz.edu.tr/ogrenciler/belgetalep/duzenle2',
-      'icon': ,
+      'icon': FontAwesomeIcons.paperPlane,
     },
     {
       'label': 'Sınav Programı',
       'url': 'https://ois.beykoz.edu.tr/ogrenciler/belge/sinavprogrami',
-      'icon': ,
+      'icon': FontAwesomeIcons.calendarCheck,
     },
     {
       'label': 'Sınav Sonuçları',
       'url': 'https://ois.beykoz.edu.tr/ogrenciler/belge/ogrsinavsonuc',
-      'icon': ,
+      'icon': FontAwesomeIcons.poll,
     },
   ];
 
@@ -99,57 +100,57 @@ class _AllFeaturesSheetState extends State<AllFeaturesSheet> {
     {
       'label': 'Parola Değiştirme',
       'url': 'https://ois.beykoz.edu.tr/ogrenciler/ogrenci/paroladegistirme',
-      'icon': ,
+      'icon': FontAwesomeIcons.key,
     },
     {
       'label': 'GNO Hesaplama',
       'url': 'https://ois.beykoz.edu.tr/ogrenciler/belge/ogrtranskripthesap',
-      'icon': ,
+      'icon': FontAwesomeIcons.calculator,
     },
     {
       'label': 'PDR Başvuru',
       'url': 'https://ois.beykoz.edu.tr/crm/pdr/basvuru',
-      'icon': ,
+      'icon': FontAwesomeIcons.brain,
     },
     {
       'label': 'Danışman Randevu',
       'url': 'https://ois.beykoz.edu.tr/ogrenciler/ogrencirandevu',
-      'icon': ,
+      'icon': FontAwesomeIcons.handshake,
     },
     {
       'label': 'Engel Bilgileriniz',
       'url': 'https://ois.beykoz.edu.tr/ogrenciler/engelbilgileri/duzenle',
-      'icon': ,
+      'icon': FontAwesomeIcons.universalAccess,
     },
     {
       'label': 'İlişki Kesme Talebi',
       'url': 'https://ois.beykoz.edu.tr/ogrenciler/iliskikesme/beyan',
-      'icon': ,
+      'icon': FontAwesomeIcons.userSlash,
     },
     {
       'label': 'Tez/Proje Konu Seçme',
       'url': 'https://ois.beykoz.edu.tr',
-      'icon': ,
+      'icon': FontAwesomeIcons.lightbulb,
     },
     {
       'label': 'Kulüp Seç. Oy Kullan',
       'url': 'https://ois.beykoz.edu.tr/ogrenciler/kulup/secimpuanduzenle',
-      'icon': ,
+      'icon': FontAwesomeIcons.voteYea,
     },
     {
       'label': 'Kulüp Üyelik Formu',
       'url': 'https://ois.beykoz.edu.tr/ogrenciler/kulup/ogrencikulupbasvuru',
-      'icon': ,
+      'icon': FontAwesomeIcons.userPlus,
     },
     {
       'label': 'Kulüp Üyelik Kontrol',
       'url': 'https://ois.beykoz.edu.tr/ogrenciler/ogrencirandevu',
-      'icon': ,
+      'icon': FontAwesomeIcons.userCheck,
     },
     {
       'label': 'Öğr. Kulüb. Başkan Adaylık Baş.',
       'url': 'https://ois.beykoz.edu.tr/ogrenciler/kulup/secimliste',
-      'icon': ,
+      'icon': FontAwesomeIcons.userTie,
     },
   ];
 
@@ -374,8 +375,9 @@ class _AllFeaturesSheetState extends State<AllFeaturesSheet> {
                                 ),
                               ],
                             ),
+                            // İKON BURADA KULLANILIYOR
                             child: Icon(
-                              item['icon'],
+                              item['icon'], // Veri listesinden gelen ikonu kullanır
                               color: Colors.white,
                               size: 30,
                             ),

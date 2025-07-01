@@ -108,7 +108,7 @@ class DesignedHomePage extends StatelessWidget {
                   padding: const EdgeInsets.symmetric(vertical: 12),
                 ),
                 child: const Text(
-                  'DİĞER',
+                  'TÜMÜ',
                   style: TextStyle(fontSize: 18, color: Color(0xFF802629)),
                 ),
               ),
@@ -214,42 +214,42 @@ class DesignedHomePage extends StatelessWidget {
       {
         'label': 'Transkript',
         'url': 'https://ois.beykoz.edu.tr/ogrenciler/belge/transkript',
-        'icon': Icons.assignment_turned_in,
+        'icon': FontAwesomeIcons.fileInvoice, // DEĞİŞTİRİLDİ
       },
       {
         'label': 'Karne',
         'url': 'https://ois.beykoz.edu.tr/ogrenciler/belge/ogrkarne',
-        'icon': Icons.grade,
+        'icon': FontAwesomeIcons.award, // DEĞİŞTİRİLDİ
       },
       {
         'label': 'Ders Programı',
         'url': 'https://ois.beykoz.edu.tr/ogrenciler/belge/ogrdersprogrami',
-        'icon': Icons.calendar_today,
+        'icon': FontAwesomeIcons.calendarWeek, // DEĞİŞTİRİLDİ
       },
       {
         'label': 'Hazırlık Karne',
         'url': 'https://ois.beykoz.edu.tr/hazirlik/hazirliksinav/ogrpreptranskript',
-        'icon': Icons.school,
+        'icon': FontAwesomeIcons.bookReader, // DEĞİŞTİRİLDİ
       },
       {
         'label': 'Ders Onay Belgesi',
         'url': 'https://ois.beykoz.edu.tr/ogrenciler/belge/dersdanismanonay',
-        'icon': Icons.verified_user,
+        'icon': FontAwesomeIcons.stamp, // DEĞİŞTİRİLDİ
       },
       {
         'label': 'Kesin Kayıt Belgesi',
         'url': 'https://ois.beykoz.edu.tr/ogrenciler/belge/kesinkayitbelgesi',
-        'icon': Icons.how_to_reg,
+        'icon': FontAwesomeIcons.idCard, // DEĞİŞTİRİLDİ
       },
       {
         'label': 'Online Belge Talep',
         'url': 'https://ois.beykoz.edu.tr/ogrenciler/belgetalep/duzenle2',
-        'icon': Icons.description,
+        'icon': FontAwesomeIcons.paperPlane, // DEĞİŞTİRİLDİ
       },
       {
         'label': 'Sınav Programı',
         'url': 'https://ois.beykoz.edu.tr/ogrenciler/belge/sinavprogrami',
-        'icon': Icons.schedule,
+        'icon': FontAwesomeIcons.calendarCheck, // DEĞİŞTİRİLDİ
       },
     ];
 
