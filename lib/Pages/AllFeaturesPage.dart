@@ -21,91 +21,135 @@ class _AllFeaturesSheetState extends State<AllFeaturesSheet> {
   // VERİ LİSTELERİ
   final List<Map<String, dynamic>> dersIslemleriFeatures = [
     {
-      'label': 'Transkript',
-      'url': 'https://ois.beykoz.edu.tr/ogrenciler/belge/transkript',
-      'icon': Icons.assignment_turned_in,
+      'label': 'Slotlar',
+      'url': 'https://ois.beykoz.edu.tr/ogrenciler/ogrenci/slot',
+      'icon': ,
     },
     {
-      'label': 'Karne',
-      'url': 'https://ois.beykoz.edu.tr/ogrenciler/belge/ogrkarne',
-      'icon': Icons.grade,
+      'label': 'Ders Seçme',
+      'url': 'https://ois.beykoz.edu.tr/ogrenciler/derssecme/ogrindex',
+      'icon': ,
     },
     {
-      'label': 'Ders Programı',
-      'url': 'https://ois.beykoz.edu.tr/ogrenciler/belge/ogrdersprogrami',
-      'icon': Icons.calendar_today,
+      'label': 'Uygulamalı Eğitim Başvurusu',
+      'url': 'https://ois.beykoz.edu.tr/ogrenciler/staj/basvuruliste',
+      'icon': ,
     },
     {
-      'label': 'Hazırlık Karne',
-      'url': 'https://ois.beykoz.edu.tr/hazirlik/hazirliksinav/ogrpreptranskript',
-      'icon': Icons.school,
+      'label': 'Sınav İtirazları',
+      'url': 'https://ois.beykoz.edu.tr/ogrenciler/sinavitiraz/liste',
+      'icon': ,
     },
     {
-      'label': 'Ders Onay Belgesi',
-      'url': 'https://ois.beykoz.edu.tr/ogrenciler/belge/dersdanismanonay',
-      'icon': Icons.verified_user,
-    },
-    {
-      'label': 'Kesin Kayıt Belgesi',
-      'url': 'https://ois.beykoz.edu.tr/ogrenciler/belge/kesinkayitbelgesi',
-      'icon': Icons.how_to_reg,
-    },
-    {
-      'label': 'Online Belge Talep',
-      'url': 'https://ois.beykoz.edu.tr/ogrenciler/belgetalep/duzenle2',
-      'icon': Icons.description,
-    },
-    {
-      'label': 'Sınav Programı',
-      'url': 'https://ois.beykoz.edu.tr/ogrenciler/belge/sinavprogrami',
-      'icon': Icons.schedule,
+      'label': 'Tek Ders Sınavı Başvurusu',
+      'url': 'https://ois.beykoz.edu.tr/ogrenciler/derssecme/tekderssinavi',
+      'icon': ,
     },
   ];
 
   final List<Map<String, dynamic>> belgelerFeatures = [
     {
-      'label': 'Ders Seçimi',
-      'url': 'https://ois.beykoz.edu.tr/ogrenciler/derssecim/derssecimv2',
-      'icon': Icons.rule,
+      'label': 'Transkript',
+      'url': 'https://ois.beykoz.edu.tr/ogrenciler/belge/transkript',
+      'icon': ,
     },
     {
-      'label': 'Notlarım',
-      'url': 'https://ois.beykoz.edu.tr/ogrenciler/ders/notlistesi',
-      'icon': Icons.grading,
+      'label': 'Karne',
+      'url': 'https://ois.beykoz.edu.tr/ogrenciler/belge/ogrkarne',
+      'icon': ,
     },
     {
-      'label': 'Devamsızlık',
-      'url': 'https://ois.beykoz.edu.tr/ogrenciler/ders/devamsizlik',
-      'icon': Icons.person_off,
+      'label': 'Ders Programı',
+      'url': 'https://ois.beykoz.edu.tr/ogrenciler/belge/ogrdersprogrami',
+      'icon': ,
     },
     {
-      'label': 'Müfredat',
-      'url': 'https://ois.beykoz.edu.tr/ogrenciler/ders/mufredat',
-      'icon': Icons.list_alt,
+      'label': 'Hazırlık Karne',
+      'url': 'https://ois.beykoz.edu.tr/hazirlik/hazirliksinav/ogrpreptranskript',
+      'icon': ,
+    },
+    {
+      'label': 'Ders Onay Belgesi',
+      'url': 'https://ois.beykoz.edu.tr/ogrenciler/belge/dersdanismanonay',
+      'icon': ,
+    },
+    {
+      'label': 'kesin Kayıt belgesi',
+      'url': 'https://ois.beykoz.edu.tr/ogrenciler/belge/kesinkayitbelgesi',
+      'icon': ,
+    },
+    {
+      'label': 'Online Belge Talep',
+      'url': 'https://ois.beykoz.edu.tr/ogrenciler/belgetalep/duzenle2',
+      'icon': ,
+    },
+    {
+      'label': 'Sınav Programı',
+      'url': 'https://ois.beykoz.edu.tr/ogrenciler/belge/sinavprogrami',
+      'icon': ,
+    },
+    {
+      'label': 'Sınav Sonuçları',
+      'url': 'https://ois.beykoz.edu.tr/ogrenciler/belge/ogrsinavsonuc',
+      'icon': ,
     },
   ];
 
   final List<Map<String, dynamic>> digerIslemlerFeatures = [
     {
-      'label': 'Akademik Takvim',
-      'url': 'https://www.beykoz.edu.tr/akademik-takvim/',
-      'icon': Icons.date_range,
+      'label': 'Parola Değiştirme',
+      'url': 'https://ois.beykoz.edu.tr/ogrenciler/ogrenci/paroladegistirme',
+      'icon': ,
     },
     {
-      'label': 'Yemekhane Menüsü',
-      'url':
-      'https://www.beykoz.edu.tr/idari-birimler/destek-hizmetleri-daire-baskanligi/yemekhane-hizmetleri/',
-      'icon': Icons.fastfood,
+      'label': 'GNO Hesaplama',
+      'url': 'https://ois.beykoz.edu.tr/ogrenciler/belge/ogrtranskripthesap',
+      'icon': ,
     },
     {
-      'label': 'Servis Saatleri',
-      'url': 'https://www.beykoz.edu.tr/ulasim/',
-      'icon': Icons.directions_bus,
+      'label': 'PDR Başvuru',
+      'url': 'https://ois.beykoz.edu.tr/crm/pdr/basvuru',
+      'icon': ,
     },
     {
-      'label': 'Kütüphane',
-      'url': 'https://kutuphane.beykoz.edu.tr/',
-      'icon': Icons.local_library,
+      'label': 'Danışman Randevu',
+      'url': 'https://ois.beykoz.edu.tr/ogrenciler/ogrencirandevu',
+      'icon': ,
+    },
+    {
+      'label': 'Engel Bilgileriniz',
+      'url': 'https://ois.beykoz.edu.tr/ogrenciler/engelbilgileri/duzenle',
+      'icon': ,
+    },
+    {
+      'label': 'İlişki Kesme Talebi',
+      'url': 'https://ois.beykoz.edu.tr/ogrenciler/iliskikesme/beyan',
+      'icon': ,
+    },
+    {
+      'label': 'Tez/Proje Konu Seçme',
+      'url': 'https://ois.beykoz.edu.tr',
+      'icon': ,
+    },
+    {
+      'label': 'Kulüp Seç. Oy Kullan',
+      'url': 'https://ois.beykoz.edu.tr/ogrenciler/kulup/secimpuanduzenle',
+      'icon': ,
+    },
+    {
+      'label': 'Kulüp Üyelik Formu',
+      'url': 'https://ois.beykoz.edu.tr/ogrenciler/kulup/ogrencikulupbasvuru',
+      'icon': ,
+    },
+    {
+      'label': 'Kulüp Üyelik Kontrol',
+      'url': 'https://ois.beykoz.edu.tr/ogrenciler/ogrencirandevu',
+      'icon': ,
+    },
+    {
+      'label': 'Öğr. Kulüb. Başkan Adaylık Baş.',
+      'url': 'https://ois.beykoz.edu.tr/ogrenciler/kulup/secimliste',
+      'icon': ,
     },
   ];
 
