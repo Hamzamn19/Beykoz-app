@@ -18,13 +18,8 @@ class _AllFeaturesSheetState extends State<AllFeaturesSheet> {
   // Sayfanın tam ekran olup olmadığını takip eden durum değişkeni
   bool _isFullyExpanded = false;
 
-  // ANİMASYON KEY'LERİ
-  Key _belgelerAnimationKey = UniqueKey();
-  Key _dersAnimationKey = UniqueKey();
-  Key _digerAnimationKey = UniqueKey();
-
   // VERİ LİSTELERİ
-  final List<Map<String, dynamic>> belgelerFeatures = [
+  final List<Map<String, dynamic>> dersIslemleriFeatures = [
     {
       'label': 'Transkript',
       'url': 'https://ois.beykoz.edu.tr/ogrenciler/belge/transkript',
@@ -67,7 +62,7 @@ class _AllFeaturesSheetState extends State<AllFeaturesSheet> {
     },
   ];
 
-  final List<Map<String, dynamic>> dersIslemleriFeatures = [
+  final List<Map<String, dynamic>> belgelerFeatures = [
     {
       'label': 'Ders Seçimi',
       'url': 'https://ois.beykoz.edu.tr/ogrenciler/derssecim/derssecimv2',
@@ -127,15 +122,14 @@ class _AllFeaturesSheetState extends State<AllFeaturesSheet> {
                 _isBelgelerExpanded = true;
                 _isDersExpanded = true;
                 _isDigerExpanded = true;
-                _belgelerAnimationKey = UniqueKey();
-                _dersAnimationKey = UniqueKey();
-                _digerAnimationKey = UniqueKey();
+                // DEĞİŞİKLİK: Key'leri yeniden atayan satırlar kaldırıldı.
+                // Animasyonun yeniden tetiklenmesini engellemek için bu adımı atıyoruz.
               });
             }
           });
         }
         // EŞİK 2: Sayfa tam ekrandan indi mi?
-        else if (notification.extent < 0.99 && _isFullyExpanded) {
+        else if (notification.extent < 0.61 && _isFullyExpanded) {
           WidgetsBinding.instance.addPostFrameCallback((_) {
             if (mounted) {
               setState(() {
@@ -143,9 +137,7 @@ class _AllFeaturesSheetState extends State<AllFeaturesSheet> {
                 _isBelgelerExpanded = false;
                 _isDersExpanded = false;
                 _isDigerExpanded = false;
-                _belgelerAnimationKey = UniqueKey();
-                _dersAnimationKey = UniqueKey();
-                _digerAnimationKey = UniqueKey();
+                // DEĞİŞİKLİK: Key'leri yeniden atayan satırlar buradan da kaldırıldı.
               });
             }
           });
@@ -205,28 +197,25 @@ class _AllFeaturesSheetState extends State<AllFeaturesSheet> {
                     ),
                   ),
                 ),
-                _buildFeatureSection(
-                  title: 'Belgeler',
-                  features: belgelerFeatures,
-                  isExpanded: _isBelgelerExpanded,
-                  animationKey: _belgelerAnimationKey,
-                  onToggle: () {
-                    setState(() {
-                      _isBelgelerExpanded = !_isBelgelerExpanded;
-                      _belgelerAnimationKey = UniqueKey();
-                    });
-                  },
-                ),
                 const SizedBox(height: 16),
                 _buildFeatureSection(
                   title: 'Ders İşlemleri',
                   features: dersIslemleriFeatures,
                   isExpanded: _isDersExpanded,
-                  animationKey: _dersAnimationKey,
                   onToggle: () {
                     setState(() {
                       _isDersExpanded = !_isDersExpanded;
-                      _dersAnimationKey = UniqueKey();
+                    });
+                  },
+                ),
+                const SizedBox(height: 16),
+                _buildFeatureSection(
+                  title: 'Belgeler',
+                  features: belgelerFeatures,
+                  isExpanded: _isBelgelerExpanded,
+                  onToggle: () {
+                    setState(() {
+                      _isBelgelerExpanded = !_isBelgelerExpanded;
                     });
                   },
                 ),
@@ -235,11 +224,9 @@ class _AllFeaturesSheetState extends State<AllFeaturesSheet> {
                   title: 'Diğer İşlemler',
                   features: digerIslemlerFeatures,
                   isExpanded: _isDigerExpanded,
-                  animationKey: _digerAnimationKey,
                   onToggle: () {
                     setState(() {
                       _isDigerExpanded = !_isDigerExpanded;
-                      _digerAnimationKey = UniqueKey();
                     });
                   },
                 ),
@@ -256,9 +243,9 @@ class _AllFeaturesSheetState extends State<AllFeaturesSheet> {
     required String title,
     required List<Map<String, dynamic>> features,
     required bool isExpanded,
-    required Key animationKey,
     required VoidCallback onToggle,
   }) {
+    // DEĞİŞİKLİK: animationKey parametresi artık gerekli değil.
     final bool canExpand = features.length > 4;
 
     return ClipRRect(
@@ -286,7 +273,6 @@ class _AllFeaturesSheetState extends State<AllFeaturesSheet> {
                 ),
               ),
               AnimationLimiter(
-                key: animationKey,
                 child: GridView.builder(
                   shrinkWrap: true,
                   physics: const NeverScrollableScrollPhysics(),
@@ -303,77 +289,94 @@ class _AllFeaturesSheetState extends State<AllFeaturesSheet> {
                       : (canExpand ? 4 : features.length),
                   itemBuilder: (context, index) {
                     final item = features[index];
-                    return AnimationConfiguration.staggeredGrid(
-                      position: index,
-                      duration: const Duration(milliseconds: 375),
-                      columnCount: 4,
-                      child: ScaleAnimation(
-                        child: FadeInAnimation(
-                          child: InkWell(
-                            onTap: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => WebViewPage(
-                                    url: item['url']!,
-                                    username: null,
-                                    password: null,
-                                  ),
-                                ),
-                              );
-                            },
-                            borderRadius: BorderRadius.circular(16),
-                            child: Column(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Container(
-                                  width: 56.75,
-                                  height: 56.75,
-                                  decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(12),
-                                    gradient: const LinearGradient(
-                                      colors: [
-                                        Color(0xFF802629),
-                                        Color(0xFFB2453C),
-                                      ],
-                                      begin: Alignment.topLeft,
-                                      end: Alignment.bottomRight,
-                                    ),
-                                    boxShadow: [
-                                      BoxShadow(
-                                        color: Colors.black12,
-                                        blurRadius: 6,
-                                        offset: const Offset(0, 2),
-                                      ),
-                                    ],
-                                  ),
-                                  child: Icon(
-                                    item['icon'],
-                                    color: Colors.white,
-                                    size: 30,
-                                  ),
-                                ),
-                                const SizedBox(height: 5),
-                                Flexible(
-                                  child: Text(
-                                    item['label']!,
-                                    textAlign: TextAlign.center,
-                                    style: const TextStyle(
-                                      color: Color(0xFF802629),
-                                      fontSize: 12,
-                                      fontWeight: FontWeight.bold,
-                                      height: 1.1,
-                                    ),
-                                    overflow: TextOverflow.ellipsis,
-                                    maxLines: 2,
-                                  ),
+
+                    // AÇIKLAMA: Bu, `GridView` içindeki her bir öğenin temel widget'ıdır.
+                    // Animasyonlu veya animasyonsuz olarak sarmalanacaktır.
+                    Widget featureItem = InkWell(
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => WebViewPage(
+                              url: item['url']!,
+                              username: null,
+                              password: null,
+                            ),
+                          ),
+                        );
+                      },
+                      borderRadius: BorderRadius.circular(16),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Container(
+                            width: 56.75,
+                            height: 56.75,
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(12),
+                              gradient: const LinearGradient(
+                                colors: [
+                                  Color(0xFF802629),
+                                  Color(0xFFB2453C),
+                                ],
+                                begin: Alignment.topLeft,
+                                end: Alignment.bottomRight,
+                              ),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.black12,
+                                  blurRadius: 6,
+                                  offset: const Offset(0, 2),
                                 ),
                               ],
                             ),
+                            child: Icon(
+                              item['icon'],
+                              color: Colors.white,
+                              size: 30,
+                            ),
                           ),
-                        ),
+                          const SizedBox(height: 5),
+                          Flexible(
+                            child: Text(
+                              item['label']!,
+                              textAlign: TextAlign.center,
+                              style: const TextStyle(
+                                color: Color(0xFF802629),
+                                fontSize: 12,
+                                fontWeight: FontWeight.bold,
+                                height: 1.1,
+                              ),
+                              overflow: TextOverflow.ellipsis,
+                              maxLines: 2,
+                            ),
+                          ),
+                        ],
                       ),
                     );
+
+                    // DEĞİŞİKLİK: Animasyonun uygulanıp uygulanmayacağını belirleyen koşul.
+                    // Koşul: Sayfa tam ekran DEĞİLSE veya öğenin indeksi 4'ten BÜYÜK veya EŞİTSE animasyon uygula.
+                    final bool shouldAnimate = !_isFullyExpanded || index >= 4;
+
+                    if (shouldAnimate) {
+                      // AÇIKLAMA: Koşul sağlandığında, öğeyi animasyon widget'ları ile sarmala.
+                      // Bu, ilk açılışta ve sayfa genişlediğinde yeni gelen öğeler için çalışır.
+                      return AnimationConfiguration.staggeredGrid(
+                        position: index,
+                        duration: const Duration(milliseconds: 375),
+                        columnCount: 4,
+                        child: ScaleAnimation(
+                          child: FadeInAnimation(
+                            child: featureItem,
+                          ),
+                        ),
+                      );
+                    } else {
+                      // AÇIKLAMA: Sayfa tam ekran olduğunda ilk 4 öğe için bu blok çalışır.
+                      // Öğeyi animasyonsuz, doğrudan döndürür.
+                      return featureItem;
+                    }
                   },
                 ),
               ),
