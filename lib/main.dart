@@ -23,7 +23,7 @@ class MyApp extends StatelessWidget {
         debugShowCheckedModeBanner: false, // Debug bandını kaldırır
         title: 'Beykoz App',
         theme: ThemeData.light(),
-        home: const RootScreen(),
+        home: const AuthWrapper(),
         routes: {
           '/login': (context) => const LoginPage(),
           // Add other named routes here if needed
