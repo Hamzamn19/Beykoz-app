@@ -1,12 +1,10 @@
 import 'package:beykoz/Pages/LoginPage.dart';
 import 'package:beykoz/Pages/RootPage.dart';
-import 'package:beykoz/Pages/HomePage.dart';
 import 'package:beykoz/Services/auth_service.dart';
 import 'package:beykoz/Services/firebase_options.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:provider/provider.dart';
-import 'AuthWrapper.dart';
 
 
 void main() async {
@@ -27,11 +25,18 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      home: const AuthWrapper(),
-      routes: {
-        '/login': (context) => const LoginPage(),
-      },
+    return ChangeNotifierProvider(
+      create: (context) => AuthService(),
+      child: MaterialApp(
+        debugShowCheckedModeBanner: false, // Debug bandını kaldırır
+        title: 'Beykoz App',
+        theme: ThemeData.light(),
+        home: const AuthWrapper(),
+        routes: {
+          '/login': (context) => const LoginPage(),
+          // Add other named routes here if needed
+        },
+      ),
     );
   }
 }
