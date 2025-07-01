@@ -230,14 +230,28 @@ class _AllFeaturesSheetState extends State<AllFeaturesSheet> {
                   ),
                 ),
                 Padding(
-                  padding: const EdgeInsets.only(bottom: 16.0, top: 5.0), // Üst ve alt boşlukları ayarladık.
-                  child: Center(
-                    child: Image.asset(
-                      'assets/images/logo.png',
-                      height: 46, // Logonun yüksekliğini buradan ayarlayabilirsiniz.
-                      fit: BoxFit.contain, // Resmin alana sığmasını sağlar.
+                  padding: const EdgeInsets.only(bottom: 16.0, top: 5.0),
+                  // DEĞİŞİKLİK BURADA BAŞLIYOR
+                  child: GestureDetector( // Logoyu tıklanabilir yapmak için GestureDetector eklendi
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const WebViewPage(
+                            url: 'https://www.beykoz.edu.tr/', // Hedef URL
+                          ),
+                        ),
+                      );
+                    },
+                    child: Center( // Center widget'ı GestureDetector'ın içine alındı
+                      child: Image.asset(
+                        'assets/images/logo.png',
+                        height: 46,
+                        fit: BoxFit.contain,
+                      ),
                     ),
                   ),
+                  // DEĞİŞİKLİK BURADA BİTİYOR
                 ),
                 const SizedBox(height: 5),
                 _buildFeatureSection(
