@@ -4,12 +4,16 @@ import 'package:flutter/material.dart';
 class AuthService extends ChangeNotifier {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   User? _user;
+  bool _isLoading = false;
 
   User? get user => _user;
+  bool get isLoading => _isLoading; // تأكد من وجود هذا السطر
 
   AuthService() {
+    _isLoading = true;
     _auth.authStateChanges().listen((User? user) {
       _user = user;
+      _isLoading = false;
       notifyListeners();
     });
   }
@@ -29,13 +33,19 @@ class AuthService extends ChangeNotifier {
     String password,
   ) async {
     try {
+      _isLoading = true; // <-- عند بدء تسجيل الدخول
+      notifyListeners();
       final UserCredential userCredential =
           await _auth.signInWithEmailAndPassword(
         email: email,
         password: password,
       );
+      _isLoading = false; // <-- عند الانتهاء
+      notifyListeners();
       return userCredential;
     } on FirebaseAuthException catch (e) {
+      _isLoading = false; // <-- عند الخطأ
+      notifyListeners();
       rethrow;
     }
   }
@@ -43,8 +53,14 @@ class AuthService extends ChangeNotifier {
   // Sign out
   Future<void> signOut() async {
     try {
+      _isLoading = true; // <-- عند بدء تسجيل الخروج
+      notifyListeners();
       await _auth.signOut();
+      _isLoading = false; // <-- عند الانتهاء
+      notifyListeners();
     } catch (e) {
+      _isLoading = false;
+      notifyListeners();
       rethrow;
     }
   }
@@ -58,4 +74,4 @@ class AuthService extends ChangeNotifier {
   bool isAuthenticated() {
     return _auth.currentUser != null;
   }
-} 
+}
