@@ -3,6 +3,7 @@ import 'package:webview_flutter/webview_flutter.dart';
 import 'package:beykoz/Pages/AttendancePage.dart';
 import 'package:beykoz/Pages/ProfilePage.dart'; // Make sure this path is correct
 import 'package:beykoz/Pages/AllFeaturesPage.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart'; // will be used for the logo
 
 // Main widget containing the home screen and Bottom Navigation Bar logic
 class HomeScreen extends StatefulWidget {
@@ -49,12 +50,12 @@ class _HomeScreenState extends State<HomeScreen> {
       body: IndexedStack(index: _selectedIndex, children: _pages),
       bottomNavigationBar: BottomNavigationBar(
         items: const <BottomNavigationBarItem>[
-          BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
+          BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Ana Sayfa'),
           BottomNavigationBarItem(icon: Icon(Icons.web), label: 'OIS'),
           BottomNavigationBarItem(icon: Icon(Icons.login), label: 'Online'),
           BottomNavigationBarItem(
             icon: Icon(Icons.check_circle),
-            label: 'Attendance',
+            label: 'Yoklama',
           ),
         ],
         currentIndex: _selectedIndex,
@@ -86,7 +87,7 @@ class DesignedHomePage extends StatelessWidget {
             children: [
               _buildTopButtons(context),
               const SizedBox(height: 24),
-              _buildSectionTitle('FREQUENTLY USED'),
+              _buildSectionTitle('SIK KULLANILANLAR'),
               const SizedBox(height: 12),
               _buildFrequentlyUsedGrid(),
               const SizedBox(height: 16),
@@ -107,12 +108,12 @@ class DesignedHomePage extends StatelessWidget {
                   padding: const EdgeInsets.symmetric(vertical: 12),
                 ),
                 child: const Text(
-                  'ALL',
+                  'DİĞER',
                   style: TextStyle(fontSize: 18, color: Color(0xFF802629)),
                 ),
               ),
               const SizedBox(height: 24),
-              _buildSectionTitle('ANNOUNCEMENTS'),
+              _buildSectionTitle('DUYURULAR'),
               const SizedBox(height: 12),
               _buildAnnouncementCard(),
               const SizedBox(height: 16),
@@ -131,7 +132,7 @@ class DesignedHomePage extends StatelessWidget {
           flex: 3,
           child: GestureDetector(
             onTap: () {
-              print('Logo tapped!');
+              print('Görsel butona tıklandı!');
             },
             child: Align(
               alignment: Alignment.centerLeft,
@@ -211,43 +212,42 @@ class DesignedHomePage extends StatelessWidget {
   Widget _buildFrequentlyUsedGrid() {
     final List<Map<String, dynamic>> frequentlyUsed = [
       {
-        'label': 'Transcript',
+        'label': 'Transkript',
         'url': 'https://ois.beykoz.edu.tr/ogrenciler/belge/transkript',
         'icon': Icons.assignment_turned_in,
       },
       {
-        'label': 'Report Card',
+        'label': 'Karne',
         'url': 'https://ois.beykoz.edu.tr/ogrenciler/belge/ogrkarne',
         'icon': Icons.grade,
       },
       {
-        'label': 'Course Schedule',
+        'label': 'Ders Programı',
         'url': 'https://ois.beykoz.edu.tr/ogrenciler/belge/ogrdersprogrami',
         'icon': Icons.calendar_today,
       },
       {
-        'label': 'Prep Transcript',
-        'url':
-            'https://ois.beykoz.edu.tr/hazirlik/hazirliksinav/ogrpreptranskript',
+        'label': 'Hazırlık Karne',
+        'url': 'https://ois.beykoz.edu.tr/hazirlik/hazirliksinav/ogrpreptranskript',
         'icon': Icons.school,
       },
       {
-        'label': 'Approval Certificate',
+        'label': 'Ders Onay Belgesi',
         'url': 'https://ois.beykoz.edu.tr/ogrenciler/belge/dersdanismanonay',
         'icon': Icons.verified_user,
       },
       {
-        'label': 'Registration Doc',
+        'label': 'Kesin Kayıt Belgesi',
         'url': 'https://ois.beykoz.edu.tr/ogrenciler/belge/kesinkayitbelgesi',
         'icon': Icons.how_to_reg,
       },
       {
-        'label': 'Online Document',
+        'label': 'Online Belge Talep',
         'url': 'https://ois.beykoz.edu.tr/ogrenciler/belgetalep/duzenle2',
         'icon': Icons.description,
       },
       {
-        'label': 'Exam Schedule',
+        'label': 'Sınav Programı',
         'url': 'https://ois.beykoz.edu.tr/ogrenciler/belge/sinavprogrami',
         'icon': Icons.schedule,
       },
@@ -437,7 +437,7 @@ class _WebViewPageState extends State<WebViewPage>
                 });
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
-                    content: Text('Could not load page: ${error.description}'),
+                    content: Text('Sayfa yüklenemedi: ${error.description}'),
                   ),
                 );
               }
