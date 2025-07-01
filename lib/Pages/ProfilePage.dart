@@ -6,7 +6,7 @@ import 'package:webview_flutter/webview_flutter.dart';
 import 'dart:developer' as developer;
 import 'package:beykoz/Pages/LoginPage.dart';
 
-// Student data model (no changes)
+// 💡 CHANGE 1: Student data model updated to include GPA
 class Student {
   final String studentId;
   final String nameSurname;
@@ -14,6 +14,7 @@ class Student {
   final String faculty;
   final String email;
   final String phoneNumber;
+  final String gpa; // Added GPA field
   String profileImageUrl;
 
   Student({
@@ -23,6 +24,7 @@ class Student {
     required this.faculty,
     required this.email,
     required this.phoneNumber,
+    required this.gpa, // Added to constructor
     this.profileImageUrl = '',
   });
 
@@ -34,6 +36,7 @@ class Student {
       department: json['department'] ?? 'Not Available',
       email: json['email'] ?? 'Not Available',
       phoneNumber: json['phoneNumber'] ?? 'Not Available',
+      gpa: json['gpa'] ?? 'N/A', // Handle new GPA field
       profileImageUrl: json['profileImageUrl'] ?? '',
     );
   }
@@ -69,7 +72,6 @@ class _ProfilePageState extends State<ProfilePage> {
       _error = null;
     });
 
-    // Use cache if available and not forced to refresh
     if (!forceRefresh && _cachedStudent != null) {
       setState(() {
         _student = _cachedStudent;
@@ -88,14 +90,14 @@ class _ProfilePageState extends State<ProfilePage> {
 
       if (result != null) {
         final student = Student.fromJson(result);
-        _cachedStudent = student; // Cache the student data
+        _cachedStudent = student;
         setState(() {
           _student = student;
           _isLoading = false;
         });
       } else {
         setState(() {
-          _error = 'Data fetching was cancelled by the user.';
+          _error = 'Data fetching was cancelled or failed.';
           _isLoading = false;
         });
       }
@@ -117,7 +119,6 @@ class _ProfilePageState extends State<ProfilePage> {
     }
   }
 
-  // Helper function to handle the Base64 profile image
   ImageProvider _getProfileImage(String imageUrl) {
     if (imageUrl.startsWith('data:image')) {
       try {
@@ -127,10 +128,7 @@ class _ProfilePageState extends State<ProfilePage> {
           return MemoryImage(imageBytes);
         }
       } catch (e) {
-        developer.log(
-          "Error decoding Base64 image: $e",
-          name: 'ImageProcessing',
-        );
+        developer.log("Error decoding Base64 image: $e", name: 'ImageProcessing');
       }
     }
     return const AssetImage('assets/images/default_avatar.png');
@@ -149,7 +147,6 @@ class _ProfilePageState extends State<ProfilePage> {
     );
   }
 
-  // This new build method decides what to show based on the state
   Widget _buildBody() {
     if (_isLoading) {
       return const Center(
@@ -183,26 +180,18 @@ class _ProfilePageState extends State<ProfilePage> {
                   style: ElevatedButton.styleFrom(
                     backgroundColor: universityColor,
                     foregroundColor: Colors.white,
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 32,
-                      vertical: 12,
-                    ),
+                    padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 12),
                   ),
                 ),
                 const SizedBox(height: 24),
                 Row(
                   children: [
                     Expanded(
-                      child: _buildActionButton(
-                        'Settings',
-                        Icons.settings,
-                            () {
-                          // Settings butonu için örnek fonksiyon
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(content: Text('Settings pressed')),
-                          );
-                        },
-                      ),
+                      child: _buildActionButton('Settings', Icons.settings, () {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(content: Text('Settings pressed')),
+                        );
+                      }),
                     ),
                     const SizedBox(width: 15),
                     Expanded(
@@ -228,11 +217,9 @@ class _ProfilePageState extends State<ProfilePage> {
       return _buildProfileView(_student!);
     }
 
-    // Fallback case (e.g., user cancelled)
     return const Center(child: Text('Could not load profile data.'));
   }
 
-  // This widget builds the main profile screen layout (no changes from before)
   Widget _buildProfileView(Student student) {
     return CustomScrollView(
       slivers: [
@@ -272,9 +259,7 @@ class _ProfilePageState extends State<ProfilePage> {
                         backgroundColor: Colors.white,
                         child: CircleAvatar(
                           radius: 55,
-                          backgroundImage: _getProfileImage(
-                            student.profileImageUrl,
-                          ),
+                          backgroundImage: _getProfileImage(student.profileImageUrl),
                           backgroundColor: Colors.grey[200],
                         ),
                       ),
@@ -319,9 +304,10 @@ class _ProfilePageState extends State<ProfilePage> {
                   ),
                   const SizedBox(width: 15),
                   Expanded(
+                    // 💡 CHANGE 2: Using student's GPA data instead of a fixed value
                     child: _buildStatCard(
-                      'GPA',
-                      '3.45',
+                      'CGPA', // Label changed to CGPA (or AGNO in TR)
+                      student.gpa, // Use the dynamic GPA from the student object
                       Icons.trending_up,
                       lightUniversityColor,
                     ),
@@ -368,13 +354,7 @@ class _ProfilePageState extends State<ProfilePage> {
               const SizedBox(height: 30),
               Row(
                 children: [
-                  Expanded(
-                    child: _buildActionButton(
-                      'Settings',
-                      Icons.settings,
-                          () {},
-                    ),
-                  ),
+                  Expanded(child: _buildActionButton('Settings', Icons.settings, () {})),
                   const SizedBox(width: 15),
                   Expanded(
                     child: _buildActionButton('Logout', Icons.logout, () async {
@@ -388,7 +368,6 @@ class _ProfilePageState extends State<ProfilePage> {
                 ],
               ),
               const SizedBox(height: 20),
-              // Add extra bottom padding to avoid being hidden by the bottom navigation bar
               const SizedBox(height: 80),
             ]),
           ),
@@ -397,12 +376,7 @@ class _ProfilePageState extends State<ProfilePage> {
     );
   }
 
-  Widget _buildStatCard(
-      String title,
-      String value,
-      IconData icon,
-      Color color,
-      ) {
+  Widget _buildStatCard(String title, String value, IconData icon, Color color) {
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
@@ -512,34 +486,23 @@ class _ProfilePageState extends State<ProfilePage> {
   }
 
   Widget _buildActionButton(
-      String title,
-      IconData icon,
-      VoidCallback onPressed, {
-        bool isDestructive = false,
-      }) {
+      String title, IconData icon, VoidCallback onPressed, {bool isDestructive = false}) {
     return SizedBox(
       height: 55,
       child: ElevatedButton(
         onPressed: onPressed,
         style: ElevatedButton.styleFrom(
-          backgroundColor: isDestructive
-              ? Colors.red.shade50
-              : universityColor.withOpacity(0.1),
+          backgroundColor: isDestructive ? Colors.red.shade50 : universityColor.withOpacity(0.1),
           foregroundColor: isDestructive ? Colors.red : universityColor,
           elevation: 0,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(16),
-          ),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Icon(icon, size: 22),
             const SizedBox(width: 8),
-            Text(
-              title,
-              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
-            ),
+            Text(title, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
           ],
         ),
       ),
@@ -547,6 +510,7 @@ class _ProfilePageState extends State<ProfilePage> {
   }
 }
 
+// 💡 CHANGE 3: The data scraper is heavily modified for two-step scraping
 class ProfileDataScraper extends StatefulWidget {
   @override
   _ProfileDataScraperState createState() => _ProfileDataScraperState();
@@ -558,9 +522,8 @@ class _ProfileDataScraperState extends State<ProfileDataScraper> {
   bool _hasError = false;
   String? _errorMessage;
 
-  // Add a timeout duration for scraping (e.g., 40 seconds)
-  static const Duration scrapeTimeout = Duration(seconds: 40);
-  bool _scrapeStarted = false;
+  // This map will temporarily hold the profile data while we fetch the GPA
+  Map<String, dynamic>? _scrapedProfileData;
 
   @override
   void initState() {
@@ -572,28 +535,35 @@ class _ProfileDataScraperState extends State<ProfileDataScraper> {
           onPageStarted: (String url) {
             WidgetsBinding.instance.addPostFrameCallback((_) {
               if (mounted) {
+                // Keep loading indicator on for the whole process
                 setState(() {
                   _isLoading = true;
                   _hasError = false;
                   _errorMessage = null;
-                  _scrapeStarted = false;
                 });
               }
             });
           },
           onPageFinished: (String url) {
-            WidgetsBinding.instance.addPostFrameCallback((_) {
-              if (mounted) {
-                setState(() => _isLoading = false);
-              }
-            });
-            if (url.contains('ogrenci/kisisel') && !_scrapeStarted) {
-              _scrapeStarted = true;
-              _scrapeDataWithTimeout();
+            // This logic now handles multiple pages
+            if (url.contains('ogrenci/kisisel') && _scrapedProfileData == null) {
+              // Step 1: We are on the personal info page, scrape it.
+              _scrapeProfileData();
+            } else if (url.contains('belge/transkript')) {
+              // Step 2: We are on the transcript page, scrape the GPA.
+              _scrapeGpa();
             } else if (url.contains('login') || url.contains('giris')) {
               setState(() {
+                _isLoading = false;
                 _hasError = true;
                 _errorMessage = 'Login failed. Please check your credentials.';
+              });
+            } else {
+              // If page finished but is not one of our targets, stop loading.
+              WidgetsBinding.instance.addPostFrameCallback((_) {
+                if(mounted) {
+                  setState(() => _isLoading = false);
+                }
               });
             }
           },
@@ -601,58 +571,25 @@ class _ProfileDataScraperState extends State<ProfileDataScraper> {
             setState(() {
               _isLoading = false;
               _hasError = true;
-              _errorMessage =
-              'No internet connection or failed to load the page.';
+              _errorMessage = 'No internet connection or failed to load the page.';
             });
           },
         ),
       )
       ..loadRequest(
+        // Start at the personal info page as before
         Uri.parse('https://ois.beykoz.edu.tr/ogrenciler/ogrenci/kisisel'),
       );
   }
 
-  // Scrape data with timeout for better device compatibility
-  void _scrapeDataWithTimeout() async {
-    try {
-      await _scrapeData().timeout(
-        scrapeTimeout,
-        onTimeout: () {
-          if (mounted) {
-            setState(() {
-              _hasError = true;
-              _isLoading = false;
-              _errorMessage =
-              'Fetching data took too long. Please try again or check your connection.';
-            });
-          }
-        },
-      );
-    } catch (e) {
-      if (mounted) {
-        setState(() {
-          _hasError = true;
-          _isLoading = false;
-          _errorMessage = 'An error occurred while fetching data: $e';
-        });
-      }
-    }
-  }
-
-  Future<void> _scrapeData() async {
-    /// 💡 **Explanation of Changes**
-    /// The `findElementTextByLabelText` function is updated.
-    /// Instead of a single `labelText`, it now accepts an array `labelTexts`.
-    /// It iterates through all `<label>` elements and checks if their text matches *any* of the labels in the provided array.
-    /// This makes the scraper bilingual, as it can find data using either English or Turkish labels.
+  /// Step 1: Scrapes personal data and navigates to the transcript page.
+  Future<void> _scrapeProfileData() async {
     const String jsCode = """
       (function() {
-        // This function now accepts an array of possible labels (e.g., ['Name', 'Adı'])
         function findElementTextByLabelText(labelTexts) {
           const allLabels = document.querySelectorAll('label');
           for (let i = 0; i < allLabels.length; i++) {
             const currentLabelText = allLabels[i].innerText.trim();
-            // Check if the current label's text is in our array of possible labels
             if (labelTexts.includes(currentLabelText)) {
               const element = allLabels[i].parentElement.nextElementSibling;
               if (element && element.classList.contains('element')) {
@@ -662,25 +599,16 @@ class _ProfileDataScraperState extends State<ProfileDataScraper> {
           }
           return 'Not Available';
         }
-        
-        // We now pass arrays with both English and Turkish labels to the function.
         const name = findElementTextByLabelText(['Name', 'Adı']);
         const surname = findElementTextByLabelText(['Surname', 'Soyadı']);
         const studentId = findElementTextByLabelText(['Student ID', 'Öğrenci No']);
         const facultyText = findElementTextByLabelText(['Faculty Code', 'Fakülte/Enstitü Kodu']);
         const departmentText = findElementTextByLabelText(['Department', 'Bölüm/Anabilim D. Kodu']);
-
-        // Contact info is more reliably found using input names which are language-independent.
         const email = document.querySelector('input[name="iletisim_416287"]')?.value || '';
         const phone = document.querySelector('input[name="iletisim_416286"]')?.value || '';
-        
-        // The image selector remains the same and should work for both versions.
         const profileImageUrl = document.querySelector('img[width="120"]')?.src || '';
-        
-        // Clean up faculty and department text which may contain codes.
         const faculty = facultyText.includes('-') ? facultyText.split('-')[1].trim() : facultyText;
         const department = departmentText.includes('-') ? departmentText.split('-')[1].trim() : departmentText;
-
         return {
           'nameSurname': name + ' ' + surname,
           'studentId': studentId,
@@ -696,28 +624,69 @@ class _ProfileDataScraperState extends State<ProfileDataScraper> {
       final result = await _controller.runJavaScriptReturningResult(jsCode);
       if (result != null && result.toString() != 'null') {
         final decodedResult = jsonDecode(result.toString()) as Map<String, dynamic>;
-        if (mounted) {
-          Navigator.pop(
-            context,
-            decodedResult,
-          ); // Return to ProfilePage with data
-        }
+
+        // Store the data and navigate to the next page instead of returning
+        _scrapedProfileData = decodedResult;
+        _controller.loadRequest(Uri.parse('https://ois.beykoz.edu.tr/ogrenciler/belge/transkript'));
+
       } else {
-        setState(() {
-          _hasError = true;
-          _errorMessage = 'Failed to fetch data from the page.';
-        });
-        if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text('Profil verisi bulunamadı.'))
-          );
-        }
+        throw Exception('Failed to parse profile data.');
       }
     } catch (e) {
       if (mounted) {
         setState(() {
           _hasError = true;
-          _errorMessage = 'An error occurred while fetching data: $e';
+          _isLoading = false;
+          _errorMessage = 'An error occurred while fetching profile data: $e';
+        });
+      }
+    }
+  }
+
+  /// Step 2: Scrapes the GPA, combines it with profile data, and returns.
+  Future<void> _scrapeGpa() async {
+    const String gpaJsCode = """
+      (function() {
+        const gnoSpans = document.querySelectorAll('span.gno');
+        let gpa = 'N/A';
+        for (const span of gnoSpans) {
+          const text = span.innerText.trim();
+          if (text.startsWith('AGNO') || text.startsWith('CGPA')) {
+            const parts = text.split(':');
+            if (parts.length > 1) {
+              gpa = parts[1].trim();
+              break;
+            }
+          }
+        }
+        return gpa;
+      })();
+    """;
+    try {
+      final gpaResult = await _controller.runJavaScriptReturningResult(gpaJsCode);
+      String gpa = 'N/A';
+      if (gpaResult != null && gpaResult.toString() != 'null') {
+        // The result is a JSON string (e.g., "\"3.03\""), so we clean it.
+        gpa = gpaResult.toString().replaceAll('"', '').trim();
+      }
+
+      if (_scrapedProfileData != null) {
+        // Add the scraped GPA to our data map
+        _scrapedProfileData!['gpa'] = gpa;
+
+        // Now we have all the data, pop the navigator and return the combined map
+        if (mounted) {
+          Navigator.pop(context, _scrapedProfileData);
+        }
+      } else {
+        throw Exception('Profile data was lost before GPA could be added.');
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() {
+          _hasError = true;
+          _isLoading = false;
+          _errorMessage = 'An error occurred while fetching GPA: $e';
         });
       }
     }
@@ -727,12 +696,16 @@ class _ProfileDataScraperState extends State<ProfileDataScraper> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Fetch Profile Data'),
+        title: const Text('Fetching Student Data...'),
         backgroundColor: const Color(0xFF802629),
       ),
       body: Stack(
         children: [
-          WebViewWidget(controller: _controller),
+          // The WebView is always in the stack, but might be hidden by loader/error
+          Opacity(
+            opacity: _isLoading || _hasError ? 0.0 : 1.0,
+            child: WebViewWidget(controller: _controller),
+          ),
           if (_isLoading)
             const Center(
               child: CircularProgressIndicator(
@@ -756,23 +729,17 @@ class _ProfileDataScraperState extends State<ProfileDataScraper> {
                     const SizedBox(height: 24),
                     ElevatedButton.icon(
                       onPressed: () {
-                        setState(() {
-                          _isLoading = true;
-                          _hasError = false;
-                          _errorMessage = null;
-                          _scrapeStarted = false;
-                        });
-                        _controller.reload();
+                        // Reset state and reload
+                        _scrapedProfileData = null;
+                        _controller.loadRequest(
+                            Uri.parse('https://ois.beykoz.edu.tr/ogrenciler/ogrenci/kisisel'));
                       },
                       icon: const Icon(Icons.refresh),
                       label: const Text('Retry'),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: const Color(0xFF802629),
                         foregroundColor: Colors.white,
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 32,
-                          vertical: 12,
-                        ),
+                        padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 12),
                       ),
                     ),
                   ],
