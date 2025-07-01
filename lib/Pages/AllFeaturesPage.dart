@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:beykoz/Pages/HomePage.dart'; // WebViewPage için gerekli
+import 'package:beykoz/Pages/HomePage.dart'; // WebViewPage'inizin doğru yolda olduğundan emin olun
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 
 class AllFeaturesSheet extends StatefulWidget {
@@ -10,10 +10,21 @@ class AllFeaturesSheet extends StatefulWidget {
 }
 
 class _AllFeaturesSheetState extends State<AllFeaturesSheet> {
-  bool _isExpanded = false;
-  Key _animationLimiterKey = UniqueKey();
+  // BÖLÜM DURUMLARI
+  bool _isBelgelerExpanded = false;
+  bool _isDersExpanded = false;
+  bool _isDigerExpanded = false;
 
-  final List<Map<String, dynamic>> allFeatures = [
+  // Sayfanın tam ekran olup olmadığını takip eden durum değişkeni
+  bool _isFullyExpanded = false;
+
+  // ANİMASYON KEY'LERİ
+  Key _belgelerAnimationKey = UniqueKey();
+  Key _dersAnimationKey = UniqueKey();
+  Key _digerAnimationKey = UniqueKey();
+
+  // VERİ LİSTELERİ
+  final List<Map<String, dynamic>> belgelerFeatures = [
     {
       'label': 'Transkript',
       'url': 'https://ois.beykoz.edu.tr/ogrenciler/belge/transkript',
@@ -54,6 +65,32 @@ class _AllFeaturesSheetState extends State<AllFeaturesSheet> {
       'url': 'https://ois.beykoz.edu.tr/ogrenciler/belge/sinavprogrami',
       'icon': Icons.schedule,
     },
+  ];
+
+  final List<Map<String, dynamic>> dersIslemleriFeatures = [
+    {
+      'label': 'Ders Seçimi',
+      'url': 'https://ois.beykoz.edu.tr/ogrenciler/derssecim/derssecimv2',
+      'icon': Icons.rule,
+    },
+    {
+      'label': 'Notlarım',
+      'url': 'https://ois.beykoz.edu.tr/ogrenciler/ders/notlistesi',
+      'icon': Icons.grading,
+    },
+    {
+      'label': 'Devamsızlık',
+      'url': 'https://ois.beykoz.edu.tr/ogrenciler/ders/devamsizlik',
+      'icon': Icons.person_off,
+    },
+    {
+      'label': 'Müfredat',
+      'url': 'https://ois.beykoz.edu.tr/ogrenciler/ders/mufredat',
+      'icon': Icons.list_alt,
+    },
+  ];
+
+  final List<Map<String, dynamic>> digerIslemlerFeatures = [
     {
       'label': 'Akademik Takvim',
       'url': 'https://www.beykoz.edu.tr/akademik-takvim/',
@@ -61,7 +98,8 @@ class _AllFeaturesSheetState extends State<AllFeaturesSheet> {
     },
     {
       'label': 'Yemekhane Menüsü',
-      'url': 'https://www.beykoz.edu.tr/idari-birimler/destek-hizmetleri-daire-baskanligi/yemekhane-hizmetleri/',
+      'url':
+      'https://www.beykoz.edu.tr/idari-birimler/destek-hizmetleri-daire-baskanligi/yemekhane-hizmetleri/',
       'icon': Icons.fastfood,
     },
     {
@@ -69,24 +107,52 @@ class _AllFeaturesSheetState extends State<AllFeaturesSheet> {
       'url': 'https://www.beykoz.edu.tr/ulasim/',
       'icon': Icons.directions_bus,
     },
+    {
+      'label': 'Kütüphane',
+      'url': 'https://kutuphane.beykoz.edu.tr/',
+      'icon': Icons.local_library,
+    },
   ];
 
   @override
   Widget build(BuildContext context) {
     return NotificationListener<DraggableScrollableNotification>(
       onNotification: (notification) {
-        if (notification.extent >= 1.0) {
-          if (!_isExpanded) {
-            WidgetsBinding.instance.addPostFrameCallback((_) {
-              if (mounted) {
-                setState(() {
-                  _isExpanded = true;
-                  _animationLimiterKey = UniqueKey();
-                });
-              }
-            });
-          }
-        } else if (notification.extent < 0.55) {
+        // EŞİK 1: Sayfa tam ekran oldu mu?
+        if (notification.extent >= 0.99 && !_isFullyExpanded) {
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            if (mounted) {
+              setState(() {
+                _isFullyExpanded = true;
+                _isBelgelerExpanded = true;
+                _isDersExpanded = true;
+                _isDigerExpanded = true;
+                _belgelerAnimationKey = UniqueKey();
+                _dersAnimationKey = UniqueKey();
+                _digerAnimationKey = UniqueKey();
+              });
+            }
+          });
+        }
+        // EŞİK 2: Sayfa tam ekrandan indi mi?
+        else if (notification.extent < 0.99 && _isFullyExpanded) {
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            if (mounted) {
+              setState(() {
+                _isFullyExpanded = false;
+                _isBelgelerExpanded = false;
+                _isDersExpanded = false;
+                _isDigerExpanded = false;
+                _belgelerAnimationKey = UniqueKey();
+                _dersAnimationKey = UniqueKey();
+                _digerAnimationKey = UniqueKey();
+              });
+            }
+          });
+        }
+
+        // Bu kısım sayfa yarıdan aşağı indiğinde geri kapanmasını sağlar
+        if (notification.extent < 0.55) {
           WidgetsBinding.instance.addPostFrameCallback((_) {
             if (mounted && Navigator.of(context).canPop()) {
               Navigator.of(context).pop();
@@ -113,6 +179,7 @@ class _AllFeaturesSheetState extends State<AllFeaturesSheet> {
             ),
             child: ListView(
               controller: scrollController,
+              padding: const EdgeInsets.symmetric(horizontal: 17.0),
               children: [
                 Center(
                   child: Container(
@@ -138,162 +205,193 @@ class _AllFeaturesSheetState extends State<AllFeaturesSheet> {
                     ),
                   ),
                 ),
-                Padding(
-                  padding:
-                  const EdgeInsets.symmetric(vertical: 0, horizontal: 17.0),
-                  // YENİ: AnimatedSize'ı ClipRRect ile sarmaladık.
-                  // Bu, animasyon sırasında yuvarlak köşelerin korunmasını sağlar.
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(20.0),
-                    child: AnimatedSize(
-                      duration: const Duration(milliseconds: 300),
-                      curve: Curves.easeInOut,
-                      child: Container(
-                        // DEĞİŞİKLİK: borderRadius ve clipBehavior buradan kaldırıldı,
-                        // çünkü artık üstteki ClipRRect bu görevi yapıyor.
-                        decoration: const BoxDecoration(
-                          color: Color(0xFFECECEC),
-                        ),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            const Padding(
-                              padding: EdgeInsets.only(
-                                  top: 16.0, left: 16.0, bottom: 8.0),
-                              child: Text(
-                                'Belgeler',
-                                style: TextStyle(
-                                  color: Color(0xFF802629),
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                            ),
-                            AnimationLimiter(
-                              key: _animationLimiterKey,
-                              child: GridView.builder(
-                                shrinkWrap: true,
-                                physics: const NeverScrollableScrollPhysics(),
-                                padding: const EdgeInsets.only(
-                                    left: 16.0, right: 16.0, bottom: 8.0),
-                                gridDelegate:
-                                const SliverGridDelegateWithFixedCrossAxisCount(
-                                  crossAxisCount: 4,
-                                  crossAxisSpacing: 12,
-                                  mainAxisSpacing: 12,
-                                  childAspectRatio: 0.8,
-                                ),
-                                itemCount:
-                                _isExpanded ? allFeatures.length : 4,
-                                itemBuilder: (context, index) {
-                                  final item = allFeatures[index];
-                                  return AnimationConfiguration.staggeredGrid(
-                                    position: index,
-                                    duration:
-                                    const Duration(milliseconds: 375),
-                                    columnCount: 4,
-                                    child: ScaleAnimation(
-                                      child: FadeInAnimation(
-                                        child: InkWell(
-                                          onTap: () {
-                                            Navigator.push(
-                                              context,
-                                              MaterialPageRoute(
-                                                builder: (context) =>
-                                                    WebViewPage(
-                                                      url: item['url']!,
-                                                      username: null,
-                                                      password: null,
-                                                    ),
-                                              ),
-                                            );
-                                          },
-                                          borderRadius:
-                                          BorderRadius.circular(16),
-                                          child: Column(
-                                            mainAxisSize: MainAxisSize.min,
-                                            children: [
-                                              Container(
-                                                width: 56.75,
-                                                height: 56.75,
-                                                decoration: BoxDecoration(
-                                                  borderRadius:
-                                                  BorderRadius.circular(
-                                                      12),
-                                                  gradient:
-                                                  const LinearGradient(
-                                                    colors: [
-                                                      Color(0xFF802629),
-                                                      Color(0xFFB2453C),
-                                                    ],
-                                                    begin: Alignment.topLeft,
-                                                    end: Alignment.bottomRight,
-                                                  ),
-                                                  boxShadow: [
-                                                    BoxShadow(
-                                                      color: Colors.black12,
-                                                      blurRadius: 6,
-                                                      offset:
-                                                      const Offset(0, 2),
-                                                    ),
-                                                  ],
-                                                ),
-                                                child: Icon(
-                                                  item['icon'],
-                                                  color: Colors.white,
-                                                  size: 30,
-                                                ),
-                                              ),
-                                              const SizedBox(height: 5),
-                                              Flexible(
-                                                child: Text(
-                                                  item['label']!,
-                                                  textAlign: TextAlign.center,
-                                                  style: const TextStyle(
-                                                    color: Color(0xFF802629),
-                                                    fontSize: 12,
-                                                    fontWeight:
-                                                    FontWeight.bold,
-                                                    height: 1.1,
-                                                  ),
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                  );
-                                },
-                              ),
-                            ),
-                            if (allFeatures.length > 4)
-                              Center(
-                                child: IconButton(
-                                  icon: Icon(
-                                    _isExpanded
-                                        ? Icons.keyboard_arrow_up
-                                        : Icons.keyboard_arrow_down,
-                                    color: const Color(0xFF802629),
-                                  ),
-                                  onPressed: () {
-                                    setState(() {
-                                      _isExpanded = !_isExpanded;
-                                      _animationLimiterKey = UniqueKey();
-                                    });
-                                  },
-                                ),
-                              ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ),
+                _buildFeatureSection(
+                  title: 'Belgeler',
+                  features: belgelerFeatures,
+                  isExpanded: _isBelgelerExpanded,
+                  animationKey: _belgelerAnimationKey,
+                  onToggle: () {
+                    setState(() {
+                      _isBelgelerExpanded = !_isBelgelerExpanded;
+                      _belgelerAnimationKey = UniqueKey();
+                    });
+                  },
                 ),
+                const SizedBox(height: 16),
+                _buildFeatureSection(
+                  title: 'Ders İşlemleri',
+                  features: dersIslemleriFeatures,
+                  isExpanded: _isDersExpanded,
+                  animationKey: _dersAnimationKey,
+                  onToggle: () {
+                    setState(() {
+                      _isDersExpanded = !_isDersExpanded;
+                      _dersAnimationKey = UniqueKey();
+                    });
+                  },
+                ),
+                const SizedBox(height: 16),
+                _buildFeatureSection(
+                  title: 'Diğer İşlemler',
+                  features: digerIslemlerFeatures,
+                  isExpanded: _isDigerExpanded,
+                  animationKey: _digerAnimationKey,
+                  onToggle: () {
+                    setState(() {
+                      _isDigerExpanded = !_isDigerExpanded;
+                      _digerAnimationKey = UniqueKey();
+                    });
+                  },
+                ),
+                const SizedBox(height: 20),
               ],
             ),
           );
         },
+      ),
+    );
+  }
+
+  Widget _buildFeatureSection({
+    required String title,
+    required List<Map<String, dynamic>> features,
+    required bool isExpanded,
+    required Key animationKey,
+    required VoidCallback onToggle,
+  }) {
+    final bool canExpand = features.length > 4;
+
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(20.0),
+      child: AnimatedSize(
+        duration: const Duration(milliseconds: 300),
+        curve: Curves.easeInOut,
+        child: Container(
+          decoration: const BoxDecoration(
+            color: Color(0xFFECECEC),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Padding(
+                padding:
+                const EdgeInsets.only(top: 16.0, left: 16.0, bottom: 8.0),
+                child: Text(
+                  title,
+                  style: const TextStyle(
+                    color: Color(0xFF802629),
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+              AnimationLimiter(
+                key: animationKey,
+                child: GridView.builder(
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  padding: const EdgeInsets.only(
+                      left: 16.0, right: 16.0, bottom: 8.0),
+                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 4,
+                    crossAxisSpacing: 12,
+                    mainAxisSpacing: 12,
+                    childAspectRatio: 0.8,
+                  ),
+                  itemCount: isExpanded
+                      ? features.length
+                      : (canExpand ? 4 : features.length),
+                  itemBuilder: (context, index) {
+                    final item = features[index];
+                    return AnimationConfiguration.staggeredGrid(
+                      position: index,
+                      duration: const Duration(milliseconds: 375),
+                      columnCount: 4,
+                      child: ScaleAnimation(
+                        child: FadeInAnimation(
+                          child: InkWell(
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => WebViewPage(
+                                    url: item['url']!,
+                                    username: null,
+                                    password: null,
+                                  ),
+                                ),
+                              );
+                            },
+                            borderRadius: BorderRadius.circular(16),
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Container(
+                                  width: 56.75,
+                                  height: 56.75,
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(12),
+                                    gradient: const LinearGradient(
+                                      colors: [
+                                        Color(0xFF802629),
+                                        Color(0xFFB2453C),
+                                      ],
+                                      begin: Alignment.topLeft,
+                                      end: Alignment.bottomRight,
+                                    ),
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: Colors.black12,
+                                        blurRadius: 6,
+                                        offset: const Offset(0, 2),
+                                      ),
+                                    ],
+                                  ),
+                                  child: Icon(
+                                    item['icon'],
+                                    color: Colors.white,
+                                    size: 30,
+                                  ),
+                                ),
+                                const SizedBox(height: 5),
+                                Flexible(
+                                  child: Text(
+                                    item['label']!,
+                                    textAlign: TextAlign.center,
+                                    style: const TextStyle(
+                                      color: Color(0xFF802629),
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.bold,
+                                      height: 1.1,
+                                    ),
+                                    overflow: TextOverflow.ellipsis,
+                                    maxLines: 2,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                    );
+                  },
+                ),
+              ),
+              if (canExpand)
+                Center(
+                  child: IconButton(
+                    icon: Icon(
+                      isExpanded
+                          ? Icons.keyboard_arrow_up
+                          : Icons.keyboard_arrow_down,
+                      color: const Color(0xFF802629),
+                    ),
+                    onPressed: onToggle,
+                  ),
+                ),
+            ],
+          ),
+        ),
       ),
     );
   }
