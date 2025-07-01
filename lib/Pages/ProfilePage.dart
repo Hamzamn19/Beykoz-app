@@ -388,7 +388,8 @@ class _ProfilePageState extends State<ProfilePage> {
                 ],
               ),
               const SizedBox(height: 20),
-              const SizedBox(height: 80), // Extra space for bottom navbar
+              // Add extra bottom padding to avoid being hidden by the bottom navigation bar
+              const SizedBox(height: 80),
             ]),
           ),
         ),
@@ -557,6 +558,10 @@ class _ProfileDataScraperState extends State<ProfileDataScraper> {
   bool _hasError = false;
   String? _errorMessage;
 
+  // Add a timeout duration for scraping (e.g., 40 seconds)
+  static const Duration scrapeTimeout = Duration(seconds: 40);
+  bool _scrapeStarted = false;
+
   @override
   void initState() {
     super.initState();
@@ -571,6 +576,7 @@ class _ProfileDataScraperState extends State<ProfileDataScraper> {
                   _isLoading = true;
                   _hasError = false;
                   _errorMessage = null;
+                  _scrapeStarted = false;
                 });
               }
             });
@@ -581,10 +587,10 @@ class _ProfileDataScraperState extends State<ProfileDataScraper> {
                 setState(() => _isLoading = false);
               }
             });
-            if (url.contains('ogrenci/kisisel')) {
-              _scrapeData();
+            if (url.contains('ogrenci/kisisel') && !_scrapeStarted) {
+              _scrapeStarted = true;
+              _scrapeDataWithTimeout();
             } else if (url.contains('login') || url.contains('giris')) {
-              // Login page detected
               setState(() {
                 _hasError = true;
                 _errorMessage = 'Login failed. Please check your credentials.';
@@ -606,7 +612,34 @@ class _ProfileDataScraperState extends State<ProfileDataScraper> {
       );
   }
 
-  void _scrapeData() async {
+  // Scrape data with timeout for better device compatibility
+  void _scrapeDataWithTimeout() async {
+    try {
+      await _scrapeData().timeout(
+        scrapeTimeout,
+        onTimeout: () {
+          if (mounted) {
+            setState(() {
+              _hasError = true;
+              _isLoading = false;
+              _errorMessage =
+                  'Fetching data took too long. Please try again or check your connection.';
+            });
+          }
+        },
+      );
+    } catch (e) {
+      if (mounted) {
+        setState(() {
+          _hasError = true;
+          _isLoading = false;
+          _errorMessage = 'An error occurred while fetching data: $e';
+        });
+      }
+    }
+  }
+
+  Future<void> _scrapeData() async {
     const String jsCode = """
       (function() {
         function findElementTextByLabelText(labelText) {
@@ -711,6 +744,7 @@ class _ProfileDataScraperState extends State<ProfileDataScraper> {
                           _isLoading = true;
                           _hasError = false;
                           _errorMessage = null;
+                          _scrapeStarted = false;
                         });
                         _controller.reload();
                       },

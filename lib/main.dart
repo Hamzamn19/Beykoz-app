@@ -1,4 +1,3 @@
-
 import 'package:beykoz/Pages/LoginPage.dart';
 import 'package:beykoz/Pages/RootPage.dart';
 import 'package:beykoz/Services/auth_service.dart';
@@ -6,7 +5,6 @@ import 'package:beykoz/Services/firebase_options.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:provider/provider.dart';
-
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -26,6 +24,10 @@ class MyApp extends StatelessWidget {
         title: 'Beykoz App',
         theme: ThemeData.light(),
         home: const RootScreen(),
+        routes: {
+          '/login': (context) => const LoginPage(),
+          // Add other named routes here if needed
+        },
       ),
     );
   }
