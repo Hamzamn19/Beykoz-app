@@ -189,7 +189,6 @@ class _EditFavoritesPageState extends State<EditFavoritesPage> {
     );
   }
 
-  // DEĞİŞİKLİK: Bu bölüm, AllFeaturesPage ile tamamen aynı görünüme ve animasyona sahip olacak şekilde güncellendi.
   Widget _buildAvailableFeatureSection({
     required String title,
     required List<Map<String, dynamic>> features,
@@ -223,7 +222,6 @@ class _EditFavoritesPageState extends State<EditFavoritesPage> {
                   style: const TextStyle(color: Color(0xFF802629), fontSize: 16, fontWeight: FontWeight.bold),
                 ),
               ),
-              // DEĞİŞİKLİK: GridView, animasyonlar için AnimationLimiter ile sarmalandı.
               AnimationLimiter(
                 child: GridView.builder(
                   shrinkWrap: true,
@@ -235,7 +233,6 @@ class _EditFavoritesPageState extends State<EditFavoritesPage> {
                   itemCount: isExpanded ? features.length : (canExpand ? 4 : features.length),
                   itemBuilder: (context, index) {
                     final item = features[index];
-                    // DEĞİŞİKLİK: Her bir grid öğesi, animasyon konfigürasyonu ile sarmalandı.
                     return AnimationConfiguration.staggeredGrid(
                       position: index,
                       duration: const Duration(milliseconds: 375),
@@ -263,9 +260,8 @@ class _EditFavoritesPageState extends State<EditFavoritesPage> {
     );
   }
 
-  // DEĞİŞİKLİK: Bu metodun parametreleri daha anlaşılır hale getirildi.
+  // GÜNCELLEME: Bu metoda seçili olmayan öğeler için bir 'ekle' ikonu eklendi.
   Widget _buildGridItem(Map<String, dynamic> item, {required bool isSelected, required VoidCallback onTap}) {
-    // Seçili olmayan (eklenebilecek) öğeler için opaklık kaldırıldı, artık tam görünürler.
     return InkWell(
       onTap: onTap,
       borderRadius: BorderRadius.circular(16),
@@ -278,7 +274,6 @@ class _EditFavoritesPageState extends State<EditFavoritesPage> {
               Container(
                 width: 56.75,
                 height: 56.75,
-                // GÜNCELLEME: İkonu ortalamak için Center widget'ı yerine 'alignment' özelliği kullanıldı.
                 alignment: Alignment.center,
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(12),
@@ -295,8 +290,6 @@ class _EditFavoritesPageState extends State<EditFavoritesPage> {
                     ),
                   ],
                 ),
-                // ÖNCEKİ YAPI: child: Center(child: Icon(...))
-                // YENİ YAPI: 'alignment' özelliği sayesinde Center widget'ına gerek kalmadı.
                 child: Icon(item['icon'], color: Colors.white, size: 30),
               ),
               const SizedBox(height: 5),
@@ -334,6 +327,28 @@ class _EditFavoritesPageState extends State<EditFavoritesPage> {
                   ],
                 ),
                 child: const Icon(Icons.cancel, color: Color(0xFF802629), size: 22),
+              ),
+            ),
+
+          // YENİ: 'isSelected' false ise (yani eklenebilir ise) üzerine 'ekle' ikonu eklenir.
+          if (!isSelected)
+            Positioned(
+              top: -8,
+              right: -8,
+              child: Container(
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  shape: BoxShape.circle,
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.2),
+                      blurRadius: 3,
+                      spreadRadius: 1,
+                    )
+                  ],
+                ),
+                // 'Ekle' eylemini belirtmek için yeşil renkli bir artı ikonu kullanıldı.
+                child: const Icon(Icons.add_circle, color: Colors.green, size: 22),
               ),
             ),
         ],
