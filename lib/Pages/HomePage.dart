@@ -219,7 +219,7 @@ class _DesignedHomePageState extends State<DesignedHomePage> {
               const SizedBox(height: 24),
               // --- DEĞİŞİKLİK: Düzenle butonu artık EditFavoritesPage'i açıyor ---
               _buildSectionTitle(
-                'SIK KULLANILANLAR',
+                'FAVORİLER',
                 onPressed: () async {
                   // EditFavoritesPage'e git ve bir sonuçla dönmesini bekle
                   final result = await Navigator.push(
