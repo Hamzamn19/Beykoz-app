@@ -4,10 +4,14 @@ import 'package:beykoz/Pages/AttendancePage.dart';
 import 'package:beykoz/Pages/ProfilePage.dart';
 import 'package:beykoz/Pages/AllFeaturesPage.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart'; // will be used for the logo
 import 'package:beykoz/Pages/SettingsPage.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+
+// --- YENİ IMPORT'LAR ---
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:beykoz/data/features_data.dart';
+import 'package:beykoz/Pages/EditFavoritesPage.dart';
 
 
 // Main widget containing the home screen and Bottom Navigation Bar logic
@@ -26,7 +30,7 @@ class _HomeScreenState extends State<HomeScreen> {
   bool _isLoadingRole = true;
 
   List<Widget> get _pages => [
-    DesignedHomePage(userRole: _userRole),
+    DesignedHomePage(userRole: _userRole), // Artık StatefulWidget
     WebViewPage(
       url: 'https://ois.beykoz.edu.tr/',
       username: widget.username,
@@ -70,6 +74,8 @@ class _HomeScreenState extends State<HomeScreen> {
         _isLoadingRole = false;
       });
     } else {
+      // Örnek olarak, 'teachers' koleksiyonunda da arama yapabilirsiniz.
+      // Şimdilik null bırakıyorum.
       setState(() {
         _userRole = null;
         _isLoadingRole = false;
@@ -116,7 +122,6 @@ class _HomeScreenState extends State<HomeScreen> {
         type: BottomNavigationBarType.fixed,
         onTap: _onItemTapped,
       ),
-      // Ayar çarkı sadece developer için
       floatingActionButton: isDeveloper
           ? _buildSettingsButton(context)
           : null,
@@ -125,6 +130,7 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Widget _buildSettingsButton(BuildContext context) {
+    // ... (Bu metot aynı kalıyor)
     return Padding(
       padding: const EdgeInsets.only(top: 40.0, right: 16.0),
       child: FloatingActionButton(
@@ -142,13 +148,63 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 }
 
-// --- NEW HOME PAGE DESIGN WIDGET ---
-class DesignedHomePage extends StatelessWidget {
+// --- DEĞİŞİKLİK: DesignedHomePage artık bir StatefulWidget ---
+class DesignedHomePage extends StatefulWidget {
   final String? userRole;
   const DesignedHomePage({super.key, this.userRole});
 
+  @override
+  State<DesignedHomePage> createState() => _DesignedHomePageState();
+}
+
+class _DesignedHomePageState extends State<DesignedHomePage> {
   static const Color primaryColor = Color(0xFF802629);
   static const Color cardColor = Color(0xFFECECEC);
+
+  // --- YENİ DURUM DEĞİŞKENİ ---
+  List<Map<String, dynamic>> _frequentlyUsedItems = [];
+  bool _isLoadingFavorites = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadUserFavorites();
+  }
+
+  // --- YENİ METOT: Kayıtlı favorileri yükler ---
+  Future<void> _loadUserFavorites() async {
+    setState(() {
+      _isLoadingFavorites = true;
+    });
+    final prefs = await SharedPreferences.getInstance();
+    final favoriteLabels = prefs.getStringList('user_favorites');
+    final allFeatures = FeaturesData.getAllFeatures();
+
+    if (favoriteLabels == null || favoriteLabels.isEmpty) {
+      // Kayıtlı favori yoksa, varsayılan listeyi kullan
+      setState(() {
+        _frequentlyUsedItems = [ ...FeaturesData.belgelerFeatures.take(8) ];
+        _isLoadingFavorites = false;
+      });
+    } else {
+      // Kayıtlı etiketlere göre özellikleri bul ve sıralı listeyi oluştur
+      final loadedFavorites = favoriteLabels
+          .map((label) {
+        try {
+          return allFeatures.firstWhere((feature) => feature['label'] == label);
+        } catch (e) {
+          return null; // Eğer bir özellik artık mevcut değilse null döner
+        }
+      })
+          .where((item) => item != null) // null olanları filtrele
+          .cast<Map<String, dynamic>>()
+          .toList();
+      setState(() {
+        _frequentlyUsedItems = loadedFavorites;
+        _isLoadingFavorites = false;
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -161,38 +217,54 @@ class DesignedHomePage extends StatelessWidget {
             children: [
               _buildTopButtons(context),
               const SizedBox(height: 24),
-              _buildSectionTitle('SIK KULLANILANLAR'),
+              // --- DEĞİŞİKLİK: Düzenle butonu artık EditFavoritesPage'i açıyor ---
+              _buildSectionTitle(
+                'SIK KULLANILANLAR',
+                onPressed: () async {
+                  // EditFavoritesPage'e git ve bir sonuçla dönmesini bekle
+                  final result = await Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => const EditFavoritesPage()),
+                  );
+                  // Eğer sayfa `true` sonucuyla kapandıysa (yani kayıt yapıldıysa),
+                  // favori listesini yeniden yükle.
+                  if (result == true) {
+                    _loadUserFavorites();
+                  }
+                },
+              ),
               const SizedBox(height: 12),
-              _buildFrequentlyUsedGrid(),
+              // --- DEĞİŞİKLİK: Yükleme durumuna göre Grid veya Indicator göster ---
+              _isLoadingFavorites
+                  ? const Center(child: CircularProgressIndicator())
+                  : _buildFrequentlyUsedGrid(),
               const SizedBox(height: 5),
               Center(
-              child :ElevatedButton(
-                onPressed: () {
-                  showModalBottomSheet(
-                    context: context,
-                    isScrollControlled: true,
-                    backgroundColor: Colors.transparent,
-                    builder: (context) => const AllFeaturesSheet(),
-                  );
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: cardColor,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(20),
+                child :ElevatedButton(
+                  onPressed: () {
+                    showModalBottomSheet(
+                      context: context,
+                      isScrollControlled: true,
+                      backgroundColor: Colors.transparent,
+                      builder: (context) => const AllFeaturesSheet(),
+                    );
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: cardColor,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    padding: const EdgeInsets.symmetric(vertical: 0, horizontal: 150),
                   ),
-                  padding: const EdgeInsets.symmetric(vertical: 0, horizontal: 150),
+                  child: const Text(
+                    'TÜMÜ',
+                    style: TextStyle(fontSize: 15, color: Color(0xFF802629)),
+                  ),
                 ),
-                child: const Text(
-                  'TÜMÜ',
-                  style: TextStyle(fontSize: 15, color: Color(0xFF802629)),
-                ),
-              ),
               ),
               const SizedBox(height: 15),
               _buildSectionTitle('DUYURULAR'),
               const SizedBox(height: 12),
-
-              // DEĞİŞİKLİK 1: Kartlar artık tıklanabilir ve ilgili linklere yönlendirir
               _buildAnnouncementCard(
                 context: context,
                 imagePath: 'assets/images/mezuniyettoreni.jpg',
@@ -212,6 +284,7 @@ class DesignedHomePage extends StatelessWidget {
     );
   }
 
+  // ... _buildTopButtons metodu aynı kalıyor ...
   Widget _buildTopButtons(BuildContext context) {
     return Row(
       children: [
@@ -268,6 +341,8 @@ class DesignedHomePage extends StatelessWidget {
     );
   }
 
+
+  // ... _buildCircularButton metodu aynı kalıyor ...
   Widget _buildCircularButton({
     required IconData icon,
     required Color backgroundColor,
@@ -285,68 +360,55 @@ class DesignedHomePage extends StatelessWidget {
     );
   }
 
-  Widget _buildSectionTitle(String title) {
+  // ... _buildSectionTitle metodu aynı kalıyor ...
+  Widget _buildSectionTitle(String title, {VoidCallback? onPressed}) {
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
       decoration: BoxDecoration(
         color: primaryColor,
         borderRadius: BorderRadius.circular(8),
       ),
-      child: Text(
-        title,
-        style: const TextStyle(
-          color: Colors.white,
-          fontWeight: FontWeight.bold,
-          fontSize: 16,
-        ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Expanded(
+            child: Text(
+              title,
+              style: const TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.bold,
+                fontSize: 16,
+              ),
+            ),
+          ),
+          if (onPressed != null)
+            InkWell(
+              onTap: onPressed,
+              child: const Padding(
+                padding: EdgeInsets.only(left: 8.0),
+                child: Row(
+                  children: [
+                    Icon(Icons.edit, color: Colors.white, size: 18),
+                    SizedBox(width: 4),
+                    Text(
+                      'Düzenle',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.w600,
+                        fontSize: 14,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+        ],
       ),
     );
   }
 
+  // --- DEĞİŞİKLİK: Bu metot artık sabit liste yerine _frequentlyUsedItems'ı kullanıyor ---
   Widget _buildFrequentlyUsedGrid() {
-    // ... (This part of the code is unchanged)
-    final List<Map<String, dynamic>> frequentlyUsed = [
-      {
-        'label': 'Transkript',
-        'url': 'https://ois.beykoz.edu.tr/ogrenciler/belge/transkript',
-        'icon': FontAwesomeIcons.fileInvoice, // DEĞİŞTİRİLDİ
-      },
-      {
-        'label': 'Karne',
-        'url': 'https://ois.beykoz.edu.tr/ogrenciler/belge/ogrkarne',
-        'icon': FontAwesomeIcons.award, // DEĞİŞTİRİLDİ
-      },
-      {
-        'label': 'Ders Programı',
-        'url': 'https://ois.beykoz.edu.tr/ogrenciler/belge/ogrdersprogrami',
-        'icon': FontAwesomeIcons.calendarWeek, // DEĞİŞTİRİLDİ
-      },
-      {
-        'label': 'Hazırlık Karne',
-        'url': 'https://ois.beykoz.edu.tr/hazirlik/hazirliksinav/ogrpreptranskript',
-        'icon': FontAwesomeIcons.bookReader, // DEĞİŞTİRİLDİ
-      },
-      {
-        'label': 'Ders Onay Belgesi',
-        'url': 'https://ois.beykoz.edu.tr/ogrenciler/belge/dersdanismanonay',
-        'icon': FontAwesomeIcons.stamp, // DEĞİŞTİRİLDİ
-      },
-      {
-        'label': 'Kesin Kayıt Belgesi',
-        'url': 'https://ois.beykoz.edu.tr/ogrenciler/belge/kesinkayitbelgesi',
-        'icon': FontAwesomeIcons.idCard, // DEĞİŞTİRİLDİ
-      },
-      {
-        'label': 'Online Belge Talep',
-        'url': 'https://ois.beykoz.edu.tr/ogrenciler/belgetalep/duzenle2',
-        'icon': FontAwesomeIcons.paperPlane, // DEĞİŞTİRİLDİ
-      },
-      {
-        'label': 'Sınav Programı',
-        'url': 'https://ois.beykoz.edu.tr/ogrenciler/belge/sinavprogrami',
-        'icon': FontAwesomeIcons.calendarCheck, // DEĞİŞTİRİLDİ
-      },
-    ];
     return GridView.builder(
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
@@ -356,9 +418,9 @@ class DesignedHomePage extends StatelessWidget {
         mainAxisSpacing: 0,
         childAspectRatio: 0.8,
       ),
-      itemCount: frequentlyUsed.length,
+      itemCount: _frequentlyUsedItems.length,
       itemBuilder: (context, index) {
-        final item = frequentlyUsed[index];
+        final item = _frequentlyUsedItems[index];
         return InkWell(
           onTap: () {
             Navigator.push(
@@ -414,7 +476,7 @@ class DesignedHomePage extends StatelessWidget {
     );
   }
 
-  // DEĞİŞİKLİK 2: _buildAnnouncementCard metodu artık tıklanabilir ve dinamik.
+  // ... _buildAnnouncementCard metodu aynı kalıyor ...
   Widget _buildAnnouncementCard({
     required BuildContext context,
     required String imagePath,
@@ -422,7 +484,6 @@ class DesignedHomePage extends StatelessWidget {
   }) {
     return InkWell(
       onTap: () {
-        // Tıklandığında WebViewPage'i aç ve ilgili URL'i gönder.
         Navigator.push(
           context,
           MaterialPageRoute(
@@ -432,22 +493,21 @@ class DesignedHomePage extends StatelessWidget {
           ),
         );
       },
-      borderRadius: BorderRadius.circular(16), // Tıklama efektinin köşelerini yuvarlak yapar
+      borderRadius: BorderRadius.circular(16),
       child: Container(
         height: 150,
         decoration: BoxDecoration(
-          color: cardColor, // Resim yüklenemezse görünecek arka plan rengi
+          color: cardColor,
           borderRadius: BorderRadius.circular(16),
           image: DecorationImage(
-            image: AssetImage(imagePath), // Gösterilecek resim
-            fit: BoxFit.cover, // Resmin tüm alanı kaplamasını sağlar
+            image: AssetImage(imagePath),
+            fit: BoxFit.cover,
           ),
         ),
       ),
     );
   }
 }
-
 // --- WEBVIEW PAGE ---
 // ... (This part of the code is unchanged)
 class WebViewPage extends StatefulWidget {
