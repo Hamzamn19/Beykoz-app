@@ -1,10 +1,9 @@
-// EditFavoritesPage.dart
-
 import 'package:flutter/material.dart';
 import 'package:beykoz/data/features_data.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:reorderable_grid_view/reorderable_grid_view.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class EditFavoritesPage extends StatefulWidget {
   const EditFavoritesPage({super.key});
@@ -332,7 +331,7 @@ class _EditFavoritesPageState extends State<EditFavoritesPage> {
                     )
                   ],
                 ),
-                child: const Icon(Icons.cancel, color: Color(0xFF802629), size: 22),
+                child: const Icon(FontAwesomeIcons.minus, color: Color(0xFF802629), size: 20),
               ),
             ),
 
