@@ -3,7 +3,6 @@ import 'package:beykoz/data/features_data.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:reorderable_grid_view/reorderable_grid_view.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class EditFavoritesPage extends StatefulWidget {
   const EditFavoritesPage({super.key});
@@ -153,6 +152,7 @@ class _EditFavoritesPageState extends State<EditFavoritesPage> {
     );
   }
 
+  // GÜNCELLENMİŞ METOT
   Widget _buildSelectedItemsGrid() {
     return ReorderableGridView.builder(
       shrinkWrap: true,
@@ -164,6 +164,24 @@ class _EditFavoritesPageState extends State<EditFavoritesPage> {
         mainAxisSpacing: 12,
         childAspectRatio: 0.8,
       ),
+      dragWidgetBuilder: (index, child) {
+        final item = _selectedItems[index];
+        final dragWidget = _buildGridItem(
+          item,
+          isSelected: true,
+          onTap: () {},
+          isDragging: true,
+        );
+
+        return Card(
+          elevation: 8.0,
+          clipBehavior: Clip.antiAlias,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16.0),
+          ),
+          child: dragWidget,
+        );
+      },
       onReorder: (oldIndex, newIndex) {
         if (oldIndex < _selectedItems.length && newIndex < _selectedItems.length) {
           setState(() {
@@ -258,23 +276,20 @@ class _EditFavoritesPageState extends State<EditFavoritesPage> {
     );
   }
 
-  // YENİ GÜNCELLEME: Öğeler Center yerine SizedBox ve Column'un kendi hizalama
-  // özellikleri kullanılarak üste yaslı ve yatayda ortalı hale getirildi.
-  Widget _buildGridItem(Map<String, dynamic> item, {required bool isSelected, required VoidCallback onTap}) {
+  // GÜNCELLENMİŞ METOT
+  Widget _buildGridItem(Map<String, dynamic> item, {required bool isSelected, required VoidCallback onTap, bool isDragging = false}) {
     return InkWell(
       onTap: onTap,
       borderRadius: BorderRadius.circular(16),
       child: Stack(
         clipBehavior: Clip.none,
         children: [
-          // YENİ: Column'un genişliğini doldurmasını ve içeriğini yatayda ortalamasını sağlayan yapı.
           SizedBox(
             width: double.infinity,
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.center, // Yatayda ortala
-              // mainAxisAlignment: MainAxisAlignment.start, // Dikeyde üste yasla (varsayılan)
+              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                const SizedBox(height: 4), // İkonun üstten biraz boşluklu başlaması için
+                const SizedBox(height: 4),
                 Container(
                   width: 56.75,
                   height: 56.75,
@@ -314,8 +329,7 @@ class _EditFavoritesPageState extends State<EditFavoritesPage> {
               ],
             ),
           ),
-          // 'isSelected' true ise (yani favorilerde ise) üzerine 'kaldır' ikonu eklenir.
-          if (isSelected)
+          if (isSelected && !isDragging)
             Positioned(
               top: -8,
               right: -8,
@@ -331,11 +345,9 @@ class _EditFavoritesPageState extends State<EditFavoritesPage> {
                     )
                   ],
                 ),
-                child: const Icon(FontAwesomeIcons.minus, color: Color(0xFF802629), size: 20),
+                child: const Icon(Icons.cancel, color: Color(0xFF802629), size: 22),
               ),
             ),
-
-          // 'isSelected' false ise (yani eklenebilir ise) üzerine 'ekle' ikonu eklenir.
           if (!isSelected)
             Positioned(
               top: -8,
