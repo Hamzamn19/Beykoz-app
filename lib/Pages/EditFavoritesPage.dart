@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:beykoz/data/features_data.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:reorderable_grid_view/reorderable_grid_view.dart';
-// DEĞİŞİKLİK: Staggered animasyonlar için paket eklendi.
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 
 class EditFavoritesPage extends StatefulWidget {
@@ -260,7 +259,8 @@ class _EditFavoritesPageState extends State<EditFavoritesPage> {
     );
   }
 
-  // GÜNCELLEME: Bu metoda seçili olmayan öğeler için bir 'ekle' ikonu eklendi.
+  // YENİ GÜNCELLEME: Öğeler Center yerine SizedBox ve Column'un kendi hizalama
+  // özellikleri kullanılarak üste yaslı ve yatayda ortalı hale getirildi.
   Widget _buildGridItem(Map<String, dynamic> item, {required bool isSelected, required VoidCallback onTap}) {
     return InkWell(
       onTap: onTap,
@@ -268,46 +268,52 @@ class _EditFavoritesPageState extends State<EditFavoritesPage> {
       child: Stack(
         clipBehavior: Clip.none,
         children: [
-          Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Container(
-                width: 56.75,
-                height: 56.75,
-                alignment: Alignment.center,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(12),
-                  gradient: const LinearGradient(
-                    colors: [Color(0xFF802629), Color(0xFFB2453C)],
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                  ),
-                  boxShadow: const [
-                    BoxShadow(
-                      color: Colors.black12,
-                      blurRadius: 6,
-                      offset: Offset(0, 2),
+          // YENİ: Column'un genişliğini doldurmasını ve içeriğini yatayda ortalamasını sağlayan yapı.
+          SizedBox(
+            width: double.infinity,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center, // Yatayda ortala
+              // mainAxisAlignment: MainAxisAlignment.start, // Dikeyde üste yasla (varsayılan)
+              children: [
+                const SizedBox(height: 4), // İkonun üstten biraz boşluklu başlaması için
+                Container(
+                  width: 56.75,
+                  height: 56.75,
+                  alignment: Alignment.center,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(12),
+                    gradient: const LinearGradient(
+                      colors: [Color(0xFF802629), Color(0xFFB2453C)],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
                     ),
-                  ],
-                ),
-                child: Icon(item['icon'], color: Colors.white, size: 30),
-              ),
-              const SizedBox(height: 5),
-              Flexible(
-                child: Text(
-                  item['label']!,
-                  textAlign: TextAlign.center,
-                  style: const TextStyle(
-                    color: Color(0xFF802629),
-                    fontSize: 12,
-                    fontWeight: FontWeight.bold,
-                    height: 1.1,
+                    boxShadow: const [
+                      BoxShadow(
+                        color: Colors.black12,
+                        blurRadius: 6,
+                        offset: Offset(0, 2),
+                      ),
+                    ],
                   ),
-                  overflow: TextOverflow.ellipsis,
-                  maxLines: 2,
+                  child: Icon(item['icon'], color: Colors.white, size: 30),
                 ),
-              ),
-            ],
+                const SizedBox(height: 2),
+                Flexible(
+                  child: Text(
+                    item['label']!,
+                    textAlign: TextAlign.center,
+                    style: const TextStyle(
+                      color: Color(0xFF802629),
+                      fontSize: 12,
+                      fontWeight: FontWeight.bold,
+                      height: 1.1,
+                    ),
+                    overflow: TextOverflow.ellipsis,
+                    maxLines: 2,
+                  ),
+                ),
+              ],
+            ),
           ),
           // 'isSelected' true ise (yani favorilerde ise) üzerine 'kaldır' ikonu eklenir.
           if (isSelected)
@@ -330,7 +336,7 @@ class _EditFavoritesPageState extends State<EditFavoritesPage> {
               ),
             ),
 
-          // YENİ: 'isSelected' false ise (yani eklenebilir ise) üzerine 'ekle' ikonu eklenir.
+          // 'isSelected' false ise (yani eklenebilir ise) üzerine 'ekle' ikonu eklenir.
           if (!isSelected)
             Positioned(
               top: -8,
@@ -347,7 +353,6 @@ class _EditFavoritesPageState extends State<EditFavoritesPage> {
                     )
                   ],
                 ),
-                // 'Ekle' eylemini belirtmek için yeşil renkli bir artı ikonu kullanıldı.
                 child: const Icon(Icons.add_circle, color: Colors.green, size: 22),
               ),
             ),
