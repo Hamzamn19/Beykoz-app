@@ -68,7 +68,7 @@ class OtherPages extends StatelessWidget {
       _ActionItem(
         icon: Icons.directions_bus,
         color: const Color(0xFF0A285F), // نفس لون الزر القديم
-        label: 'Ulaşım Bilgileri',
+        label: 'Ulaşım ve İletişim',
         onTap: () {
           Navigator.push(
             context,
