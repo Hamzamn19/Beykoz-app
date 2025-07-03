@@ -8,7 +8,7 @@ import 'NewsPage.dart';
 import 'ProfilePage.dart';
 
 class RootScreen extends StatefulWidget {
-  const RootScreen({Key? key}) : super(key: key);
+  const RootScreen({super.key});
 
   @override
   State<RootScreen> createState() => _RootScreenState();
@@ -56,10 +56,10 @@ class CustomNavBar extends StatelessWidget {
   final ValueChanged<int> onTabSelected;
 
   const CustomNavBar({
-    Key? key,
+    super.key,
     required this.selectedIndex,
     required this.onTabSelected,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -180,6 +180,8 @@ class _NavBarIcon extends StatelessWidget {
 }
 
 class WebviewPageSelector extends StatelessWidget {
+  const WebviewPageSelector({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -273,7 +275,7 @@ class _MinimalButton extends StatelessWidget {
 class WebViewPage extends StatefulWidget {
   final String url;
 
-  const WebViewPage({Key? key, required this.url}) : super(key: key);
+  const WebViewPage({super.key, required this.url});
 
   @override
   _WebViewPageState createState() => _WebViewPageState();

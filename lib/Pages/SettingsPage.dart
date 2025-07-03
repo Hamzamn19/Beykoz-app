@@ -6,6 +6,8 @@ import 'package:beykoz/Pages/AddDepartmentPage.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class SettingsPage extends StatelessWidget {
+  const SettingsPage({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(

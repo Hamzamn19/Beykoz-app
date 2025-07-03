@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 import 'package:beykoz/Pages/AttendancePage.dart';
-import 'package:beykoz/Pages/ProfilePage.dart';
 import 'package:beykoz/Pages/AllFeaturesPage.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart'; // will be used for the logo
+// will be used for the logo
 import 'package:beykoz/Pages/SettingsPage.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';

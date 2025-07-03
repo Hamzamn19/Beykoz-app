@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class AddDepartmentPage extends StatefulWidget {
+  const AddDepartmentPage({super.key});
+
   @override
   _AddDepartmentPageState createState() => _AddDepartmentPageState();
 }
@@ -58,13 +60,13 @@ class _AddDepartmentPageState extends State<AddDepartmentPage> {
               SizedBox(height: 24),
               ElevatedButton(
                 onPressed: _isLoading ? null : _addDepartment,
-                child: _isLoading ? CircularProgressIndicator(color: Colors.white) : Text('Ekle'),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color(0xFF802629),
                   foregroundColor: Colors.white,
                   padding: const EdgeInsets.symmetric(vertical: 14),
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
                 ),
+                child: _isLoading ? CircularProgressIndicator(color: Colors.white) : Text('Ekle'),
               ),
               if (_successMessage != null) ...[
                 SizedBox(height: 16),

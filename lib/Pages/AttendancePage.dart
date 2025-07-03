@@ -4,13 +4,12 @@ import 'dart:math';
 import 'package:flutter_reactive_ble/flutter_reactive_ble.dart';
 import 'dart:async';
 import 'package:permission_handler/permission_handler.dart';
-import 'package:app_settings/app_settings.dart';
 import 'package:beykoz/Pages/TeacherAttendancePage.dart';
 import 'package:beykoz/Pages/StudentAttendancePage.dart';
 
 class AttendanceScreen extends StatefulWidget {
   final String? role;
-  const AttendanceScreen({Key? key, this.role}) : super(key: key);
+  const AttendanceScreen({super.key, this.role});
 
   @override
   _AttendanceScreenState createState() => _AttendanceScreenState();
@@ -28,7 +27,7 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
   final TextEditingController _sessionCodeController = TextEditingController();
   bool _isScanning = false;
   String? _scanResultMessage;
-  List<String> _debugLogs = []; // Add debug logging
+  final List<String> _debugLogs = []; // Add debug logging
   bool _permissionsGranted = false;
 
   @override
@@ -200,7 +199,7 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
       
       // Check manufacturer data for session code
       final manufacturerData = device.manufacturerData;
-      if (manufacturerData != null && manufacturerData.isNotEmpty) {
+      if (manufacturerData.isNotEmpty) {
         _addDebugLog('Raw manufacturer data length: ${manufacturerData.length}');
         _addDebugLog('Raw manufacturer data: ${manufacturerData.map((b) => b.toRadixString(16).padLeft(2, '0')).join(' ')}');
         

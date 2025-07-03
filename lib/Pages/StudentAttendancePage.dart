@@ -3,6 +3,8 @@ import 'package:flutter_reactive_ble/flutter_reactive_ble.dart';
 import 'dart:async';
 
 class StudentAttendancePage extends StatefulWidget {
+  const StudentAttendancePage({super.key});
+
   @override
   _StudentAttendancePageState createState() => _StudentAttendancePageState();
 }
@@ -30,7 +32,7 @@ class _StudentAttendancePageState extends State<StudentAttendancePage> {
     late StreamSubscription<DiscoveredDevice> subscription;
     subscription = ble.scanForDevices(withServices: [serviceUuid], scanMode: ScanMode.lowLatency).listen((device) {
       final manufacturerData = device.manufacturerData;
-      if (manufacturerData != null && manufacturerData.isNotEmpty) {
+      if (manufacturerData.isNotEmpty) {
         if (manufacturerData.length >= 3) {
           final companyId = manufacturerData[0] | (manufacturerData[1] << 8);
           if (companyId == 0x1234) {

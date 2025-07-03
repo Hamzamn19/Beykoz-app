@@ -5,6 +5,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'dart:async';
 
 class TeacherAttendancePage extends StatefulWidget {
+  const TeacherAttendancePage({super.key});
+
   @override
   _TeacherAttendancePageState createState() => _TeacherAttendancePageState();
 }

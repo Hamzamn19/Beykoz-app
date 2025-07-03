@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class AddCoursePage extends StatefulWidget {
+  const AddCoursePage({super.key});
+
   @override
   _AddCoursePageState createState() => _AddCoursePageState();
 }
@@ -125,13 +127,13 @@ class _AddCoursePageState extends State<AddCoursePage> {
               SizedBox(height: 24),
               ElevatedButton(
                 onPressed: _isLoading ? null : _addCourse,
-                child: _isLoading ? CircularProgressIndicator(color: Colors.white) : Text('Ekle'),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color(0xFF802629),
                   foregroundColor: Colors.white,
                   padding: const EdgeInsets.symmetric(vertical: 14),
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
                 ),
+                child: _isLoading ? CircularProgressIndicator(color: Colors.white) : Text('Ekle'),
               ),
               if (_successMessage != null) ...[
                 SizedBox(height: 16),
