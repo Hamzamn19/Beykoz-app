@@ -107,12 +107,12 @@ class TransportationPage extends StatelessWidget {
           title: "Rektörlük Yerleşkesi",
           address:
               "Orhan Veli Kanık Caddesi No:114, 34810 Kavacık-Beykoz/İstanbul",
-          mapsUrl: "https://maps.app.goo.gl/9gZ8dY3X4A7E5X7Y9",
+          mapsUrl: "https://maps.app.goo.gl/yri12V8vGP8RgwLN8",
         ),
         _CampusExpansionTile(
           title: "Kavacık Yerleşkesi",
           address: "Vatan Caddesi No: 69 PK: 34805 Kavacık - Beykoz / İstanbul",
-          mapsUrl: "https://maps.app.goo.gl/u7z2x5R4B9S6A3Zz7",
+          mapsUrl: "https://maps.app.goo.gl/wosE547jewnYBj7r8",
           children: const [
             "Lisansüstü Programlar Enstitüsü",
             "İşletme ve Yönetim Bilimleri Fakültesi",
@@ -124,7 +124,7 @@ class TransportationPage extends StatelessWidget {
         _CampusExpansionTile(
           title: "Lisans Yerleşkesi",
           address: "Muhtar Sokak No: 3 Kavacık - Beykoz / İstanbul",
-          mapsUrl: "https://maps.app.goo.gl/wN9F9jX6YkZ3R1Bw7",
+          mapsUrl: "https://maps.app.goo.gl/cavh2PwNeuPEtqf18",
           children: const [
             "Sanat ve Tasarım Fakültesi (Gastronomi ve Mutfak Sanatları Lisans Programı Öğrencileri Hariç)",
             "Mühendislik ve Mimarlık Fakültesi",
@@ -133,7 +133,7 @@ class TransportationPage extends StatelessWidget {
         _CampusExpansionTile(
           title: "Lisans Programları Laboratuvar ve Atölyeler",
           address: "Ertürk Sokak No: 6 Kavacık - Beykoz / İstanbul",
-          mapsUrl: "https://maps.app.goo.gl/hU5w5fQjZ6k3P4wZ6",
+          mapsUrl: "https://maps.app.goo.gl/ybN5vyfouLiPyryh6",
           children: const [
             "Çizim Atölyesi",
             "Sayısal Sistemler Laboratuvarı",
@@ -147,7 +147,7 @@ class TransportationPage extends StatelessWidget {
           title: "Hazırlık Yerleşkesi",
           address:
               "Fatih Sultan Mehmet Cadddesi Şehit Er Cengiz Karcıoğlu Sk. No: 7 34810 Kavacık Beykoz İstanbul",
-          mapsUrl: "https://maps.app.goo.gl/x8n2wNqE9H8R2C3m6",
+          mapsUrl: "https://maps.app.goo.gl/Zcd7bYrfKdjsRZnn6",
           children: const [
             "İngilizce Hazırlık Programı",
             "Gastronomi ve Mutfak Sanatları Lisans Programı",
