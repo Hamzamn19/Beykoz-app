@@ -6,6 +6,7 @@ import 'package:webview_flutter/webview_flutter.dart';
 import 'dart:convert';
 import 'NewsPage.dart';
 import 'ProfilePage.dart';
+import 'Otherpages.dart'; // <-- Yeni sayfayı içe aktar
 
 class RootScreen extends StatefulWidget {
   const RootScreen({Key? key}) : super(key: key);
@@ -17,12 +18,14 @@ class RootScreen extends StatefulWidget {
 class _RootScreenState extends State<RootScreen> {
   int _selectedIndex = 0;
 
+  // --- Değişiklik burada ---
+  // ProfilePage(), OtherPages() ile değiştirildi
   final List<Widget> _pages = [
     DesignedHomePage(),
     NewsPage(),
     AttendanceScreen(),
     WebviewPageSelector(),
-    ProfilePage(),
+    OtherPages(), // <-- Yeni sayfa burada
   ];
 
   @override
@@ -108,8 +111,10 @@ class CustomNavBar extends StatelessWidget {
                     selected: selectedIndex == 3,
                     onTap: () => onTabSelected(3),
                   ),
+                  // --- Değişiklik burada ---
+                  // Simge كانت 'person' الآن أصبحت 'menu' لصفحة OtherPages
                   _NavBarIcon(
-                    icon: Icons.person,
+                    icon: Icons.menu, // <-- تم التغيير هنا
                     selected: selectedIndex == 4,
                     onTap: () => onTabSelected(4),
                   ),

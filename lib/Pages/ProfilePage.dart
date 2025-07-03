@@ -128,7 +128,10 @@ class _ProfilePageState extends State<ProfilePage> {
           return MemoryImage(imageBytes);
         }
       } catch (e) {
-        developer.log("Error decoding Base64 image: $e", name: 'ImageProcessing');
+        developer.log(
+          "Error decoding Base64 image: $e",
+          name: 'ImageProcessing',
+        );
       }
     }
     return const AssetImage('assets/images/default_avatar.png');
@@ -180,32 +183,13 @@ class _ProfilePageState extends State<ProfilePage> {
                   style: ElevatedButton.styleFrom(
                     backgroundColor: universityColor,
                     foregroundColor: Colors.white,
-                    padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 12),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 32,
+                      vertical: 12,
+                    ),
                   ),
                 ),
                 const SizedBox(height: 24),
-                Row(
-                  children: [
-                    Expanded(
-                      child: _buildActionButton('Settings', Icons.settings, () {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(content: Text('Settings pressed')),
-                        );
-                      }),
-                    ),
-                    const SizedBox(width: 15),
-                    Expanded(
-                      child: _buildActionButton('Logout', Icons.logout, () async {
-                        await FirebaseAuth.instance.signOut();
-                        Navigator.of(context).pushAndRemoveUntil(
-                          MaterialPageRoute(builder: (context) => LoginPage()),
-                              (Route<dynamic> route) => false,
-                        );
-                      }, isDestructive: true),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 80),
               ],
             ),
           ),
@@ -259,7 +243,9 @@ class _ProfilePageState extends State<ProfilePage> {
                         backgroundColor: Colors.white,
                         child: CircleAvatar(
                           radius: 55,
-                          backgroundImage: _getProfileImage(student.profileImageUrl),
+                          backgroundImage: _getProfileImage(
+                            student.profileImageUrl,
+                          ),
                           backgroundColor: Colors.grey[200],
                         ),
                       ),
@@ -307,7 +293,8 @@ class _ProfilePageState extends State<ProfilePage> {
                     // 💡 CHANGE 2: Using student's GPA data instead of a fixed value
                     child: _buildStatCard(
                       'CGPA', // Label changed to CGPA (or AGNO in TR)
-                      student.gpa, // Use the dynamic GPA from the student object
+                      student
+                          .gpa, // Use the dynamic GPA from the student object
                       Icons.trending_up,
                       lightUniversityColor,
                     ),
@@ -352,23 +339,6 @@ class _ProfilePageState extends State<ProfilePage> {
                 color: universityColor,
               ),
               const SizedBox(height: 30),
-              Row(
-                children: [
-                  Expanded(child: _buildActionButton('Settings', Icons.settings, () {})),
-                  const SizedBox(width: 15),
-                  Expanded(
-                    child: _buildActionButton('Logout', Icons.logout, () async {
-                      await FirebaseAuth.instance.signOut();
-                      Navigator.of(context).pushAndRemoveUntil(
-                        MaterialPageRoute(builder: (context) => LoginPage()),
-                            (Route<dynamic> route) => false,
-                      );
-                    }, isDestructive: true),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 20),
-              const SizedBox(height: 80),
             ]),
           ),
         ),
@@ -376,7 +346,12 @@ class _ProfilePageState extends State<ProfilePage> {
     );
   }
 
-  Widget _buildStatCard(String title, String value, IconData icon, Color color) {
+  Widget _buildStatCard(
+    String title,
+    String value,
+    IconData icon,
+    Color color,
+  ) {
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
@@ -486,23 +461,34 @@ class _ProfilePageState extends State<ProfilePage> {
   }
 
   Widget _buildActionButton(
-      String title, IconData icon, VoidCallback onPressed, {bool isDestructive = false}) {
+    String title,
+    IconData icon,
+    VoidCallback onPressed, {
+    bool isDestructive = false,
+  }) {
     return SizedBox(
       height: 55,
       child: ElevatedButton(
         onPressed: onPressed,
         style: ElevatedButton.styleFrom(
-          backgroundColor: isDestructive ? Colors.red.shade50 : universityColor.withOpacity(0.1),
+          backgroundColor: isDestructive
+              ? Colors.red.shade50
+              : universityColor.withOpacity(0.1),
           foregroundColor: isDestructive ? Colors.red : universityColor,
           elevation: 0,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
         ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Icon(icon, size: 22),
             const SizedBox(width: 8),
-            Text(title, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
+            Text(
+              title,
+              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+            ),
           ],
         ),
       ),
@@ -546,7 +532,8 @@ class _ProfileDataScraperState extends State<ProfileDataScraper> {
           },
           onPageFinished: (String url) {
             // This logic now handles multiple pages
-            if (url.contains('ogrenci/kisisel') && _scrapedProfileData == null) {
+            if (url.contains('ogrenci/kisisel') &&
+                _scrapedProfileData == null) {
               // Step 1: We are on the personal info page, scrape it.
               _scrapeProfileData();
             } else if (url.contains('belge/transkript')) {
@@ -561,7 +548,7 @@ class _ProfileDataScraperState extends State<ProfileDataScraper> {
             } else {
               // If page finished but is not one of our targets, stop loading.
               WidgetsBinding.instance.addPostFrameCallback((_) {
-                if(mounted) {
+                if (mounted) {
                   setState(() => _isLoading = false);
                 }
               });
@@ -571,7 +558,8 @@ class _ProfileDataScraperState extends State<ProfileDataScraper> {
             setState(() {
               _isLoading = false;
               _hasError = true;
-              _errorMessage = 'No internet connection or failed to load the page.';
+              _errorMessage =
+                  'No internet connection or failed to load the page.';
             });
           },
         ),
@@ -623,12 +611,14 @@ class _ProfileDataScraperState extends State<ProfileDataScraper> {
     try {
       final result = await _controller.runJavaScriptReturningResult(jsCode);
       if (result != null && result.toString() != 'null') {
-        final decodedResult = jsonDecode(result.toString()) as Map<String, dynamic>;
+        final decodedResult =
+            jsonDecode(result.toString()) as Map<String, dynamic>;
 
         // Store the data and navigate to the next page instead of returning
         _scrapedProfileData = decodedResult;
-        _controller.loadRequest(Uri.parse('https://ois.beykoz.edu.tr/ogrenciler/belge/transkript'));
-
+        _controller.loadRequest(
+          Uri.parse('https://ois.beykoz.edu.tr/ogrenciler/belge/transkript'),
+        );
       } else {
         throw Exception('Failed to parse profile data.');
       }
@@ -663,7 +653,9 @@ class _ProfileDataScraperState extends State<ProfileDataScraper> {
       })();
     """;
     try {
-      final gpaResult = await _controller.runJavaScriptReturningResult(gpaJsCode);
+      final gpaResult = await _controller.runJavaScriptReturningResult(
+        gpaJsCode,
+      );
       String gpa = 'N/A';
       if (gpaResult != null && gpaResult.toString() != 'null') {
         // The result is a JSON string (e.g., "\"3.03\""), so we clean it.
@@ -732,14 +724,20 @@ class _ProfileDataScraperState extends State<ProfileDataScraper> {
                         // Reset state and reload
                         _scrapedProfileData = null;
                         _controller.loadRequest(
-                            Uri.parse('https://ois.beykoz.edu.tr/ogrenciler/ogrenci/kisisel'));
+                          Uri.parse(
+                            'https://ois.beykoz.edu.tr/ogrenciler/ogrenci/kisisel',
+                          ),
+                        );
                       },
                       icon: const Icon(Icons.refresh),
                       label: const Text('Retry'),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: const Color(0xFF802629),
                         foregroundColor: Colors.white,
-                        padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 12),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 32,
+                          vertical: 12,
+                        ),
                       ),
                     ),
                   ],
