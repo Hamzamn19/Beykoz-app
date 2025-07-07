@@ -3,11 +3,16 @@ import 'package:webview_flutter/webview_flutter.dart';
 import 'package:beykoz/Pages/AttendancePage.dart';
 import 'package:beykoz/Pages/AllFeaturesPage.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+<<<<<<< HEAD
 // will be used for the logo
+=======
+>>>>>>> f8cd556487b4011e65d981c9f99856563f781c88
 import 'package:beykoz/Pages/SettingsPage.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:beykoz/data/features_data.dart';
+import 'package:beykoz/Pages/EditFavoritesPage.dart';
 
 // Main widget containing the home screen and Bottom Navigation Bar logic
 class HomeScreen extends StatefulWidget {
@@ -25,7 +30,7 @@ class _HomeScreenState extends State<HomeScreen> {
   bool _isLoadingRole = true;
 
   List<Widget> get _pages => [
-    DesignedHomePage(userRole: _userRole),
+    DesignedHomePage(userRole: _userRole), // Artık StatefulWidget
     WebViewPage(
       url: 'https://ois.beykoz.edu.tr/',
       username: widget.username,
@@ -69,6 +74,8 @@ class _HomeScreenState extends State<HomeScreen> {
         _isLoadingRole = false;
       });
     } else {
+      // Örnek olarak, 'teachers' koleksiyonunda da arama yapabilirsiniz.
+      // Şimdilik null bırakıyorum.
       setState(() {
         _userRole = null;
         _isLoadingRole = false;
@@ -85,9 +92,7 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     if (_isLoadingRole) {
-      return const Scaffold(
-        body: Center(child: CircularProgressIndicator()),
-      );
+      return const Scaffold(body: Center(child: CircularProgressIndicator()));
     }
     // Student: yoklama sekmesi sadece öğrenci, ayar çarkı yok
     // Teacher: yoklama sekmesi sadece öğretmen, ayar çarkı yok
@@ -98,27 +103,8 @@ class _HomeScreenState extends State<HomeScreen> {
 
     return Scaffold(
       body: IndexedStack(index: _selectedIndex, children: _pages),
-      bottomNavigationBar: BottomNavigationBar(
-        items: const <BottomNavigationBarItem>[
-          BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Ana Sayfa'),
-          BottomNavigationBarItem(icon: Icon(Icons.web), label: 'OIS'),
-          BottomNavigationBarItem(icon: Icon(Icons.login), label: 'Online'),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.check_circle),
-            label: 'Yoklama',
-          ),
-        ],
-        currentIndex: _selectedIndex,
-        selectedItemColor: Colors.white,
-        unselectedItemColor: Colors.grey,
-        backgroundColor: const Color(0xFF802629),
-        type: BottomNavigationBarType.fixed,
-        onTap: _onItemTapped,
-      ),
-      // Ayar çarkı sadece developer için
-      floatingActionButton: isDeveloper
-          ? _buildSettingsButton(context)
-          : null,
+
+      floatingActionButton: isDeveloper ? _buildSettingsButton(context) : null,
       floatingActionButtonLocation: FloatingActionButtonLocation.endTop,
     );
   }
@@ -141,13 +127,61 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 }
 
-// --- NEW HOME PAGE DESIGN WIDGET ---
-class DesignedHomePage extends StatelessWidget {
+// DesignedHomePage artık bir StatefulWidget
+class DesignedHomePage extends StatefulWidget {
   final String? userRole;
   const DesignedHomePage({super.key, this.userRole});
 
+  @override
+  State<DesignedHomePage> createState() => _DesignedHomePageState();
+}
+
+class _DesignedHomePageState extends State<DesignedHomePage> {
   static const Color primaryColor = Color(0xFF802629);
   static const Color cardColor = Color(0xFFECECEC);
+
+  List<Map<String, dynamic>> _frequentlyUsedItems = [];
+  bool _isLoadingFavorites = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadUserFavorites();
+  }
+
+  Future<void> _loadUserFavorites() async {
+    setState(() {
+      _isLoadingFavorites = true;
+    });
+    final prefs = await SharedPreferences.getInstance();
+    final favoriteLabels = prefs.getStringList('user_favorites');
+    final allFeatures = FeaturesData.getAllFeatures();
+
+    if (favoriteLabels == null || favoriteLabels.isEmpty) {
+      setState(() {
+        _frequentlyUsedItems = [...FeaturesData.belgelerFeatures.take(8)];
+        _isLoadingFavorites = false;
+      });
+    } else {
+      final loadedFavorites = favoriteLabels
+          .map((label) {
+            try {
+              return allFeatures.firstWhere(
+                (feature) => feature['label'] == label,
+              );
+            } catch (e) {
+              return null;
+            }
+          })
+          .where((item) => item != null)
+          .cast<Map<String, dynamic>>()
+          .toList();
+      setState(() {
+        _frequentlyUsedItems = loadedFavorites;
+        _isLoadingFavorites = false;
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -158,50 +192,69 @@ class DesignedHomePage extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
+              // Bu fonksiyon, açılır menüyü içerecek şekilde düzenlendi
               _buildTopButtons(context),
               const SizedBox(height: 24),
-              _buildSectionTitle('SIK KULLANILANLAR'),
+              _buildSectionTitle(
+                'FAVORİLER',
+                onPressed: () async {
+                  final result = await Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const EditFavoritesPage(),
+                    ),
+                  );
+                  if (result == true) {
+                    _loadUserFavorites();
+                  }
+                },
+              ),
               const SizedBox(height: 12),
-              _buildFrequentlyUsedGrid(),
+              _isLoadingFavorites
+                  ? const Center(child: CircularProgressIndicator())
+                  : _buildFrequentlyUsedGrid(),
               const SizedBox(height: 5),
               Center(
-              child :ElevatedButton(
-                onPressed: () {
-                  showModalBottomSheet(
-                    context: context,
-                    isScrollControlled: true,
-                    backgroundColor: Colors.transparent,
-                    builder: (context) => const AllFeaturesSheet(),
-                  );
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: cardColor,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(20),
+                child: ElevatedButton(
+                  onPressed: () {
+                    showModalBottomSheet(
+                      context: context,
+                      isScrollControlled: true,
+                      backgroundColor: Colors.transparent,
+                      builder: (context) => const AllFeaturesSheet(),
+                    );
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: cardColor,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    padding: const EdgeInsets.symmetric(
+                      vertical: 0,
+                      horizontal: 150,
+                    ),
                   ),
-                  padding: const EdgeInsets.symmetric(vertical: 0, horizontal: 150),
+                  child: const Text(
+                    'TÜMÜ',
+                    style: TextStyle(fontSize: 15, color: Color(0xFF802629)),
+                  ),
                 ),
-                child: const Text(
-                  'TÜMÜ',
-                  style: TextStyle(fontSize: 15, color: Color(0xFF802629)),
-                ),
-              ),
               ),
               const SizedBox(height: 15),
               _buildSectionTitle('DUYURULAR'),
               const SizedBox(height: 12),
-
-              // DEĞİŞİKLİK 1: Kartlar artık tıklanabilir ve ilgili linklere yönlendirir
               _buildAnnouncementCard(
                 context: context,
                 imagePath: 'assets/images/mezuniyettoreni.jpg',
-                url: 'https://www.beykoz.edu.tr/haber/5581-2025-mezuniyet-toreni',
+                url:
+                    'https://www.beykoz.edu.tr/haber/5581-2025-mezuniyet-toreni',
               ),
               const SizedBox(height: 16),
               _buildAnnouncementCard(
                 context: context,
                 imagePath: 'assets/images/yazogretimi.jpg',
-                url: 'https://www.beykoz.edu.tr/haber/5616-2024-2025-yaz-ogretiminde-acilabilecek-dersler-duyurusu',
+                url:
+                    'https://www.beykoz.edu.tr/haber/5616-2024-2025-yaz-ogretiminde-acilabilecek-dersler-duyurusu',
               ),
               const SizedBox(height: 90),
             ],
@@ -211,6 +264,7 @@ class DesignedHomePage extends StatelessWidget {
     );
   }
 
+  // Bu fonksiyondaki ana değişiklik
   Widget _buildTopButtons(BuildContext context) {
     return Row(
       children: [
@@ -221,9 +275,8 @@ class DesignedHomePage extends StatelessWidget {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => const WebViewPage(
-                    url: 'https://www.beykoz.edu.tr/',
-                  ),
+                  builder: (context) =>
+                      const WebViewPage(url: 'https://www.beykoz.edu.tr/'),
                 ),
               );
             },
@@ -254,11 +307,119 @@ class DesignedHomePage extends StatelessWidget {
                   );
                 },
               ),
-              _buildCircularButton(
-                icon: Icons.notifications,
-                backgroundColor: const Color(0xFF802629),
-                iconColor: Colors.white,
-                onPressed: () {},
+              // Zil düğmesini açılır menü ile değiştirme
+              PopupMenuButton<String>(
+                offset: const Offset(0, 50),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16),
+                  side: const BorderSide(color: Color(0xFF802629), width: 1),
+                ),
+                color: Colors.white,
+                elevation: 8,
+                onSelected: (value) {
+                  // Seçilen değere göre eylemi belirle
+                  if (value == 'profile') {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => ProfilePage()),
+                    );
+                  } else if (value == 'logout') {
+                    // Çıkış yapma mantığını buraya ekleyebilirsiniz
+                    // Örneğin: FirebaseAuth.instance.signOut();
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text('Başarıyla çıkış yapıldı')),
+                    );
+                  }
+                },
+                itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
+                  PopupMenuItem<String>(
+                    enabled: false,
+                    padding: const EdgeInsets.symmetric(
+                      vertical: 12,
+                      horizontal: 8,
+                    ),
+                    child: Row(
+                      children: [
+                        CircleAvatar(
+                          radius: 22,
+                          backgroundColor: const Color(0xFF802629),
+                          child: const Icon(
+                            Icons.person,
+                            color: Colors.white,
+                            size: 28,
+                          ),
+                        ),
+                        const SizedBox(width: 12),
+                        const Text(
+                          'Profilim',
+                          style: TextStyle(
+                            color: Color(0xFF802629),
+                            fontWeight: FontWeight.bold,
+                            fontSize: 18,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const PopupMenuDivider(),
+                  PopupMenuItem<String>(
+                    value: 'profile',
+                    child: Row(
+                      children: [
+                        const Icon(
+                          Icons.info_outline,
+                          color: Color(0xFF802629),
+                        ),
+                        const SizedBox(width: 10),
+                        const Text(
+                          'Profil Bilgilerini Görüntüle',
+                          style: TextStyle(
+                            color: Color(0xFF802629),
+                            fontWeight: FontWeight.w500,
+                            fontSize: 15,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  PopupMenuItem<String>(
+                    value: 'logout',
+                    child: Row(
+                      children: [
+                        const Icon(Icons.logout, color: Colors.red),
+                        const SizedBox(width: 10),
+                        const Text(
+                          'Çıkış Yap',
+                          style: TextStyle(
+                            color: Colors.red,
+                            fontWeight: FontWeight.w500,
+                            fontSize: 15,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+                // Arayüzde görünecek düğmenin stili
+                child: Container(
+                  padding: const EdgeInsets.all(10),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFF802629),
+                    shape: BoxShape.circle,
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.15),
+                        blurRadius: 6,
+                        offset: const Offset(0, 2),
+                      ),
+                    ],
+                  ),
+                  child: const Icon(
+                    Icons.person, // Profil simgesi
+                    color: Colors.white,
+                    size: 32,
+                  ),
+                ),
               ),
             ],
           ),
@@ -284,68 +445,53 @@ class DesignedHomePage extends StatelessWidget {
     );
   }
 
-  Widget _buildSectionTitle(String title) {
+  Widget _buildSectionTitle(String title, {VoidCallback? onPressed}) {
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
       decoration: BoxDecoration(
         color: primaryColor,
         borderRadius: BorderRadius.circular(8),
       ),
-      child: Text(
-        title,
-        style: const TextStyle(
-          color: Colors.white,
-          fontWeight: FontWeight.bold,
-          fontSize: 16,
-        ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Expanded(
+            child: Text(
+              title,
+              style: const TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.bold,
+                fontSize: 16,
+              ),
+            ),
+          ),
+          if (onPressed != null)
+            InkWell(
+              onTap: onPressed,
+              child: const Padding(
+                padding: EdgeInsets.only(left: 8.0),
+                child: Row(
+                  children: [
+                    Icon(Icons.edit, color: Colors.white, size: 18),
+                    SizedBox(width: 4),
+                    Text(
+                      'Düzenle',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.w600,
+                        fontSize: 14,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+        ],
       ),
     );
   }
 
   Widget _buildFrequentlyUsedGrid() {
-    // ... (This part of the code is unchanged)
-    final List<Map<String, dynamic>> frequentlyUsed = [
-      {
-        'label': 'Transkript',
-        'url': 'https://ois.beykoz.edu.tr/ogrenciler/belge/transkript',
-        'icon': FontAwesomeIcons.fileInvoice, // DEĞİŞTİRİLDİ
-      },
-      {
-        'label': 'Karne',
-        'url': 'https://ois.beykoz.edu.tr/ogrenciler/belge/ogrkarne',
-        'icon': FontAwesomeIcons.award, // DEĞİŞTİRİLDİ
-      },
-      {
-        'label': 'Ders Programı',
-        'url': 'https://ois.beykoz.edu.tr/ogrenciler/belge/ogrdersprogrami',
-        'icon': FontAwesomeIcons.calendarWeek, // DEĞİŞTİRİLDİ
-      },
-      {
-        'label': 'Hazırlık Karne',
-        'url': 'https://ois.beykoz.edu.tr/hazirlik/hazirliksinav/ogrpreptranskript',
-        'icon': FontAwesomeIcons.bookReader, // DEĞİŞTİRİLDİ
-      },
-      {
-        'label': 'Ders Onay Belgesi',
-        'url': 'https://ois.beykoz.edu.tr/ogrenciler/belge/dersdanismanonay',
-        'icon': FontAwesomeIcons.stamp, // DEĞİŞTİRİLDİ
-      },
-      {
-        'label': 'Kesin Kayıt Belgesi',
-        'url': 'https://ois.beykoz.edu.tr/ogrenciler/belge/kesinkayitbelgesi',
-        'icon': FontAwesomeIcons.idCard, // DEĞİŞTİRİLDİ
-      },
-      {
-        'label': 'Online Belge Talep',
-        'url': 'https://ois.beykoz.edu.tr/ogrenciler/belgetalep/duzenle2',
-        'icon': FontAwesomeIcons.paperPlane, // DEĞİŞTİRİLDİ
-      },
-      {
-        'label': 'Sınav Programı',
-        'url': 'https://ois.beykoz.edu.tr/ogrenciler/belge/sinavprogrami',
-        'icon': FontAwesomeIcons.calendarCheck, // DEĞİŞTİRİLDİ
-      },
-    ];
     return GridView.builder(
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
@@ -355,9 +501,9 @@ class DesignedHomePage extends StatelessWidget {
         mainAxisSpacing: 0,
         childAspectRatio: 0.8,
       ),
-      itemCount: frequentlyUsed.length,
+      itemCount: _frequentlyUsedItems.length,
       itemBuilder: (context, index) {
-        final item = frequentlyUsed[index];
+        final item = _frequentlyUsedItems[index];
         return InkWell(
           onTap: () {
             Navigator.push(
@@ -413,7 +559,6 @@ class DesignedHomePage extends StatelessWidget {
     );
   }
 
-  // DEĞİŞİKLİK 2: _buildAnnouncementCard metodu artık tıklanabilir ve dinamik.
   Widget _buildAnnouncementCard({
     required BuildContext context,
     required String imagePath,
@@ -421,25 +566,20 @@ class DesignedHomePage extends StatelessWidget {
   }) {
     return InkWell(
       onTap: () {
-        // Tıklandığında WebViewPage'i aç ve ilgili URL'i gönder.
         Navigator.push(
           context,
-          MaterialPageRoute(
-            builder: (context) => WebViewPage(
-              url: url,
-            ),
-          ),
+          MaterialPageRoute(builder: (context) => WebViewPage(url: url)),
         );
       },
-      borderRadius: BorderRadius.circular(16), // Tıklama efektinin köşelerini yuvarlak yapar
+      borderRadius: BorderRadius.circular(16),
       child: Container(
         height: 150,
         decoration: BoxDecoration(
-          color: cardColor, // Resim yüklenemezse görünecek arka plan rengi
+          color: cardColor,
           borderRadius: BorderRadius.circular(16),
           image: DecorationImage(
-            image: AssetImage(imagePath), // Gösterilecek resim
-            fit: BoxFit.cover, // Resmin tüm alanı kaplamasını sağlar
+            image: AssetImage(imagePath),
+            fit: BoxFit.cover,
           ),
         ),
       ),
@@ -447,8 +587,7 @@ class DesignedHomePage extends StatelessWidget {
   }
 }
 
-// --- WEBVIEW PAGE ---
-// ... (This part of the code is unchanged)
+// WebViewPage kodunun bu kısmı değişmedi
 class WebViewPage extends StatefulWidget {
   final String url;
   final String? username;
@@ -506,7 +645,7 @@ class _WebViewPageState extends State<WebViewPage>
                 username = username.substring(0, atIndex);
               }
               final loginJs =
-              '''
+                  '''
                 (function() {
                   var username = "$username";
                   var password = "${widget.password}";
