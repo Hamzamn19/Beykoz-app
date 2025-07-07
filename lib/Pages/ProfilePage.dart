@@ -14,6 +14,7 @@ class Student {
   final String email;
   final String phoneNumber;
   String profileImageUrl;
+  final String gpa; // Added GPA field
 
   Student({
     required this.studentId,
@@ -23,6 +24,7 @@ class Student {
     required this.email,
     required this.phoneNumber,
     this.profileImageUrl = '',
+    this.gpa = 'N/A', // Default value
   });
 
   factory Student.fromJson(Map<String, dynamic> json) {
@@ -34,6 +36,7 @@ class Student {
       email: json['email'] ?? 'Not Available',
       phoneNumber: json['phoneNumber'] ?? 'Not Available',
       profileImageUrl: json['profileImageUrl'] ?? '',
+      gpa: json['gpa'] ?? 'N/A',
     );
   }
 }
@@ -191,7 +194,6 @@ class _ProfilePageState extends State<ProfilePage> {
                   ),
                 ),
                 const SizedBox(height: 24),
-<<<<<<< HEAD
                 Row(
                   children: [
                     Expanded(
@@ -219,8 +221,6 @@ class _ProfilePageState extends State<ProfilePage> {
                   ],
                 ),
                 const SizedBox(height: 80),
-=======
->>>>>>> f8cd556487b4011e65d981c9f99856563f781c88
               ],
             ),
           ),
@@ -324,14 +324,8 @@ class _ProfilePageState extends State<ProfilePage> {
                   const SizedBox(width: 15),
                   Expanded(
                     child: _buildStatCard(
-<<<<<<< HEAD
-                      'GPA',
-                      '3.45',
-=======
                       'CGPA', // Label changed to CGPA (or AGNO in TR)
-                      student
-                          .gpa, // Use the dynamic GPA from the student object
->>>>>>> f8cd556487b4011e65d981c9f99856563f781c88
+                      student.gpa, // Use the dynamic GPA from the student object
                       Icons.trending_up,
                       lightUniversityColor,
                     ),
@@ -376,7 +370,6 @@ class _ProfilePageState extends State<ProfilePage> {
                 color: universityColor,
               ),
               const SizedBox(height: 30),
-<<<<<<< HEAD
               Row(
                 children: [
                   Expanded(
@@ -401,8 +394,6 @@ class _ProfilePageState extends State<ProfilePage> {
               const SizedBox(height: 20),
               // Add extra bottom padding to avoid being hidden by the bottom navigation bar
               const SizedBox(height: 80),
-=======
->>>>>>> f8cd556487b4011e65d981c9f99856563f781c88
             ]),
           ),
         ),
@@ -577,6 +568,8 @@ class _ProfileDataScraperState extends State<ProfileDataScraper> {
   static const Duration scrapeTimeout = Duration(seconds: 40);
   bool _scrapeStarted = false;
 
+  Map<String, dynamic>? _scrapedProfileData; // For multi-step scraping
+
   @override
   void initState() {
     super.initState();
@@ -597,40 +590,22 @@ class _ProfileDataScraperState extends State<ProfileDataScraper> {
             });
           },
           onPageFinished: (String url) {
-<<<<<<< HEAD
-            WidgetsBinding.instance.addPostFrameCallback((_) {
-              if (mounted) {
-                setState(() => _isLoading = false);
-              }
-            });
-            if (url.contains('ogrenci/kisisel') && !_scrapeStarted) {
-              _scrapeStarted = true;
-              _scrapeDataWithTimeout();
-=======
-            // This logic now handles multiple pages
-            if (url.contains('ogrenci/kisisel') &&
-                _scrapedProfileData == null) {
-              // Step 1: We are on the personal info page, scrape it.
+            // Multi-step scraping logic
+            if (url.contains('ogrenci/kisisel') && _scrapedProfileData == null) {
               _scrapeProfileData();
             } else if (url.contains('belge/transkript')) {
-              // Step 2: We are on the transcript page, scrape the GPA.
               _scrapeGpa();
->>>>>>> f8cd556487b4011e65d981c9f99856563f781c88
             } else if (url.contains('login') || url.contains('giris')) {
               setState(() {
                 _hasError = true;
                 _errorMessage = 'Login failed. Please check your credentials.';
               });
-<<<<<<< HEAD
-=======
             } else {
-              // If page finished but is not one of our targets, stop loading.
               WidgetsBinding.instance.addPostFrameCallback((_) {
                 if (mounted) {
                   setState(() => _isLoading = false);
                 }
               });
->>>>>>> f8cd556487b4011e65d981c9f99856563f781c88
             }
           },
           onWebResourceError: (error) {
@@ -648,34 +623,8 @@ class _ProfileDataScraperState extends State<ProfileDataScraper> {
       );
   }
 
-  // Scrape data with timeout for better device compatibility
-  void _scrapeDataWithTimeout() async {
-    try {
-      await _scrapeData().timeout(
-        scrapeTimeout,
-        onTimeout: () {
-          if (mounted) {
-            setState(() {
-              _hasError = true;
-              _isLoading = false;
-              _errorMessage =
-                  'Fetching data took too long. Please try again or check your connection.';
-            });
-          }
-        },
-      );
-    } catch (e) {
-      if (mounted) {
-        setState(() {
-          _hasError = true;
-          _isLoading = false;
-          _errorMessage = 'An error occurred while fetching data: $e';
-        });
-      }
-    }
-  }
-
-  Future<void> _scrapeData() async {
+  // Step 1: Scrape profile data
+  Future<void> _scrapeProfileData() async {
     const String jsCode = """
       (function() {
         function findElementTextByLabelText(labelText) {
@@ -714,15 +663,9 @@ class _ProfileDataScraperState extends State<ProfileDataScraper> {
     """;
     try {
       final result = await _controller.runJavaScriptReturningResult(jsCode);
-<<<<<<< HEAD
-      if (result.toString() != 'null') {
-        final decodedResult = jsonDecode(result.toString()) as Map<String, dynamic>;
-=======
       if (result != null && result.toString() != 'null') {
         final decodedResult =
             jsonDecode(result.toString()) as Map<String, dynamic>;
-
-        // Store the data and navigate to the next page instead of returning
         _scrapedProfileData = decodedResult;
         _controller.loadRequest(
           Uri.parse('https://ois.beykoz.edu.tr/ogrenciler/belge/transkript'),
@@ -741,7 +684,7 @@ class _ProfileDataScraperState extends State<ProfileDataScraper> {
     }
   }
 
-  /// Step 2: Scrapes the GPA, combines it with profile data, and returns.
+  // Step 2: Scrape GPA and return all data
   Future<void> _scrapeGpa() async {
     const String gpaJsCode = """
       (function() {
@@ -766,21 +709,15 @@ class _ProfileDataScraperState extends State<ProfileDataScraper> {
       );
       String gpa = 'N/A';
       if (gpaResult != null && gpaResult.toString() != 'null') {
-        // The result is a JSON string (e.g., "\"3.03\""), so we clean it.
         gpa = gpaResult.toString().replaceAll('"', '').trim();
       }
-
       if (_scrapedProfileData != null) {
-        // Add the scraped GPA to our data map
         _scrapedProfileData!['gpa'] = gpa;
-
-        // Now we have all the data, pop the navigator and return the combined map
->>>>>>> f8cd556487b4011e65d981c9f99856563f781c88
         if (mounted) {
           Navigator.pop(
             context,
-            decodedResult,
-          ); // Return to ProfilePage with data
+            _scrapedProfileData,
+          );
         }
       } else {
         setState(() {
@@ -789,7 +726,7 @@ class _ProfileDataScraperState extends State<ProfileDataScraper> {
         });
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Profil verisi bulunamadı.'))
+            SnackBar(content: Text('Profil verisi bulunamadı.')),
           );
         }
       }
@@ -836,15 +773,6 @@ class _ProfileDataScraperState extends State<ProfileDataScraper> {
                     const SizedBox(height: 24),
                     ElevatedButton.icon(
                       onPressed: () {
-<<<<<<< HEAD
-                        setState(() {
-                          _isLoading = true;
-                          _hasError = false;
-                          _errorMessage = null;
-                          _scrapeStarted = false;
-                        });
-                        _controller.reload();
-=======
                         // Reset state and reload
                         _scrapedProfileData = null;
                         _controller.loadRequest(
@@ -852,7 +780,6 @@ class _ProfileDataScraperState extends State<ProfileDataScraper> {
                             'https://ois.beykoz.edu.tr/ogrenciler/ogrenci/kisisel',
                           ),
                         );
->>>>>>> f8cd556487b4011e65d981c9f99856563f781c88
                       },
                       icon: const Icon(Icons.refresh),
                       label: const Text('Retry'),

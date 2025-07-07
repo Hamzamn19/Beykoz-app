@@ -1,10 +1,10 @@
+
 import 'package:flutter/material.dart';
 
-<<<<<<< HEAD
-class NewsPage extends StatelessWidget {
-  const NewsPage({super.key});
-=======
+
 class NewsPage extends StatefulWidget {
+  const NewsPage({super.key});
+
   @override
   _NewsPageState createState() => _NewsPageState();
 }
@@ -63,7 +63,6 @@ class _NewsPageState extends State<NewsPage> {
       }
     });
   }
->>>>>>> f8cd556487b4011e65d981c9f99856563f781c88
 
   @override
   Widget build(BuildContext context) {
@@ -429,5 +428,6 @@ class _NewsPageState extends State<NewsPage> {
         ),
       ),
     );
-  }
-}
+
+  // Remove duplicate build method at the end
+}}

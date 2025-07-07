@@ -1,12 +1,10 @@
+import 'package:beykoz/Pages/ProfilePage.dart';
 import 'package:flutter/material.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 import 'package:beykoz/Pages/AttendancePage.dart';
 import 'package:beykoz/Pages/AllFeaturesPage.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-<<<<<<< HEAD
 // will be used for the logo
-=======
->>>>>>> f8cd556487b4011e65d981c9f99856563f781c88
 import 'package:beykoz/Pages/SettingsPage.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -30,7 +28,7 @@ class _HomeScreenState extends State<HomeScreen> {
   bool _isLoadingRole = true;
 
   List<Widget> get _pages => [
-    DesignedHomePage(userRole: _userRole), // Artık StatefulWidget
+    DesignedHomePage(userRole: _userRole),
     WebViewPage(
       url: 'https://ois.beykoz.edu.tr/',
       username: widget.username,
@@ -74,8 +72,6 @@ class _HomeScreenState extends State<HomeScreen> {
         _isLoadingRole = false;
       });
     } else {
-      // Örnek olarak, 'teachers' koleksiyonunda da arama yapabilirsiniz.
-      // Şimdilik null bırakıyorum.
       setState(() {
         _userRole = null;
         _isLoadingRole = false;
@@ -103,8 +99,27 @@ class _HomeScreenState extends State<HomeScreen> {
 
     return Scaffold(
       body: IndexedStack(index: _selectedIndex, children: _pages),
-
-      floatingActionButton: isDeveloper ? _buildSettingsButton(context) : null,
+      bottomNavigationBar: BottomNavigationBar(
+        items: const <BottomNavigationBarItem>[
+          BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Ana Sayfa'),
+          BottomNavigationBarItem(icon: Icon(Icons.web), label: 'OIS'),
+          BottomNavigationBarItem(icon: Icon(Icons.login), label: 'Online'),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.check_circle),
+            label: 'Yoklama',
+          ),
+        ],
+        currentIndex: _selectedIndex,
+        selectedItemColor: Colors.white,
+        unselectedItemColor: Colors.grey,
+        backgroundColor: const Color(0xFF802629),
+        type: BottomNavigationBarType.fixed,
+        onTap: _onItemTapped,
+      ),
+      // Ayar çarkı sadece developer için
+      floatingActionButton: isDeveloper
+          ? _buildSettingsButton(context)
+          : null,
       floatingActionButtonLocation: FloatingActionButtonLocation.endTop,
     );
   }
@@ -192,7 +207,6 @@ class _DesignedHomePageState extends State<DesignedHomePage> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              // Bu fonksiyon, açılır menüyü içerecek şekilde düzenlendi
               _buildTopButtons(context),
               const SizedBox(height: 24),
               _buildSectionTitle(
@@ -243,11 +257,12 @@ class _DesignedHomePageState extends State<DesignedHomePage> {
               const SizedBox(height: 15),
               _buildSectionTitle('DUYURULAR'),
               const SizedBox(height: 12),
+
+              // DEĞİŞİKLİK 1: Kartlar artık tıklanabilir ve ilgili linklere yönlendirir
               _buildAnnouncementCard(
                 context: context,
                 imagePath: 'assets/images/mezuniyettoreni.jpg',
-                url:
-                    'https://www.beykoz.edu.tr/haber/5581-2025-mezuniyet-toreni',
+                url: 'https://www.beykoz.edu.tr/haber/5581-2025-mezuniyet-toreni',
               ),
               const SizedBox(height: 16),
               _buildAnnouncementCard(
@@ -264,7 +279,6 @@ class _DesignedHomePageState extends State<DesignedHomePage> {
     );
   }
 
-  // Bu fonksiyondaki ana değişiklik
   Widget _buildTopButtons(BuildContext context) {
     return Row(
       children: [
@@ -492,6 +506,49 @@ class _DesignedHomePageState extends State<DesignedHomePage> {
   }
 
   Widget _buildFrequentlyUsedGrid() {
+    // ... (This part of the code is unchanged)
+    final List<Map<String, dynamic>> frequentlyUsed = [
+      {
+        'label': 'Transkript',
+        'url': 'https://ois.beykoz.edu.tr/ogrenciler/belge/transkript',
+        'icon': FontAwesomeIcons.fileInvoice, // DEĞİŞTİRİLDİ
+      },
+      {
+        'label': 'Karne',
+        'url': 'https://ois.beykoz.edu.tr/ogrenciler/belge/ogrkarne',
+        'icon': FontAwesomeIcons.award, // DEĞİŞTİRİLDİ
+      },
+      {
+        'label': 'Ders Programı',
+        'url': 'https://ois.beykoz.edu.tr/ogrenciler/belge/ogrdersprogrami',
+        'icon': FontAwesomeIcons.calendarWeek, // DEĞİŞTİRİLDİ
+      },
+      {
+        'label': 'Hazırlık Karne',
+        'url': 'https://ois.beykoz.edu.tr/hazirlik/hazirliksinav/ogrpreptranskript',
+        'icon': FontAwesomeIcons.bookReader, // DEĞİŞTİRİLDİ
+      },
+      {
+        'label': 'Ders Onay Belgesi',
+        'url': 'https://ois.beykoz.edu.tr/ogrenciler/belge/dersdanismanonay',
+        'icon': FontAwesomeIcons.stamp, // DEĞİŞTİRİLDİ
+      },
+      {
+        'label': 'Kesin Kayıt Belgesi',
+        'url': 'https://ois.beykoz.edu.tr/ogrenciler/belge/kesinkayitbelgesi',
+        'icon': FontAwesomeIcons.idCard, // DEĞİŞTİRİLDİ
+      },
+      {
+        'label': 'Online Belge Talep',
+        'url': 'https://ois.beykoz.edu.tr/ogrenciler/belgetalep/duzenle2',
+        'icon': FontAwesomeIcons.paperPlane, // DEĞİŞTİRİLDİ
+      },
+      {
+        'label': 'Sınav Programı',
+        'url': 'https://ois.beykoz.edu.tr/ogrenciler/belge/sinavprogrami',
+        'icon': FontAwesomeIcons.calendarCheck, // DEĞİŞTİRİLDİ
+      },
+    ];
     return GridView.builder(
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
@@ -559,6 +616,7 @@ class _DesignedHomePageState extends State<DesignedHomePage> {
     );
   }
 
+  // DEĞİŞİKLİK 2: _buildAnnouncementCard metodu artık tıklanabilir ve dinamik.
   Widget _buildAnnouncementCard({
     required BuildContext context,
     required String imagePath,
@@ -566,9 +624,14 @@ class _DesignedHomePageState extends State<DesignedHomePage> {
   }) {
     return InkWell(
       onTap: () {
+        // Tıklandığında WebViewPage'i aç ve ilgili URL'i gönder.
         Navigator.push(
           context,
-          MaterialPageRoute(builder: (context) => WebViewPage(url: url)),
+          MaterialPageRoute(
+            builder: (context) => WebViewPage(
+              url: url,
+            ),
+          ),
         );
       },
       borderRadius: BorderRadius.circular(16),
@@ -587,7 +650,8 @@ class _DesignedHomePageState extends State<DesignedHomePage> {
   }
 }
 
-// WebViewPage kodunun bu kısmı değişmedi
+// --- WEBVIEW PAGE ---
+// ... (This part of the code is unchanged)
 class WebViewPage extends StatefulWidget {
   final String url;
   final String? username;
@@ -645,7 +709,7 @@ class _WebViewPageState extends State<WebViewPage>
                 username = username.substring(0, atIndex);
               }
               final loginJs =
-                  '''
+              '''
                 (function() {
                   var username = "$username";
                   var password = "${widget.password}";
