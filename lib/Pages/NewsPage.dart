@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 
 
@@ -18,7 +17,7 @@ class _NewsPageState extends State<NewsPage> {
       'adminAvatar': 'assets/admin1.jpg',
       'timestamp': '2 saat önce',
       'content':
-          'Bahar dönemi kayıt işlemleri 15 Mart tarihinde başlayacaktır. Detaylı bilgi için öğrenci işleri birimine başvurunuz.',
+      'Bahar dönemi kayıt işlemleri 15 Mart tarihinde başlayacaktır. Detaylı bilgi için öğrenci işleri birimine başvurunuz.',
       'image': 'assets/kayit.jpg',
       'likes': 45,
       'comments': 12,
@@ -30,7 +29,7 @@ class _NewsPageState extends State<NewsPage> {
       'adminAvatar': 'assets/admin2.jpg',
       'timestamp': '5 saat önce',
       'content':
-          'Üniversitemiz spor festivaline tüm öğrencilerimizi davet ediyoruz! 🎉 Kayıtlar başladı.',
+      'Üniversitemiz spor festivaline tüm öğrencilerimizi davet ediyoruz! 🎉 Kayıtlar başladı.',
       'image': 'assets/festival.jpg',
       'likes': 128,
       'comments': 34,
@@ -42,7 +41,7 @@ class _NewsPageState extends State<NewsPage> {
       'adminAvatar': 'assets/admin3.jpg',
       'timestamp': '1 gün önce',
       'content':
-          'Final sınavları programı açıklandı. Öğrenci bilgi sisteminden kontrol edebilirsiniz.',
+      'Final sınavları programı açıklandı. Öğrenci bilgi sisteminden kontrol edebilirsiniz.',
       'image': null,
       'likes': 89,
       'comments': 23,
@@ -89,8 +88,13 @@ class _NewsPageState extends State<NewsPage> {
         },
         child: ListView.builder(
           padding: EdgeInsets.symmetric(vertical: 8),
-          itemCount: posts.length,
+          // Değişiklik 1: itemCount'u 1 artırıyoruz.
+          itemCount: posts.length + 1,
           itemBuilder: (context, index) {
+            // Değişiklik 2: Eğer index listenin son elemanı ise, boşluk ekliyoruz.
+            if (index == posts.length) {
+              return SizedBox(height: 100); // Sanal boşluk
+            }
             return _buildPostCard(posts[index]);
           },
         ),
@@ -255,9 +259,9 @@ class _NewsPageState extends State<NewsPage> {
   }
 
   void _showCommentsBottomSheet(
-    BuildContext context,
-    Map<String, dynamic> post,
-  ) {
+      BuildContext context,
+      Map<String, dynamic> post,
+      ) {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -428,6 +432,5 @@ class _NewsPageState extends State<NewsPage> {
         ),
       ),
     );
-
-  // Remove duplicate build method at the end
-}}
+  }
+}

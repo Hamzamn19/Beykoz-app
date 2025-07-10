@@ -608,6 +608,8 @@ class _DesignedHomePageState extends State<DesignedHomePage> {
                   fontWeight: FontWeight.bold,
                   height: 1.1,
                 ),
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
               ),
             ],
           ),
