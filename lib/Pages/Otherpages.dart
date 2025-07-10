@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'Transportation.dart'; // تأكد من أن هذا الملف موجود وصحيح
+import 'Transportation.dart'; // Make sure this file exists and is correct
+import 'AcademicStaffPage.dart'; // Import the new AcademicStaffPage
 
 class OtherPages extends StatelessWidget {
   const OtherPages({super.key});
 
-  // دالة لفتح الرابط، لم تتغير
+  // Function to launch URL
   Future<void> _launchUrl(String url) async {
     final uri = Uri.parse(url);
     if (!await launchUrl(uri, mode: LaunchMode.inAppWebView)) {
@@ -15,8 +16,7 @@ class OtherPages extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // قائمة جديدة من العناصر باستخدام الفئة المساعدة الجديدة
-    // لاحظ أن كل عنصر يحدد دالة onTap الخاصة به
+    // List of items using the helper class
     final List<_ActionItem> items = [
       _ActionItem(
         icon: Icons.podcasts,
@@ -63,16 +63,27 @@ class OtherPages extends StatelessWidget {
           'https://www.beykoz.edu.tr/icerik/5274-basin-bultenleri',
         ),
       ),
-      // -- العنصر الجديد المضاف --
-      // هذا العنصر يقوم بالانتقال إلى صفحة أخرى بدلاً من فتح رابط
+      // --- Transportation and Communication Item ---
       _ActionItem(
         icon: Icons.directions_bus,
-        color: const Color(0xFF0A285F), // نفس لون الزر القديم
+        color: const Color(0xFF0A285F), // Same as the old button color
         label: 'Ulaşım ve İletişim',
         onTap: () {
           Navigator.push(
             context,
             MaterialPageRoute(builder: (context) => TransportationPage()),
+          );
+        },
+      ),
+      // --- New Academic Staff Item ---
+      _ActionItem(
+        icon: Icons.school, // You can choose an appropriate icon
+        color: Colors.brown, // Choose a suitable color
+        label: 'Akademik Kadro',
+        onTap: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => AcademicStaffPage()),
           );
         },
       ),
@@ -82,7 +93,7 @@ class OtherPages extends StatelessWidget {
       appBar: AppBar(
         title: const Text(
           'Diğer Sayfalar',
-        ), // تم تعديل العنوان ليعكس المحتوى بشكل أفضل
+        ), // Title adjusted to better reflect content
         backgroundColor: const Color(0xFF802629),
         foregroundColor: Colors.white,
       ),
@@ -91,26 +102,26 @@ class OtherPages extends StatelessWidget {
         child: Column(
           children: [
             const Text(
-              'Önemli Bağlantılar ve Servisler', // تم تعديل العنوان
+              'Önemli Bağlantılar ve Servisler', // Title adjusted
               style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 24),
-            // الآن الشبكة هي العنصر الوحيد القابل للتوسيع وتملأ المساحة
+            // The grid is now the only expandable element and fills the space
             Expanded(
               child: GridView.builder(
-                // استخدام GridView.builder لتحسين الأداء إذا كانت القائمة كبيرة
+                // Using GridView.builder for better performance if the list is large
                 gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 2, // عدد الأعمدة
+                  crossAxisCount: 2, // Number of columns
                   mainAxisSpacing: 16,
                   crossAxisSpacing: 16,
                   childAspectRatio:
-                      1.1, // يمكنك تعديل هذه النسبة لتغيير ارتفاع العناصر
+                      1.1, // You can adjust this ratio to change item height
                 ),
                 itemCount: items.length,
                 itemBuilder: (context, index) {
                   final item = items[index];
                   return InkWell(
-                    // استدعاء دالة onTap الخاصة بالعنصر عند الضغط عليه
+                    // Call the item's onTap function when pressed
                     onTap: item.onTap,
                     borderRadius: BorderRadius.circular(16),
                     child: Container(
@@ -153,14 +164,15 @@ class OtherPages extends StatelessWidget {
   }
 }
 
-// -- الفئة المساعدة الجديدة --
-// هذه الفئة تصف أي عنصر قابل للتنفيذ في الشبكة
-// تحتوي على أيقونة ولون وعنوان ودالة (onTap) لتنفيذها عند الضغط
+// --- Helper Class ---
+// This class describes any executable item in the grid
+// It contains an icon, color, label, and a function (onTap) to execute when pressed
 class _ActionItem {
   final IconData icon;
   final Color color;
   final String label;
-  final VoidCallback onTap; // دالة لا ترجع قيمة ولا تأخذ متغيرات
+  final VoidCallback
+  onTap; // Function that returns no value and takes no parameters
 
   const _ActionItem({
     required this.icon,
