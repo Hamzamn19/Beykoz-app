@@ -12,6 +12,8 @@ class _AcademicStaffPageState extends State<AcademicStaffPage>
     with TickerProviderStateMixin {
   late AnimationController _fadeController;
   late Animation<double> _fadeAnimation;
+  static const Color primaryColor = Color(0xFF802629);
+  static const Color cardColor = Color(0xFFECECEC);
 
   @override
   void initState() {
@@ -34,7 +36,6 @@ class _AcademicStaffPageState extends State<AcademicStaffPage>
       if (await canLaunchUrl(uri)) {
         await launchUrl(uri, mode: LaunchMode.externalApplication);
       } else {
-        // Hata durumunda kullanıcıya bilgi ver
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
@@ -106,16 +107,21 @@ class _AcademicStaffPageState extends State<AcademicStaffPage>
       expandedHeight: 200.0,
       floating: false,
       pinned: true,
+      iconTheme: const IconThemeData(
+        color: Colors.white,
+      ), // Geri okunu beyaz yapar
       flexibleSpace: FlexibleSpaceBar(
         title: const Text(
           'Akademik Kadro',
           style: TextStyle(
             fontWeight: FontWeight.bold,
+            color: Colors.white,
+            fontSize: 18,
             shadows: [
               Shadow(
                 offset: Offset(0, 1),
                 blurRadius: 3.0,
-                color: Colors.black26,
+                color: Colors.black54,
               ),
             ],
           ),
@@ -123,9 +129,9 @@ class _AcademicStaffPageState extends State<AcademicStaffPage>
         background: Container(
           decoration: const BoxDecoration(
             gradient: LinearGradient(
-              begin: Alignment.topCenter,
-              end: Alignment.bottomCenter,
-              colors: [Color(0xFF802629), Color(0xFF9D3034), Color(0xFF802629)],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [Color(0xFF802629), Color(0xFFB2453C)],
             ),
           ),
           child: Stack(
@@ -158,6 +164,7 @@ class _AcademicStaffPageState extends State<AcademicStaffPage>
           ),
         ),
       ),
+      backgroundColor: primaryColor,
     );
   }
 
@@ -168,21 +175,23 @@ class _AcademicStaffPageState extends State<AcademicStaffPage>
         Row(
           children: [
             Container(
-              padding: const EdgeInsets.all(12),
+              padding: const EdgeInsets.all(10),
               decoration: BoxDecoration(
                 gradient: const LinearGradient(
-                  colors: [Color(0xFF802629), Color(0xFF9D3034)],
+                  colors: [Color(0xFF802629), Color(0xFFB2453C)],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
                 ),
                 borderRadius: BorderRadius.circular(12),
                 boxShadow: [
                   BoxShadow(
-                    color: const Color(0xFF802629).withOpacity(0.3),
-                    blurRadius: 8,
-                    offset: const Offset(0, 4),
+                    color: Colors.black.withOpacity(0.15),
+                    blurRadius: 6,
+                    offset: const Offset(0, 2),
                   ),
                 ],
               ),
-              child: const Icon(Icons.school, color: Colors.white, size: 24),
+              child: const Icon(Icons.school, color: Colors.white, size: 30),
             ),
             const SizedBox(width: 16),
             const Expanded(
@@ -192,7 +201,7 @@ class _AcademicStaffPageState extends State<AcademicStaffPage>
                   Text(
                     'Fakülteler ve Akademik Birimler',
                     style: TextStyle(
-                      fontSize: 24,
+                      fontSize: 20,
                       fontWeight: FontWeight.bold,
                       color: Color(0xFF802629),
                     ),
@@ -200,7 +209,7 @@ class _AcademicStaffPageState extends State<AcademicStaffPage>
                   SizedBox(height: 4),
                   Text(
                     'Fakülteler ve Yüksekokullar',
-                    style: TextStyle(fontSize: 16, color: Colors.grey),
+                    style: TextStyle(fontSize: 14, color: Colors.grey),
                   ),
                 ],
               ),
@@ -213,19 +222,15 @@ class _AcademicStaffPageState extends State<AcademicStaffPage>
 
   Widget _buildStatsCard() {
     return Container(
-      padding: const EdgeInsets.all(20),
+      padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        gradient: const LinearGradient(
-          colors: [Color(0xFFF8F9FA), Color(0xFFE9ECEF)],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
+        color: cardColor,
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
-            blurRadius: 10,
-            offset: const Offset(0, 5),
+            color: Colors.black.withOpacity(0.1),
+            blurRadius: 6,
+            offset: const Offset(0, 2),
           ),
         ],
       ),
@@ -244,23 +249,34 @@ class _AcademicStaffPageState extends State<AcademicStaffPage>
     return Column(
       children: [
         Container(
-          padding: const EdgeInsets.all(8),
+          padding: const EdgeInsets.all(10),
           decoration: BoxDecoration(
-            color: const Color(0xFF802629).withOpacity(0.1),
-            borderRadius: BorderRadius.circular(8),
+            gradient: const LinearGradient(
+              colors: [Color(0xFF802629), Color(0xFFB2453C)],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+            ),
+            borderRadius: BorderRadius.circular(12),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.15),
+                blurRadius: 6,
+                offset: const Offset(0, 2),
+              ),
+            ],
           ),
-          child: Icon(icon, color: const Color(0xFF802629), size: 24),
+          child: Icon(icon, color: Colors.white, size: 30),
         ),
         const SizedBox(height: 8),
         Text(
           number,
           style: const TextStyle(
-            fontSize: 24,
+            fontSize: 20,
             fontWeight: FontWeight.bold,
             color: Color(0xFF802629),
           ),
         ),
-        Text(label, style: const TextStyle(fontSize: 14, color: Colors.grey)),
+        Text(label, style: const TextStyle(fontSize: 12, color: Colors.grey)),
       ],
     );
   }
@@ -270,7 +286,7 @@ class _AcademicStaffPageState extends State<AcademicStaffPage>
       FacultyData(
         'İşletme ve Yönetim Bilimleri Fakültesi',
         Icons.business_center,
-        const LinearGradient(colors: [Color(0xFF4A90E2), Color(0xFF357ABD)]),
+        const LinearGradient(colors: [Color(0xFF802629), Color(0xFFB2453C)]),
         [
           PersonData(
             name: 'Prof. Dr. Ayşe Yılmaz (Dekan)',
@@ -299,7 +315,7 @@ class _AcademicStaffPageState extends State<AcademicStaffPage>
       FacultyData(
         'Sosyal Bilimler Fakültesi',
         Icons.groups,
-        const LinearGradient(colors: [Color(0xFF26A69A), Color(0xFF00695C)]),
+        const LinearGradient(colors: [Color(0xFF802629), Color(0xFFB2453C)]),
         [
           PersonData(
             name: 'Prof. Dr. Zeynep Arslan (Dekan)',
@@ -328,7 +344,7 @@ class _AcademicStaffPageState extends State<AcademicStaffPage>
       FacultyData(
         'Mühendislik ve Mimarlık Fakültesi',
         Icons.architecture,
-        const LinearGradient(colors: [Color(0xFFFF7043), Color(0xFFD84315)]),
+        const LinearGradient(colors: [Color(0xFF802629), Color(0xFFB2453C)]),
         [
           PersonData(
             name: 'Prof. Dr. Ragıp Kutay KARACA',
@@ -357,7 +373,7 @@ class _AcademicStaffPageState extends State<AcademicStaffPage>
       FacultyData(
         'Sanat ve Tasarım Fakültesi',
         Icons.palette,
-        const LinearGradient(colors: [Color(0xFF8E24AA), Color(0xFF6A1B9A)]),
+        const LinearGradient(colors: [Color(0xFF802629), Color(0xFFB2453C)]),
         [
           PersonData(
             name: 'Prof. Dr. Didem Kurt (Dekan)',
@@ -388,7 +404,7 @@ class _AcademicStaffPageState extends State<AcademicStaffPage>
       FacultyData(
         'Beykoz Lojistik Meslek Yüksekokulu',
         Icons.local_shipping,
-        const LinearGradient(colors: [Color(0xFF43A047), Color(0xFF2E7D32)]),
+        const LinearGradient(colors: [Color(0xFF802629), Color(0xFFB2453C)]),
         [
           PersonData(
             name: 'Prof. Dr. Mehmet Özkan (Müdür)',
@@ -416,7 +432,7 @@ class _AcademicStaffPageState extends State<AcademicStaffPage>
       FacultyData(
         'Yabancı Diller Yüksekokulu',
         Icons.language,
-        const LinearGradient(colors: [Color(0xFFE91E63), Color(0xFFC2185B)]),
+        const LinearGradient(colors: [Color(0xFF802629), Color(0xFFB2453C)]),
         [
           PersonData(
             name: 'Prof. Dr. Sarah Johnson (Müdür)',
@@ -445,7 +461,7 @@ class _AcademicStaffPageState extends State<AcademicStaffPage>
       FacultyData(
         'Meslek Yüksekokulu',
         Icons.work,
-        const LinearGradient(colors: [Color(0xFF795548), Color(0xFF5D4037)]),
+        const LinearGradient(colors: [Color(0xFF802629), Color(0xFFB2453C)]),
         [
           PersonData(
             name: 'Prof. Dr. Ahmet Demir (Müdür)',
@@ -474,7 +490,7 @@ class _AcademicStaffPageState extends State<AcademicStaffPage>
       FacultyData(
         'Sivil Havacılık Yüksekokulu',
         Icons.flight,
-        const LinearGradient(colors: [Color(0xFF2196F3), Color(0xFF1976D2)]),
+        const LinearGradient(colors: [Color(0xFF802629), Color(0xFFB2453C)]),
         [
           PersonData(
             name: 'Prof. Dr. Pilot Cenk Uçar (Müdür)',
@@ -503,66 +519,87 @@ class _AcademicStaffPageState extends State<AcademicStaffPage>
     ];
 
     return Column(
-      children: faculties.asMap().entries.map((entry) {
-        final index = entry.key;
-        final faculty = entry.value;
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Container(
+          padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
+          decoration: BoxDecoration(
+            color: primaryColor,
+            borderRadius: BorderRadius.circular(8),
+          ),
+          child: const Text(
+            'FAKÜLTELER',
+            style: TextStyle(
+              color: Colors.white,
+              fontWeight: FontWeight.bold,
+              fontSize: 16,
+            ),
+          ),
+        ),
+        const SizedBox(height: 12),
+        ...faculties.asMap().entries.map((entry) {
+          final index = entry.key;
+          final faculty = entry.value;
 
-        return AnimatedContainer(
-          duration: Duration(milliseconds: 300 + (index * 100)),
-          curve: Curves.easeInOut,
-          margin: const EdgeInsets.only(bottom: 16),
-          child: _buildFacultyCard(faculty),
-        );
-      }).toList(),
+          return AnimatedContainer(
+            duration: Duration(milliseconds: 300 + (index * 100)),
+            curve: Curves.easeInOut,
+            margin: const EdgeInsets.only(bottom: 16),
+            child: _buildFacultyCard(faculty),
+          );
+        }).toList(),
+      ],
     );
   }
 
   Widget _buildFacultyCard(FacultyData faculty) {
     return Card(
-      elevation: 8,
-      shadowColor: Colors.black.withOpacity(0.1),
+      elevation: 0,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       child: Container(
         decoration: BoxDecoration(
+          color: cardColor,
           borderRadius: BorderRadius.circular(16),
-          gradient: LinearGradient(
-            colors: [Colors.white, Colors.grey.shade50],
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-          ),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.1),
+              blurRadius: 6,
+              offset: const Offset(0, 2),
+            ),
+          ],
         ),
         child: Theme(
           data: Theme.of(context).copyWith(
             dividerColor: Colors.transparent,
-            splashColor: faculty.gradient.colors.first.withOpacity(0.1),
+            splashColor: primaryColor.withOpacity(0.1),
           ),
           child: ExpansionTile(
             tilePadding: const EdgeInsets.symmetric(
-              horizontal: 20,
+              horizontal: 16,
               vertical: 8,
             ),
             childrenPadding: const EdgeInsets.only(bottom: 16),
             leading: Container(
-              padding: const EdgeInsets.all(12),
+              padding: const EdgeInsets.all(10),
               decoration: BoxDecoration(
                 gradient: faculty.gradient,
                 borderRadius: BorderRadius.circular(12),
                 boxShadow: [
                   BoxShadow(
-                    color: faculty.gradient.colors.first.withOpacity(0.3),
-                    blurRadius: 8,
-                    offset: const Offset(0, 4),
+                    color: Colors.black.withOpacity(0.15),
+                    blurRadius: 6,
+                    offset: const Offset(0, 2),
                   ),
                 ],
               ),
-              child: Icon(faculty.icon, color: Colors.white, size: 24),
+              child: Icon(faculty.icon, color: Colors.white, size: 30),
             ),
             title: Text(
               faculty.name,
               style: const TextStyle(
-                fontSize: 18,
+                fontSize: 16,
                 fontWeight: FontWeight.bold,
-                color: Color(0xFF2C3E50),
+                color: Color(0xFF802629),
               ),
             ),
             subtitle: Row(
@@ -570,37 +607,30 @@ class _AcademicStaffPageState extends State<AcademicStaffPage>
               children: [
                 Text(
                   '${faculty.staff.length} akademisyen',
-                  style: TextStyle(fontSize: 14, color: Colors.grey.shade600),
+                  style: TextStyle(fontSize: 12, color: Colors.grey.shade600),
                 ),
                 GestureDetector(
-                  onTap: () =>
-                      _launchURL(faculty.webUrl), // Fakülte geneli CV'leri için
+                  onTap: () => _launchURL(faculty.webUrl),
                   child: Container(
                     padding: const EdgeInsets.symmetric(
                       horizontal: 8,
                       vertical: 4,
                     ),
                     decoration: BoxDecoration(
-                      color: faculty.gradient.colors.first.withOpacity(0.1),
+                      color: primaryColor.withOpacity(0.1),
                       borderRadius: BorderRadius.circular(12),
-                      border: Border.all(
-                        color: faculty.gradient.colors.first.withOpacity(0.3),
-                      ),
+                      border: Border.all(color: primaryColor.withOpacity(0.3)),
                     ),
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        Icon(
-                          Icons.link, // Daha genel bir link ikonu
-                          size: 14,
-                          color: faculty.gradient.colors.first,
-                        ),
+                        Icon(Icons.link, size: 14, color: primaryColor),
                         const SizedBox(width: 4),
                         Text(
-                          'Fakülte Sayfası', // Metin güncellendi
+                          'Fakülte Sayfası',
                           style: TextStyle(
                             fontSize: 12,
-                            color: faculty.gradient.colors.first,
+                            color: primaryColor,
                             fontWeight: FontWeight.w500,
                           ),
                         ),
@@ -612,27 +642,34 @@ class _AcademicStaffPageState extends State<AcademicStaffPage>
             ),
             children: faculty.staff.asMap().entries.map((entry) {
               final index = entry.key;
-              final person = entry.value; // Artık PersonData nesnesi
+              final person = entry.value;
 
               return AnimatedContainer(
                 duration: Duration(milliseconds: 200 + (index * 50)),
-                margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 4),
+                margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
                 child: Container(
                   padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
                     color:
                         (person.name.contains('Dekan') ||
                             person.name.contains('Müdür'))
-                        ? faculty.gradient.colors.first.withOpacity(0.1)
-                        : Colors.grey.shade50,
+                        ? primaryColor.withOpacity(0.1)
+                        : cardColor,
                     borderRadius: BorderRadius.circular(8),
                     border: Border.all(
                       color:
                           (person.name.contains('Dekan') ||
                               person.name.contains('Müdür'))
-                          ? faculty.gradient.colors.first.withOpacity(0.3)
+                          ? primaryColor.withOpacity(0.3)
                           : Colors.transparent,
                     ),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.1),
+                        blurRadius: 6,
+                        offset: const Offset(0, 2),
+                      ),
+                    ],
                   ),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -642,9 +679,7 @@ class _AcademicStaffPageState extends State<AcademicStaffPage>
                           Container(
                             padding: const EdgeInsets.all(6),
                             decoration: BoxDecoration(
-                              color: faculty.gradient.colors.first.withOpacity(
-                                0.2,
-                              ),
+                              color: primaryColor.withOpacity(0.2),
                               borderRadius: BorderRadius.circular(6),
                             ),
                             child: Icon(
@@ -652,7 +687,7 @@ class _AcademicStaffPageState extends State<AcademicStaffPage>
                                       person.name.contains('Müdür'))
                                   ? Icons.star
                                   : Icons.person_outline,
-                              color: faculty.gradient.colors.first,
+                              color: primaryColor,
                               size: 16,
                             ),
                           ),
@@ -661,13 +696,13 @@ class _AcademicStaffPageState extends State<AcademicStaffPage>
                             child: Text(
                               person.name,
                               style: TextStyle(
-                                fontSize: 16,
+                                fontSize: 14,
                                 fontWeight:
                                     (person.name.contains('Dekan') ||
                                         person.name.contains('Müdür'))
                                     ? FontWeight.bold
                                     : FontWeight.normal,
-                                color: const Color(0xFF2C3E50),
+                                color: Color(0xFF802629),
                               ),
                             ),
                           ),
@@ -678,7 +713,7 @@ class _AcademicStaffPageState extends State<AcademicStaffPage>
                         Text(
                           person.about!,
                           style: TextStyle(
-                            fontSize: 14,
+                            fontSize: 12,
                             color: Colors.grey.shade700,
                             fontStyle: FontStyle.italic,
                           ),
@@ -694,13 +729,10 @@ class _AcademicStaffPageState extends State<AcademicStaffPage>
                               vertical: 6,
                             ),
                             decoration: BoxDecoration(
-                              color: faculty.gradient.colors.first.withOpacity(
-                                0.1,
-                              ),
-                              borderRadius: BorderRadius.circular(15),
+                              color: primaryColor.withOpacity(0.1),
+                              borderRadius: BorderRadius.circular(12),
                               border: Border.all(
-                                color: faculty.gradient.colors.first
-                                    .withOpacity(0.3),
+                                color: primaryColor.withOpacity(0.3),
                               ),
                             ),
                             child: Row(
@@ -708,15 +740,15 @@ class _AcademicStaffPageState extends State<AcademicStaffPage>
                               children: [
                                 Icon(
                                   Icons.description,
-                                  size: 16,
-                                  color: faculty.gradient.colors.first,
+                                  size: 14,
+                                  color: primaryColor,
                                 ),
                                 const SizedBox(width: 6),
                                 Text(
                                   'CV / Özgeçmiş',
                                   style: TextStyle(
-                                    fontSize: 13,
-                                    color: faculty.gradient.colors.first,
+                                    fontSize: 12,
+                                    color: primaryColor,
                                     fontWeight: FontWeight.w500,
                                   ),
                                 ),
@@ -737,22 +769,20 @@ class _AcademicStaffPageState extends State<AcademicStaffPage>
   }
 }
 
-// Yeni PersonData sınıfı
 class PersonData {
   final String name;
-  final String? about; // Hakkında bilgisi, opsiyonel
-  final String? cvUrl; // CV linki, opsiyonel
+  final String? about;
+  final String? cvUrl;
 
   PersonData({required this.name, this.about, this.cvUrl});
 }
 
-// FacultyData sınıfı PersonData listesini içerecek şekilde güncellendi
 class FacultyData {
   final String name;
   final IconData icon;
   final LinearGradient gradient;
-  final List<PersonData> staff; // PersonData listesi oldu
-  final String webUrl; // Fakültenin kendi web sayfası linki
+  final List<PersonData> staff;
+  final String webUrl;
 
   FacultyData(this.name, this.icon, this.gradient, this.staff, this.webUrl);
 }
