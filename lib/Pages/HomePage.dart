@@ -320,22 +320,23 @@ class _DesignedHomePageState extends State<DesignedHomePage> {
   Widget _buildTopButtons(BuildContext context) {
     return Consumer<ThemeService>(
       builder: (context, themeService, child) {
-        return Row(
-          children: [
-            Expanded(
-              flex: 3,
-              child: GestureDetector(
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) =>
-                          const WebViewPage(url: 'https://www.beykoz.edu.tr/'),
-                    ),
-                  );
-                },
-                child: Align(
-                  alignment: Alignment.centerLeft,
+        // Üst bölümün yüksekliğini sabit tutmak için bir SizedBox ekliyoruz.
+        return SizedBox(
+          height: 48, // Logonun orijinal yüksekliği ile aynı
+          child: Stack( // <-- Yapıyı Stack olarak değiştiriyoruz
+            children: [
+              // 1. Ortalanmış Logo
+              Center( // <-- Logoyu tam ortaya almak için Center widget'ı kullanıyoruz
+                child: GestureDetector(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) =>
+                        const WebViewPage(url: 'https://www.beykoz.edu.tr/'),
+                      ),
+                    );
+                  },
                   child: Image.asset(
                     'assets/images/logo.png',
                     fit: BoxFit.contain,
@@ -343,146 +344,147 @@ class _DesignedHomePageState extends State<DesignedHomePage> {
                   ),
                 ),
               ),
-            ),
-            const SizedBox(width: 16),
-            Expanded(
-              flex: 2,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                children: [
-                  _buildCircularButton(
-                    icon: Icons.settings,
-                    backgroundColor: themeService.isDarkMode 
-                        ? ThemeService.darkCardColor 
-                        : const Color(0xFFECECEC),
-                    iconColor: themeService.isDarkMode 
-                        ? ThemeService.darkPrimaryColor 
-                        : const Color(0xFF802629),
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => SettingsPage()),
-                      );
-                    },
-                  ),
-              // Zil düğmesini açılır menü ile değiştirme
-              PopupMenuButton<String>(
-                offset: const Offset(0, 50),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(16),
-                  side: const BorderSide(color: Color(0xFF802629), width: 1),
-                ),
-                color: Colors.white,
-                elevation: 8,
-                onSelected: (value) {
-                  // Seçilen değere göre eylemi belirle
-                  if (value == 'profile') {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => ProfilePage()),
-                    );
-                  } else if (value == 'logout') {
-                    // Çıkış yapma mantığını buraya ekleyebilirsiniz
-                    // Örneğin: FirebaseAuth.instance.signOut();
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('Başarıyla çıkış yapıldı')),
-                    );
-                  }
-                },
-                itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
-                  PopupMenuItem<String>(
-                    enabled: false,
-                    padding: const EdgeInsets.symmetric(
-                      vertical: 12,
-                      horizontal: 8,
+
+              // 2. Sağa Yaslanmış Butonlar
+              Align( // <-- Butonları sağa yaslamak için Align widget'ı kullanıyoruz
+                alignment: Alignment.centerRight,
+                child: Row(
+                  mainAxisSize: MainAxisSize.min, // Row'un sadece çocuklar kadar yer kaplamasını sağlar
+                  children: [
+                    _buildCircularButton(
+                      icon: Icons.settings,
+                      backgroundColor: themeService.isDarkMode
+                          ? ThemeService.darkCardColor
+                          : const Color(0xFFECECEC),
+                      iconColor: themeService.isDarkMode
+                          ? ThemeService.darkPrimaryColor
+                          : const Color(0xFF802629),
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => SettingsPage()),
+                        );
+                      },
                     ),
-                    child: Row(
-                      children: [
-                        CircleAvatar(
-                          radius: 22,
-                          backgroundColor: const Color(0xFF802629),
-                          child: const Icon(
-                            Icons.person,
-                            color: Colors.white,
-                            size: 28,
-                          ),
-                        ),
-                        const SizedBox(width: 12),
-                        const Text(
-                          'Profilim',
-                          style: TextStyle(
-                            color: Color(0xFF802629),
-                            fontWeight: FontWeight.bold,
-                            fontSize: 18,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  const PopupMenuDivider(),
-                  PopupMenuItem<String>(
-                    value: 'profile',
-                    child: Row(
-                      children: [
-                        const Icon(
-                          Icons.info_outline,
-                          color: Color(0xFF802629),
-                        ),
-                        const SizedBox(width: 10),
-                        const Text(
-                          'Profil Bilgilerini Görüntüle',
-                          style: TextStyle(
-                            color: Color(0xFF802629),
-                            fontWeight: FontWeight.w500,
-                            fontSize: 15,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  PopupMenuItem<String>(
-                    value: 'logout',
-                    child: Row(
-                      children: [
-                        const Icon(Icons.logout, color: Colors.red),
-                        const SizedBox(width: 10),
-                        const Text(
-                          'Çıkış Yap',
-                          style: TextStyle(
-                            color: Colors.red,
-                            fontWeight: FontWeight.w500,
-                            fontSize: 15,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-                // Arayüzde görünecek düğmenin stili
-                child: Container(
-                  padding: const EdgeInsets.all(10),
-                  decoration: BoxDecoration(
-                    color: const Color(0xFF802629),
-                    shape: BoxShape.circle,
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withOpacity(0.15),
-                        blurRadius: 6,
-                        offset: const Offset(0, 2),
+                    // ... (PopupMenuButton kodunuz burada aynen kalır)
+                    PopupMenuButton<String>(
+                      offset: const Offset(0, 50),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(16),
+                        side: const BorderSide(color: Color(0xFF802629), width: 1),
                       ),
-                    ],
-                  ),
-                  child: const Icon(
-                    Icons.person, // Profil simgesi
-                    color: Colors.white,
-                    size: 32,
-                  ),
+                      color: Colors.white,
+                      elevation: 8,
+                      onSelected: (value) {
+                        // Seçilen değere göre eylemi belirle
+                        if (value == 'profile') {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (context) => ProfilePage()),
+                          );
+                        } else if (value == 'logout') {
+                          // Çıkış yapma mantığını buraya ekleyebilirsiniz
+                          // Örneğin: FirebaseAuth.instance.signOut();
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(content: Text('Başarıyla çıkış yapıldı')),
+                          );
+                        }
+                      },
+                      itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
+                        PopupMenuItem<String>(
+                          enabled: false,
+                          padding: const EdgeInsets.symmetric(
+                            vertical: 12,
+                            horizontal: 8,
+                          ),
+                          child: Row(
+                            children: [
+                              CircleAvatar(
+                                radius: 22,
+                                backgroundColor: const Color(0xFF802629),
+                                child: const Icon(
+                                  Icons.person,
+                                  color: Colors.white,
+                                  size: 28,
+                                ),
+                              ),
+                              const SizedBox(width: 12),
+                              const Text(
+                                'Profilim',
+                                style: TextStyle(
+                                  color: Color(0xFF802629),
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 18,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        const PopupMenuDivider(),
+                        PopupMenuItem<String>(
+                          value: 'profile',
+                          child: Row(
+                            children: [
+                              const Icon(
+                                Icons.info_outline,
+                                color: Color(0xFF802629),
+                              ),
+                              const SizedBox(width: 10),
+                              const Text(
+                                'Profil Bilgilerini Görüntüle',
+                                style: TextStyle(
+                                  color: Color(0xFF802629),
+                                  fontWeight: FontWeight.w500,
+                                  fontSize: 15,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        PopupMenuItem<String>(
+                          value: 'logout',
+                          child: Row(
+                            children: [
+                              const Icon(Icons.logout, color: Colors.red),
+                              const SizedBox(width: 10),
+                              const Text(
+                                'Çıkış Yap',
+                                style: TextStyle(
+                                  color: Colors.red,
+                                  fontWeight: FontWeight.w500,
+                                  fontSize: 15,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                      // Arayüzde görünecek düğmenin stili
+                      child: Container(
+                        padding: const EdgeInsets.all(10),
+                        decoration: BoxDecoration(
+                          color: const Color(0xFF802629),
+                          shape: BoxShape.circle,
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withOpacity(0.15),
+                              blurRadius: 6,
+                              offset: const Offset(0, 2),
+                            ),
+                          ],
+                        ),
+                        child: const Icon(
+                          Icons.person, // Profil simgesi
+                          color: Colors.white,
+                          size: 20,
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
               ),
             ],
           ),
-        ),
-      ],
         );
       },
     );
@@ -501,7 +503,7 @@ class _DesignedHomePageState extends State<DesignedHomePage> {
         padding: const EdgeInsets.all(10),
         backgroundColor: backgroundColor,
       ),
-      child: Icon(icon, color: iconColor, size: 30),
+      child: Icon(icon, color: iconColor, size: 20),
     );
   }
 
