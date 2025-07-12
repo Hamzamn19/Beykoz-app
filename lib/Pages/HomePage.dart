@@ -13,6 +13,9 @@ import 'package:beykoz/data/features_data.dart';
 import 'package:beykoz/Pages/EditFavoritesPage.dart';
 import 'package:beykoz/Services/theme_service.dart';
 import 'package:provider/provider.dart';
+import 'package:url_launcher/url_launcher.dart';
+import 'Transportation.dart';
+import 'AcademicStaffPage.dart';
 
 // Main widget containing the home screen and Bottom Navigation Bar logic
 class HomeScreen extends StatefulWidget {
@@ -170,9 +173,16 @@ class DesignedHomePage extends StatefulWidget {
   State<DesignedHomePage> createState() => _DesignedHomePageState();
 }
 
-class _DesignedHomePageState extends State<DesignedHomePage> {
+class _DesignedHomePageState extends State<DesignedHomePage>
+    with SingleTickerProviderStateMixin {
   late Color primaryColor;
   late Color cardColor;
+  late AnimationController _animationController;
+  late Animation<double> _slideAnimation;
+  late Animation<double> _scaleAnimation;
+  late Animation<double> _fadeAnimation;
+  bool _isDrawerOpen = false;
+  String? _userName;
 
   List<Map<String, dynamic>> _frequentlyUsedItems = [];
   bool _isLoadingFavorites = true;
@@ -181,6 +191,130 @@ class _DesignedHomePageState extends State<DesignedHomePage> {
   void initState() {
     super.initState();
     _loadUserFavorites();
+    _fetchUserName();
+    
+    // Initialize animation controller
+    _animationController = AnimationController(
+      duration: const Duration(milliseconds: 300),
+      vsync: this,
+    );
+    
+    // Create animations
+    _slideAnimation = Tween<double>(
+      begin: 0.0,
+      end: 1.0,
+    ).animate(CurvedAnimation(
+      parent: _animationController,
+      curve: Curves.easeInOut,
+    ));
+    
+    _scaleAnimation = Tween<double>(
+      begin: 1.0,
+      end: 0.9, // Increase height back to 90% to maintain proper height
+    ).animate(CurvedAnimation(
+      parent: _animationController,
+      curve: Curves.easeInOut,
+    ));
+    
+    _fadeAnimation = Tween<double>(
+      begin: 0.0,
+      end: 1.0,
+    ).animate(CurvedAnimation(
+      parent: _animationController,
+      curve: Curves.easeInOut,
+    ));
+  }
+
+  @override
+  void dispose() {
+    _animationController.dispose();
+    super.dispose();
+  }
+
+  void _toggleDrawer() {
+    setState(() {
+      _isDrawerOpen = !_isDrawerOpen;
+    });
+    
+    if (_isDrawerOpen) {
+      _animationController.forward();
+    } else {
+      _animationController.reverse();
+    }
+  }
+
+  // Function to launch URL for sidebar items
+  Future<void> _launchUrl(String url) async {
+    final uri = Uri.parse(url);
+    if (!await launchUrl(uri, mode: LaunchMode.inAppWebView)) {
+      throw Exception('Bağlantı açılamadı: $url');
+    }
+  }
+
+  // Fetch user name from Firebase
+  Future<void> _fetchUserName() async {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user != null) {
+      // First try to get user role and student number from students collection
+      final studentDoc = await FirebaseFirestore.instance
+          .collection('students')
+          .doc(user.email)
+          .get();
+      
+      if (studentDoc.exists) {
+        final role = studentDoc.data()?['role'] as String?;
+        
+        if (role == 'teachers') {
+          // For teachers, fetch from teachers collection using email
+          final teacherDoc = await FirebaseFirestore.instance
+              .collection('teachers')
+              .doc(user.email)
+              .get();
+              
+          if (teacherDoc.exists) {
+            setState(() {
+              _userName = teacherDoc.data()?['name'] as String? ?? 'Kullanıcı';
+            });
+          } else {
+            setState(() {
+              _userName = 'Kullanıcı';
+            });
+          }
+        } else {
+          // For students, get student number and fetch from students collection
+          final studentNumber = studentDoc.data()?['studentNumber'] as String?;
+          
+          if (studentNumber != null) {
+            final nameDoc = await FirebaseFirestore.instance
+                .collection('students')
+                .doc(studentNumber)
+                .get();
+                
+            if (nameDoc.exists) {
+              setState(() {
+                _userName = nameDoc.data()?['name'] as String? ?? 'Kullanıcı';
+              });
+            } else {
+              setState(() {
+                _userName = 'Kullanıcı';
+              });
+            }
+          } else {
+            setState(() {
+              _userName = 'Kullanıcı';
+            });
+          }
+        }
+      } else {
+        setState(() {
+          _userName = 'Kullanıcı';
+        });
+      }
+    } else {
+      setState(() {
+        _userName = 'Kullanıcı';
+      });
+    }
   }
 
   @override
@@ -233,84 +367,151 @@ class _DesignedHomePageState extends State<DesignedHomePage> {
   Widget build(BuildContext context) {
     return Consumer<ThemeService>(
       builder: (context, themeService, child) {
-        return SafeArea(
-          child: SingleChildScrollView(
-            child: Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  _buildTopButtons(context),
-                  const SizedBox(height: 24),
-                  _buildSectionTitle(
-                    'FAVORİLER',
-                    onPressed: () async {
-                      final result = await Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => const EditFavoritesPage(),
-                        ),
-                      );
-                      if (result == true) {
-                        _loadUserFavorites();
+        return GestureDetector(
+          onHorizontalDragEnd: (details) {
+            // Open sidebar: swipe right (velocity > 0), only if closed
+            if (!_isDrawerOpen && details.primaryVelocity != null && details.primaryVelocity! > 300) {
+              _toggleDrawer();
+            }
+            // Close sidebar: swipe left (velocity < 0), only if open
+            if (_isDrawerOpen && details.primaryVelocity != null && details.primaryVelocity! < -300) {
+              _toggleDrawer();
+            }
+          },
+          child: Stack(
+            children: [
+              // --- GESTURE STRIP FOR OPENING SIDEBAR ---
+              if (!_isDrawerOpen)
+                Positioned(
+                  left: 0,
+                  top: 0,
+                  bottom: 0,
+                  width: 24,
+                  child: GestureDetector(
+                    behavior: HitTestBehavior.translucent,
+                    onHorizontalDragEnd: (details) {
+                      if (details.primaryVelocity != null && details.primaryVelocity! > 300) {
+                        _toggleDrawer();
                       }
                     },
+                    child: const SizedBox.expand(),
                   ),
-                  const SizedBox(height: 12),
-                  _isLoadingFavorites
-                      ? const Center(child: CircularProgressIndicator())
-                      : _buildFrequentlyUsedGrid(),
-                  const SizedBox(height: 5),
-                  Center(
-                    child: ElevatedButton(
-                      onPressed: () {
-                        showModalBottomSheet(
-                          context: context,
-                          isScrollControlled: true,
-                          backgroundColor: Colors.transparent,
-                          builder: (context) => const AllFeaturesSheet(),
-                        );
-                      },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: cardColor,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(20),
-                        ),
-                        padding: const EdgeInsets.symmetric(
-                          vertical: 0,
-                          horizontal: 150,
-                        ),
-                      ),
-                      child: Text(
-                        'TÜMÜ',
-                        style: TextStyle(
-                          fontSize: 15, 
-                          color: primaryColor,
+                ),
+              // Main content with animations
+              AnimatedBuilder(
+                animation: _animationController,
+                builder: (context, child) {
+                  return Transform.translate(
+                    offset: Offset(
+                      _slideAnimation.value * (MediaQuery.of(context).size.width * 0.8),
+                      0,
+                    ),
+                    child: Transform.scale(
+                      scale: _scaleAnimation.value,
+                      child: SafeArea(
+                        child: SingleChildScrollView(
+                          child: Padding(
+                            padding: const EdgeInsets.all(16.0),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.stretch,
+                              children: [
+                                _buildTopButtons(context),
+                                const SizedBox(height: 24),
+                                _buildSectionTitle(
+                                  'FAVORİLER',
+                                  onPressed: () async {
+                                    final result = await Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) => const EditFavoritesPage(),
+                                      ),
+                                    );
+                                    if (result == true) {
+                                      _loadUserFavorites();
+                                    }
+                                  },
+                                ),
+                                const SizedBox(height: 12),
+                                _isLoadingFavorites
+                                    ? const Center(child: CircularProgressIndicator())
+                                    : _buildFrequentlyUsedGrid(),
+                                const SizedBox(height: 5),
+                                Center(
+                                  child: ElevatedButton(
+                                    onPressed: () {
+                                      showModalBottomSheet(
+                                        context: context,
+                                        isScrollControlled: true,
+                                        backgroundColor: Colors.transparent,
+                                        builder: (context) => const AllFeaturesSheet(),
+                                      );
+                                    },
+                                    style: ElevatedButton.styleFrom(
+                                      backgroundColor: cardColor,
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(20),
+                                      ),
+                                      padding: const EdgeInsets.symmetric(
+                                        vertical: 0,
+                                        horizontal: 150,
+                                      ),
+                                    ),
+                                    child: Text(
+                                      'TÜMÜ',
+                                      style: TextStyle(
+                                        fontSize: 15, 
+                                        color: primaryColor,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                                const SizedBox(height: 15),
+                                _buildSectionTitle('DUYURULAR'),
+                                const SizedBox(height: 12),
+                                _buildAnnouncementCard(
+                                  context: context,
+                                  imagePath: 'assets/images/mezuniyettoreni.jpg',
+                                  url: 'https://www.beykoz.edu.tr/haber/5581-2025-mezuniyet-toreni',
+                                ),
+                                const SizedBox(height: 16),
+                                _buildAnnouncementCard(
+                                  context: context,
+                                  imagePath: 'assets/images/yazogretimi.jpg',
+                                  url:
+                                      'https://www.beykoz.edu.tr/haber/5616-2024-2025-yaz-ogretiminde-acilabilecek-dersler-duyurusu',
+                                ),
+                                const SizedBox(height: 90),
+                              ],
+                            ),
+                          ),
                         ),
                       ),
                     ),
-                  ),
-                  const SizedBox(height: 15),
-                  _buildSectionTitle('DUYURULAR'),
-                  const SizedBox(height: 12),
-
-                  // DEĞİŞİKLİK 1: Kartlar artık tıklanabilir ve ilgili linklere yönlendirir
-                  _buildAnnouncementCard(
-                    context: context,
-                    imagePath: 'assets/images/mezuniyettoreni.jpg',
-                    url: 'https://www.beykoz.edu.tr/haber/5581-2025-mezuniyet-toreni',
-                  ),
-                  const SizedBox(height: 16),
-                  _buildAnnouncementCard(
-                    context: context,
-                    imagePath: 'assets/images/yazogretimi.jpg',
-                    url:
-                        'https://www.beykoz.edu.tr/haber/5616-2024-2025-yaz-ogretiminde-acilabilecek-dersler-duyurusu',
-                  ),
-                  const SizedBox(height: 90),
-                ],
+                  );
+                },
               ),
-            ),
+              if (_isDrawerOpen)
+                Positioned.fill(
+                  child: GestureDetector(
+                    onTap: _toggleDrawer,
+                    child: Container(
+                      color: Colors.black.withOpacity(0.3),
+                    ),
+                  ),
+                ),
+              AnimatedBuilder(
+                animation: _animationController,
+                builder: (context, child) {
+                  return Transform.translate(
+                    offset: Offset(
+                      -MediaQuery.of(context).size.width * 0.8 * (1 - _slideAnimation.value),
+                      0,
+                    ),
+                    child: _buildSidebar(context, themeService),
+                  );
+                },
+              ),
+            ],
           ),
         );
       },
@@ -345,7 +546,22 @@ class _DesignedHomePageState extends State<DesignedHomePage> {
                 ),
               ),
 
-              // 2. Sağa Yaslanmış Butonlar
+              // 2. Sola Yaslanmış Hamburger Butonu
+              Align(
+                alignment: Alignment.centerLeft,
+                child: _buildCircularButton(
+                  icon: Icons.menu,
+                  backgroundColor: themeService.isDarkMode
+                      ? ThemeService.darkCardColor
+                      : const Color(0xFFECECEC),
+                  iconColor: themeService.isDarkMode
+                      ? ThemeService.darkPrimaryColor
+                      : const Color(0xFF802629),
+                  onPressed: _toggleDrawer,
+                ),
+              ),
+
+              // 3. Sağa Yaslanmış Butonlar
               Align( // <-- Butonları sağa yaslamak için Align widget'ı kullanıyoruz
                 alignment: Alignment.centerRight,
                 child: Row(
@@ -590,6 +806,218 @@ class _DesignedHomePageState extends State<DesignedHomePage> {
       ),
     );
   }
+
+  // Minimalistic Sidebar
+  Widget _buildSidebar(BuildContext context, ThemeService themeService) {
+    final List<_SidebarItem> sidebarItems = [
+      _SidebarItem(
+        icon: Icons.podcasts,
+        color: Colors.green,
+        label: 'Spotify Podcast',
+        onTap: () => _launchUrl('https://open.spotify.com/show/3PDrCJDBv8GK7B3slOm9ZE'),
+      ),
+      _SidebarItem(
+        icon: Icons.menu_book,
+        color: Colors.blue,
+        label: 'Beykoz Yayınları',
+        onTap: () => _launchUrl('https://www.beykoz.edu.tr/icerik/2872-beykoz-yayinlari'),
+      ),
+      _SidebarItem(
+        icon: Icons.local_library,
+        color: Colors.orange,
+        label: 'Kütüphane',
+        onTap: () => _launchUrl('https://www.beykoz.edu.tr/icerik/3233-kutuphane'),
+      ),
+      _SidebarItem(
+        icon: Icons.account_balance,
+        color: Colors.purple,
+        label: 'Kurumsal Kimlik\nKılavuzu',
+        onTap: () => _launchUrl('https://www.beykoz.edu.tr/icerik/90-kurumsal-kimlik-kilavuzu'),
+      ),
+      _SidebarItem(
+        icon: Icons.newspaper,
+        color: Colors.red,
+        label: 'Basında Beykoz',
+        onTap: () => _launchUrl('https://www.beykoz.edu.tr/haber/92-basinda-beykoz'),
+      ),
+      _SidebarItem(
+        icon: Icons.campaign,
+        color: Colors.teal,
+        label: 'Basın Bültenleri',
+        onTap: () => _launchUrl('https://www.beykoz.edu.tr/icerik/5274-basin-bultenleri'),
+      ),
+      _SidebarItem(
+        icon: Icons.directions_bus,
+        color: const Color(0xFF0A285F),
+        label: 'Ulaşım ve İletişim',
+        onTap: () {
+          _toggleDrawer();
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => TransportationPage()),
+          );
+        },
+      ),
+      _SidebarItem(
+        icon: Icons.school,
+        color: Colors.brown,
+        label: 'Akademik Kadro',
+        onTap: () {
+          _toggleDrawer();
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => AcademicStaffPage()),
+          );
+        },
+      ),
+      _SidebarItem(
+        icon: Icons.web,
+        color: Colors.indigo,
+        label: 'Web Portal',
+        onTap: () {
+          _toggleDrawer();
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => const WebViewPage(url: 'https://www.beykoz.edu.tr/'),
+            ),
+          );
+        },
+      ),
+    ];
+
+    final backgroundColor = themeService.isDarkMode
+        ? ThemeService.darkBackgroundColor
+        : ThemeService.lightBackgroundColor;
+    final textColor = themeService.isDarkMode
+        ? ThemeService.darkTextPrimaryColor
+        : ThemeService.lightTextPrimaryColor;
+
+    return Container(
+      width: MediaQuery.of(context).size.width * 0.8,
+      height: MediaQuery.of(context).size.height,
+      decoration: BoxDecoration(
+        color: backgroundColor,
+        borderRadius: const BorderRadius.only(
+          topRight: Radius.circular(24),
+          bottomRight: Radius.circular(24),
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.08),
+            blurRadius: 12,
+            offset: const Offset(2, 0),
+          ),
+        ],
+      ),
+      child: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 18),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Top row: greeting and close icon
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  CircleAvatar(
+                    backgroundColor: themeService.isDarkMode
+                        ? ThemeService.darkPrimaryColor
+                        : ThemeService.lightPrimaryColor,
+                    radius: 22,
+                    child: Icon(Icons.school, color: Colors.white, size: 22),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Hoş Geldiniz',
+                          style: TextStyle(
+                            color: textColor,
+                            fontWeight: FontWeight.w600,
+                            fontSize: 15,
+                          ),
+                        ),
+                        Text(
+                          _userName ?? 'Kullanıcı',
+                          style: TextStyle(
+                            color: textColor.withOpacity(0.8),
+                            fontWeight: FontWeight.w400,
+                            fontSize: 13,
+                          ),
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ],
+                    ),
+                  ),
+                  // Removed the IconButton (cross/close)
+                ],
+              ),
+              const SizedBox(height: 18),
+              Text(
+                'Önemli Bağlantılar ve Servisler',
+                style: TextStyle(
+                  fontSize: 15,
+                  fontWeight: FontWeight.bold,
+                  color: textColor,
+                ),
+              ),
+              const SizedBox(height: 10),
+              // Minimalistic menu list
+              Expanded(
+                child: ListView.separated(
+                  itemCount: sidebarItems.length,
+                  separatorBuilder: (context, index) => const SizedBox(height: 2),
+                  itemBuilder: (context, index) {
+                    final item = sidebarItems[index];
+                    return ListTile(
+                      leading: Icon(item.icon, color: item.color, size: 24),
+                      title: Text(
+                        item.label,
+                        style: TextStyle(
+                          color: textColor,
+                          fontWeight: FontWeight.w500,
+                          fontSize: 14,
+                        ),
+                      ),
+                      onTap: item.onTap,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      contentPadding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                      hoverColor: themeService.isDarkMode
+                          ? Colors.white.withOpacity(0.04)
+                          : Colors.black.withOpacity(0.03),
+                      splashColor: themeService.isDarkMode
+                          ? Colors.white.withOpacity(0.08)
+                          : Colors.black.withOpacity(0.06),
+                    );
+                  },
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+// Helper class for sidebar items
+class _SidebarItem {
+  final IconData icon;
+  final Color color;
+  final String label;
+  final VoidCallback onTap;
+
+  const _SidebarItem({
+    required this.icon,
+    required this.color,
+    required this.label,
+    required this.onTap,
+  });
 }
 
 // --- WEBVIEW PAGE ---
