@@ -19,15 +19,28 @@ class RootScreen extends StatefulWidget {
 
 class _RootScreenState extends State<RootScreen> {
   int _selectedIndex = 0;
+  bool _isDrawerOpen = false;
+  void _setDrawerOpen(bool value) {
+    setState(() {
+      _isDrawerOpen = value;
+    });
+  }
+  void _setSelectedIndex(int index) {
+    setState(() {
+      _selectedIndex = index;
+    });
+  }
 
-  // --- Değişiklik burada ---
-  // ProfilePage() is used for the person icon
-  final List<Widget> _pages = [
-    DesignedHomePage(),
+  List<Widget> get _pages => [
+    DesignedHomePage(
+      isDrawerOpen: _isDrawerOpen,
+      setDrawerOpen: _setDrawerOpen,
+      setSelectedIndex: _setSelectedIndex,
+    ),
     NewsPage(),
     AttendanceScreen(),
     WebviewPageSelector(),
-    ProfilePage(), // <-- Changed to ProfilePage for person icon
+    ProfilePage(),
   ];
 
   @override
@@ -41,20 +54,21 @@ class _RootScreenState extends State<RootScreen> {
           body: Stack(
             children: [
               _pages[_selectedIndex],
-              Align(
-                alignment: Alignment.bottomCenter,
-                child: Padding(
-                  padding: const EdgeInsets.only(bottom: 24.0),
-                  child: CustomNavBar(
-                    selectedIndex: _selectedIndex,
-                    onTabSelected: (index) {
-                      setState(() {
-                        _selectedIndex = index;
-                      });
-                    },
+              if (!_isDrawerOpen)
+                Align(
+                  alignment: Alignment.bottomCenter,
+                  child: Padding(
+                    padding: const EdgeInsets.only(bottom: 24.0),
+                    child: CustomNavBar(
+                      selectedIndex: _selectedIndex,
+                      onTabSelected: (index) {
+                        setState(() {
+                          _selectedIndex = index;
+                        });
+                      },
+                    ),
                   ),
                 ),
-              ),
             ],
           ),
         );

@@ -16,6 +16,7 @@ import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'Transportation.dart';
 import 'AcademicStaffPage.dart';
+import 'RootPage.dart';
 
 // Main widget containing the home screen and Bottom Navigation Bar logic
 class HomeScreen extends StatefulWidget {
@@ -31,9 +32,20 @@ class _HomeScreenState extends State<HomeScreen> {
   int _selectedIndex = 0;
   String? _userRole;
   bool _isLoadingRole = true;
+  bool _isDrawerOpen = false;
+
+  void _setDrawerOpen(bool value) {
+    setState(() {
+      _isDrawerOpen = value;
+    });
+  }
 
   List<Widget> get _pages => [
-    DesignedHomePage(userRole: _userRole),
+    DesignedHomePage(
+      userRole: _userRole,
+      isDrawerOpen: _isDrawerOpen,
+      setDrawerOpen: _setDrawerOpen,
+    ),
     WebViewPage(
       url: 'https://ois.beykoz.edu.tr/',
       username: widget.username,
@@ -109,7 +121,7 @@ class _HomeScreenState extends State<HomeScreen> {
               ? ThemeService.darkBackgroundColor 
               : ThemeService.lightBackgroundColor,
           body: IndexedStack(index: _selectedIndex, children: _pages),
-          bottomNavigationBar: BottomNavigationBar(
+          bottomNavigationBar: _isDrawerOpen ? null : BottomNavigationBar(
             items: const <BottomNavigationBarItem>[
               BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Ana Sayfa'),
               BottomNavigationBarItem(icon: Icon(Icons.web), label: 'OIS'),
@@ -128,7 +140,6 @@ class _HomeScreenState extends State<HomeScreen> {
             type: BottomNavigationBarType.fixed,
             onTap: _onItemTapped,
           ),
-          // Ayar çarkı sadece developer için
           floatingActionButton: isDeveloper
               ? _buildSettingsButton(context)
               : null,
@@ -167,7 +178,10 @@ class _HomeScreenState extends State<HomeScreen> {
 // DesignedHomePage artık bir StatefulWidget
 class DesignedHomePage extends StatefulWidget {
   final String? userRole;
-  const DesignedHomePage({super.key, this.userRole});
+  final bool isDrawerOpen;
+  final void Function(bool) setDrawerOpen;
+  final void Function(int)? setSelectedIndex;
+  const DesignedHomePage({super.key, this.userRole, required this.isDrawerOpen, required this.setDrawerOpen, this.setSelectedIndex});
 
   @override
   State<DesignedHomePage> createState() => _DesignedHomePageState();
@@ -181,9 +195,7 @@ class _DesignedHomePageState extends State<DesignedHomePage>
   late Animation<double> _slideAnimation;
   late Animation<double> _scaleAnimation;
   late Animation<double> _fadeAnimation;
-  bool _isDrawerOpen = false;
   String? _userName;
-
   List<Map<String, dynamic>> _frequentlyUsedItems = [];
   bool _isLoadingFavorites = true;
 
@@ -192,14 +204,10 @@ class _DesignedHomePageState extends State<DesignedHomePage>
     super.initState();
     _loadUserFavorites();
     _fetchUserName();
-    
-    // Initialize animation controller
     _animationController = AnimationController(
       duration: const Duration(milliseconds: 300),
       vsync: this,
     );
-    
-    // Create animations
     _slideAnimation = Tween<double>(
       begin: 0.0,
       end: 1.0,
@@ -207,15 +215,13 @@ class _DesignedHomePageState extends State<DesignedHomePage>
       parent: _animationController,
       curve: Curves.easeInOut,
     ));
-    
     _scaleAnimation = Tween<double>(
       begin: 1.0,
-      end: 0.9, // Increase height back to 90% to maintain proper height
+      end: 0.9,
     ).animate(CurvedAnimation(
       parent: _animationController,
       curve: Curves.easeInOut,
     ));
-    
     _fadeAnimation = Tween<double>(
       begin: 0.0,
       end: 1.0,
@@ -231,12 +237,10 @@ class _DesignedHomePageState extends State<DesignedHomePage>
     super.dispose();
   }
 
+  // Remove local _isDrawerOpen, use widget.isDrawerOpen and widget.setDrawerOpen
   void _toggleDrawer() {
-    setState(() {
-      _isDrawerOpen = !_isDrawerOpen;
-    });
-    
-    if (_isDrawerOpen) {
+    widget.setDrawerOpen(!widget.isDrawerOpen);
+    if (!widget.isDrawerOpen) {
       _animationController.forward();
     } else {
       _animationController.reverse();
@@ -370,18 +374,18 @@ class _DesignedHomePageState extends State<DesignedHomePage>
         return GestureDetector(
           onHorizontalDragEnd: (details) {
             // Open sidebar: swipe right (velocity > 0), only if closed
-            if (!_isDrawerOpen && details.primaryVelocity != null && details.primaryVelocity! > 300) {
+            if (!widget.isDrawerOpen && details.primaryVelocity != null && details.primaryVelocity! > 300) {
               _toggleDrawer();
             }
             // Close sidebar: swipe left (velocity < 0), only if open
-            if (_isDrawerOpen && details.primaryVelocity != null && details.primaryVelocity! < -300) {
+            if (widget.isDrawerOpen && details.primaryVelocity != null && details.primaryVelocity! < -300) {
               _toggleDrawer();
             }
           },
           child: Stack(
             children: [
               // --- GESTURE STRIP FOR OPENING SIDEBAR ---
-              if (!_isDrawerOpen)
+              if (!widget.isDrawerOpen)
                 Positioned(
                   left: 0,
                   top: 0,
@@ -490,7 +494,7 @@ class _DesignedHomePageState extends State<DesignedHomePage>
                   );
                 },
               ),
-              if (_isDrawerOpen)
+              if (widget.isDrawerOpen)
                 Positioned.fill(
                   child: GestureDetector(
                     onTap: _toggleDrawer,
@@ -852,10 +856,12 @@ class _DesignedHomePageState extends State<DesignedHomePage>
         label: 'Ulaşım ve İletişim',
         onTap: () {
           _toggleDrawer();
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => TransportationPage()),
-          );
+          Future.delayed(const Duration(milliseconds: 250), () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => TransportationPage()),
+            );
+          });
         },
       ),
       _SidebarItem(
@@ -864,10 +870,12 @@ class _DesignedHomePageState extends State<DesignedHomePage>
         label: 'Akademik Kadro',
         onTap: () {
           _toggleDrawer();
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => AcademicStaffPage()),
-          );
+          Future.delayed(const Duration(milliseconds: 250), () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => AcademicStaffPage()),
+            );
+          });
         },
       ),
       _SidebarItem(
@@ -876,12 +884,11 @@ class _DesignedHomePageState extends State<DesignedHomePage>
         label: 'Web Portal',
         onTap: () {
           _toggleDrawer();
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => const WebViewPage(url: 'https://www.beykoz.edu.tr/'),
-            ),
-          );
+          if (widget.setSelectedIndex != null) {
+            Future.delayed(const Duration(milliseconds: 250), () {
+              widget.setSelectedIndex!(3); // 3 is the index of WebviewPageSelector
+            });
+          }
         },
       ),
     ];
@@ -917,44 +924,44 @@ class _DesignedHomePageState extends State<DesignedHomePage>
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               // Top row: greeting and close icon
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  CircleAvatar(
-                    backgroundColor: themeService.isDarkMode
-                        ? ThemeService.darkPrimaryColor
-                        : ThemeService.lightPrimaryColor,
-                    radius: 22,
-                    child: Icon(Icons.school, color: Colors.white, size: 22),
-                  ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          'Hoş Geldiniz',
-                          style: TextStyle(
-                            color: textColor,
-                            fontWeight: FontWeight.w600,
-                            fontSize: 15,
-                          ),
-                        ),
-                        Text(
-                          _userName ?? 'Kullanıcı',
-                          style: TextStyle(
-                            color: textColor.withOpacity(0.8),
-                            fontWeight: FontWeight.w400,
-                            fontSize: 13,
-                          ),
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ],
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    CircleAvatar(
+                      backgroundColor: themeService.isDarkMode
+                          ? ThemeService.darkPrimaryColor
+                          : ThemeService.lightPrimaryColor,
+                      radius: 22,
+                      child: Icon(Icons.school, color: Colors.white, size: 22),
                     ),
-                  ),
-                  // Removed the IconButton (cross/close)
-                ],
-              ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Hoş Geldiniz',
+                            style: TextStyle(
+                              color: textColor,
+                              fontWeight: FontWeight.w600,
+                              fontSize: 15,
+                            ),
+                          ),
+                          Text(
+                            _userName ?? 'Kullanıcı',
+                            style: TextStyle(
+                              color: textColor.withOpacity(0.8),
+                              fontWeight: FontWeight.w400,
+                              fontSize: 13,
+                            ),
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ],
+                      ),
+                    ),
+                    // Removed the IconButton (cross/close)
+                  ],
+                ),
               const SizedBox(height: 18),
               Text(
                 'Önemli Bağlantılar ve Servisler',
