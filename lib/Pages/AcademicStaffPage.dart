@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:beykoz/Services/theme_service.dart';
+import 'package:provider/provider.dart';
 
 class AcademicStaffPage extends StatefulWidget {
   const AcademicStaffPage({super.key});
@@ -75,104 +77,210 @@ class _AcademicStaffPageState extends State<AcademicStaffPage>
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: CustomScrollView(
-        slivers: [
-          _buildSliverAppBar(),
-          SliverToBoxAdapter(
-            child: FadeTransition(
-              opacity: _fadeAnimation,
-              child: Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    _buildHeaderSection(),
-                    const SizedBox(height: 24),
-                    _buildStatsCard(),
-                    const SizedBox(height: 24),
-                    _buildFacultiesSection(),
-                  ],
+    return Consumer<ThemeService>(
+      builder: (context, themeService, child) {
+        return Scaffold(
+          backgroundColor: themeService.isDarkMode 
+              ? ThemeService.darkBackgroundColor 
+              : Colors.white,
+          body: CustomScrollView(
+            slivers: [
+              _buildSliverAppBar(),
+              SliverToBoxAdapter(
+                child: FadeTransition(
+                  opacity: _fadeAnimation,
+                  child: Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        _buildHeaderSection(),
+                        const SizedBox(height: 24),
+                        _buildStatsCard(),
+                        const SizedBox(height: 24),
+                        _buildFacultiesSection(),
+                      ],
+                    ),
+                  ),
                 ),
               ),
-            ),
+            ],
           ),
-        ],
-      ),
+        );
+      },
     );
   }
 
   Widget _buildSliverAppBar() {
-    return SliverAppBar(
-      expandedHeight: 200.0,
-      floating: false,
-      pinned: true,
-      iconTheme: const IconThemeData(
-        color: Colors.white,
-      ), // Geri okunu beyaz yapar
-      flexibleSpace: FlexibleSpaceBar(
-        title: const Text(
-          'Akademik Kadro',
-          style: TextStyle(
-            fontWeight: FontWeight.bold,
+    return Consumer<ThemeService>(
+      builder: (context, themeService, child) {
+        return SliverAppBar(
+          expandedHeight: 200.0,
+          floating: false,
+          pinned: true,
+          iconTheme: const IconThemeData(
             color: Colors.white,
-            fontSize: 18,
-            shadows: [
-              Shadow(
-                offset: Offset(0, 1),
-                blurRadius: 3.0,
-                color: Colors.black54,
-              ),
-            ],
           ),
-        ),
-        background: Container(
-          decoration: const BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-              colors: [Color(0xFF802629), Color(0xFFB2453C)],
+          flexibleSpace: FlexibleSpaceBar(
+            title: const Text(
+              'Akademik Kadro',
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                color: Colors.white,
+                fontSize: 18,
+                shadows: [
+                  Shadow(
+                    offset: Offset(0, 1),
+                    blurRadius: 3.0,
+                    color: Colors.black54,
+                  ),
+                ],
+              ),
+            ),
+            background: Container(
+              decoration: const BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                  colors: [Color(0xFF802629), Color(0xFFB2453C)],
+                ),
+              ),
+              child: Stack(
+                children: [
+                  Positioned(
+                    right: -50,
+                    top: -50,
+                    child: Container(
+                      width: 200,
+                      height: 200,
+                      decoration: BoxDecoration(
+                        color: Colors.white.withOpacity(0.1),
+                        shape: BoxShape.circle,
+                      ),
+                    ),
+                  ),
+                  Positioned(
+                    left: -30,
+                    bottom: -30,
+                    child: Container(
+                      width: 100,
+                      height: 100,
+                      decoration: BoxDecoration(
+                        color: Colors.white.withOpacity(0.05),
+                        shape: BoxShape.circle,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
-          child: Stack(
-            children: [
-              Positioned(
-                right: -50,
-                top: -50,
-                child: Container(
-                  width: 200,
-                  height: 200,
-                  decoration: BoxDecoration(
-                    color: Colors.white.withOpacity(0.1),
-                    shape: BoxShape.circle,
-                  ),
-                ),
-              ),
-              Positioned(
-                left: -30,
-                bottom: -30,
-                child: Container(
-                  width: 100,
-                  height: 100,
-                  decoration: BoxDecoration(
-                    color: Colors.white.withOpacity(0.05),
-                    shape: BoxShape.circle,
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-      backgroundColor: primaryColor,
+          backgroundColor: themeService.isDarkMode 
+              ? ThemeService.darkPrimaryColor 
+              : primaryColor,
+        );
+      },
     );
   }
 
   Widget _buildHeaderSection() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
+    return Consumer<ThemeService>(
+      builder: (context, themeService, child) {
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(10),
+                  decoration: BoxDecoration(
+                    gradient: const LinearGradient(
+                      colors: [Color(0xFF802629), Color(0xFFB2453C)],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                    ),
+                    borderRadius: BorderRadius.circular(12),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.15),
+                        blurRadius: 6,
+                        offset: const Offset(0, 2),
+                      ),
+                    ],
+                  ),
+                  child: const Icon(Icons.school, color: Colors.white, size: 30),
+                ),
+                const SizedBox(width: 16),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Fakülteler ve Akademik Birimler',
+                        style: TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                          color: themeService.isDarkMode 
+                              ? ThemeService.darkTextPrimaryColor 
+                              : Color(0xFF802629),
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        'Fakülteler ve Yüksekokullar',
+                        style: TextStyle(
+                          fontSize: 14, 
+                          color: themeService.isDarkMode 
+                              ? ThemeService.darkTextSecondaryColor 
+                              : Colors.grey
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  Widget _buildStatsCard() {
+    return Consumer<ThemeService>(
+      builder: (context, themeService, child) {
+        return Container(
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            color: themeService.isDarkMode 
+                ? ThemeService.darkCardColor 
+                : cardColor,
+            borderRadius: BorderRadius.circular(16),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.1),
+                blurRadius: 6,
+                offset: const Offset(0, 2),
+              ),
+            ],
+          ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: [
+              _buildStatItem('8', 'Birim', Icons.account_balance),
+              _buildStatItem('32', 'Akademisyen', Icons.person),
+              _buildStatItem('12', 'Profesör', Icons.workspace_premium),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildStatItem(String number, String label, IconData icon) {
+    return Consumer<ThemeService>(
+      builder: (context, themeService, child) {
+        return Column(
           children: [
             Container(
               padding: const EdgeInsets.all(10),
@@ -191,93 +299,31 @@ class _AcademicStaffPageState extends State<AcademicStaffPage>
                   ),
                 ],
               ),
-              child: const Icon(Icons.school, color: Colors.white, size: 30),
+              child: Icon(icon, color: Colors.white, size: 30),
             ),
-            const SizedBox(width: 16),
-            const Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Fakülteler ve Akademik Birimler',
-                    style: TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                      color: Color(0xFF802629),
-                    ),
-                  ),
-                  SizedBox(height: 4),
-                  Text(
-                    'Fakülteler ve Yüksekokullar',
-                    style: TextStyle(fontSize: 14, color: Colors.grey),
-                  ),
-                ],
+            const SizedBox(height: 8),
+            Text(
+              number,
+              style: TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+                color: themeService.isDarkMode 
+                    ? ThemeService.darkTextPrimaryColor 
+                    : Color(0xFF802629),
               ),
+            ),
+            Text(
+              label, 
+              style: TextStyle(
+                fontSize: 12, 
+                color: themeService.isDarkMode 
+                    ? ThemeService.darkTextSecondaryColor 
+                    : Colors.grey
+              )
             ),
           ],
-        ),
-      ],
-    );
-  }
-
-  Widget _buildStatsCard() {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: cardColor,
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.1),
-            blurRadius: 6,
-            offset: const Offset(0, 2),
-          ),
-        ],
-      ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
-        children: [
-          _buildStatItem('8', 'Birim', Icons.account_balance),
-          _buildStatItem('32', 'Akademisyen', Icons.person),
-          _buildStatItem('12', 'Profesör', Icons.workspace_premium),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildStatItem(String number, String label, IconData icon) {
-    return Column(
-      children: [
-        Container(
-          padding: const EdgeInsets.all(10),
-          decoration: BoxDecoration(
-            gradient: const LinearGradient(
-              colors: [Color(0xFF802629), Color(0xFFB2453C)],
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-            ),
-            borderRadius: BorderRadius.circular(12),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withOpacity(0.15),
-                blurRadius: 6,
-                offset: const Offset(0, 2),
-              ),
-            ],
-          ),
-          child: Icon(icon, color: Colors.white, size: 30),
-        ),
-        const SizedBox(height: 8),
-        Text(
-          number,
-          style: const TextStyle(
-            fontSize: 20,
-            fontWeight: FontWeight.bold,
-            color: Color(0xFF802629),
-          ),
-        ),
-        Text(label, style: const TextStyle(fontSize: 12, color: Colors.grey)),
-      ],
+        );
+      },
     );
   }
 
@@ -521,20 +567,26 @@ class _AcademicStaffPageState extends State<AcademicStaffPage>
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        Container(
-          padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
-          decoration: BoxDecoration(
-            color: primaryColor,
-            borderRadius: BorderRadius.circular(8),
-          ),
-          child: const Text(
-            'FAKÜLTELER',
-            style: TextStyle(
-              color: Colors.white,
-              fontWeight: FontWeight.bold,
-              fontSize: 16,
-            ),
-          ),
+        Consumer<ThemeService>(
+          builder: (context, themeService, child) {
+            return Container(
+              padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
+              decoration: BoxDecoration(
+                color: themeService.isDarkMode 
+                    ? ThemeService.darkPrimaryColor 
+                    : primaryColor,
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: const Text(
+                'FAKÜLTELER',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 16,
+                ),
+              ),
+            );
+          },
         ),
         const SizedBox(height: 12),
         ...faculties.asMap().entries.map((entry) {
@@ -553,218 +605,269 @@ class _AcademicStaffPageState extends State<AcademicStaffPage>
   }
 
   Widget _buildFacultyCard(FacultyData faculty) {
-    return Card(
-      elevation: 0,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-      child: Container(
-        decoration: BoxDecoration(
-          color: cardColor,
-          borderRadius: BorderRadius.circular(16),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.1),
-              blurRadius: 6,
-              offset: const Offset(0, 2),
-            ),
-          ],
-        ),
-        child: Theme(
-          data: Theme.of(context).copyWith(
-            dividerColor: Colors.transparent,
-            splashColor: primaryColor.withOpacity(0.1),
-          ),
-          child: ExpansionTile(
-            tilePadding: const EdgeInsets.symmetric(
-              horizontal: 16,
-              vertical: 8,
-            ),
-            childrenPadding: const EdgeInsets.only(bottom: 16),
-            leading: Container(
-              padding: const EdgeInsets.all(10),
-              decoration: BoxDecoration(
-                gradient: faculty.gradient,
-                borderRadius: BorderRadius.circular(12),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.15),
-                    blurRadius: 6,
-                    offset: const Offset(0, 2),
-                  ),
-                ],
-              ),
-              child: Icon(faculty.icon, color: Colors.white, size: 30),
-            ),
-            title: Text(
-              faculty.name,
-              style: const TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-                color: Color(0xFF802629),
-              ),
-            ),
-            subtitle: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  '${faculty.staff.length} akademisyen',
-                  style: TextStyle(fontSize: 12, color: Colors.grey.shade600),
-                ),
-                GestureDetector(
-                  onTap: () => _launchURL(faculty.webUrl),
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 8,
-                      vertical: 4,
-                    ),
-                    decoration: BoxDecoration(
-                      color: primaryColor.withOpacity(0.1),
-                      borderRadius: BorderRadius.circular(12),
-                      border: Border.all(color: primaryColor.withOpacity(0.3)),
-                    ),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Icon(Icons.link, size: 14, color: primaryColor),
-                        const SizedBox(width: 4),
-                        Text(
-                          'Fakülte Sayfası',
-                          style: TextStyle(
-                            fontSize: 12,
-                            color: primaryColor,
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
+    return Consumer<ThemeService>(
+      builder: (context, themeService, child) {
+        return Card(
+          elevation: 0,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+          child: Container(
+            decoration: BoxDecoration(
+              color: themeService.isDarkMode 
+                  ? ThemeService.darkCardColor 
+                  : cardColor,
+              borderRadius: BorderRadius.circular(16),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.1),
+                  blurRadius: 6,
+                  offset: const Offset(0, 2),
                 ),
               ],
             ),
-            children: faculty.staff.asMap().entries.map((entry) {
-              final index = entry.key;
-              final person = entry.value;
-
-              return AnimatedContainer(
-                duration: Duration(milliseconds: 200 + (index * 50)),
-                margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-                child: Container(
-                  padding: const EdgeInsets.all(12),
+            child: Theme(
+              data: Theme.of(context).copyWith(
+                dividerColor: Colors.transparent,
+                splashColor: (themeService.isDarkMode 
+                    ? ThemeService.darkPrimaryColor 
+                    : primaryColor).withOpacity(0.1),
+              ),
+              child: ExpansionTile(
+                tilePadding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 8,
+                ),
+                childrenPadding: const EdgeInsets.only(bottom: 16),
+                leading: Container(
+                  padding: const EdgeInsets.all(10),
                   decoration: BoxDecoration(
-                    color:
-                        (person.name.contains('Dekan') ||
-                            person.name.contains('Müdür'))
-                        ? primaryColor.withOpacity(0.1)
-                        : cardColor,
-                    borderRadius: BorderRadius.circular(8),
-                    border: Border.all(
-                      color:
-                          (person.name.contains('Dekan') ||
-                              person.name.contains('Müdür'))
-                          ? primaryColor.withOpacity(0.3)
-                          : Colors.transparent,
-                    ),
+                    gradient: faculty.gradient,
+                    borderRadius: BorderRadius.circular(12),
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.black.withOpacity(0.1),
+                        color: Colors.black.withOpacity(0.15),
                         blurRadius: 6,
                         offset: const Offset(0, 2),
                       ),
                     ],
                   ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        children: [
-                          Container(
-                            padding: const EdgeInsets.all(6),
-                            decoration: BoxDecoration(
-                              color: primaryColor.withOpacity(0.2),
-                              borderRadius: BorderRadius.circular(6),
-                            ),
-                            child: Icon(
-                              (person.name.contains('Dekan') ||
-                                      person.name.contains('Müdür'))
-                                  ? Icons.star
-                                  : Icons.person_outline,
-                              color: primaryColor,
-                              size: 16,
-                            ),
+                  child: Icon(faculty.icon, color: Colors.white, size: 30),
+                ),
+                title: Text(
+                  faculty.name,
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                    color: themeService.isDarkMode 
+                        ? ThemeService.darkTextPrimaryColor 
+                        : Color(0xFF802629),
+                  ),
+                ),
+                subtitle: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      '${faculty.staff.length} akademisyen',
+                      style: TextStyle(
+                        fontSize: 12, 
+                        color: themeService.isDarkMode 
+                            ? ThemeService.darkTextSecondaryColor 
+                            : Colors.grey.shade600
+                      ),
+                    ),
+                    GestureDetector(
+                      onTap: () => _launchURL(faculty.webUrl),
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 8,
+                          vertical: 4,
+                        ),
+                        decoration: BoxDecoration(
+                          color: (themeService.isDarkMode 
+                              ? ThemeService.darkPrimaryColor 
+                              : primaryColor).withOpacity(0.1),
+                          borderRadius: BorderRadius.circular(12),
+                          border: Border.all(
+                            color: (themeService.isDarkMode 
+                                ? ThemeService.darkPrimaryColor 
+                                : primaryColor).withOpacity(0.3)
                           ),
-                          const SizedBox(width: 12),
-                          Expanded(
-                            child: Text(
-                              person.name,
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Icon(
+                              Icons.link, 
+                              size: 14, 
+                              color: themeService.isDarkMode 
+                                  ? ThemeService.darkPrimaryColor 
+                                  : primaryColor
+                            ),
+                            const SizedBox(width: 4),
+                            Text(
+                              'Fakülte Sayfası',
                               style: TextStyle(
-                                fontSize: 14,
-                                fontWeight:
-                                    (person.name.contains('Dekan') ||
-                                        person.name.contains('Müdür'))
-                                    ? FontWeight.bold
-                                    : FontWeight.normal,
-                                color: Color(0xFF802629),
+                                fontSize: 12,
+                                color: themeService.isDarkMode 
+                                    ? ThemeService.darkPrimaryColor 
+                                    : primaryColor,
+                                fontWeight: FontWeight.w500,
                               ),
                             ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                children: faculty.staff.asMap().entries.map((entry) {
+                  final index = entry.key;
+                  final person = entry.value;
+
+                  return AnimatedContainer(
+                    duration: Duration(milliseconds: 200 + (index * 50)),
+                    margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+                    child: Container(
+                      padding: const EdgeInsets.all(12),
+                      decoration: BoxDecoration(
+                        color:
+                            (person.name.contains('Dekan') ||
+                                person.name.contains('Müdür'))
+                            ? (themeService.isDarkMode 
+                                ? ThemeService.darkPrimaryColor 
+                                : primaryColor).withOpacity(0.1)
+                            : (themeService.isDarkMode 
+                                ? ThemeService.darkCardColor 
+                                : cardColor),
+                        borderRadius: BorderRadius.circular(8),
+                        border: Border.all(
+                          color:
+                              (person.name.contains('Dekan') ||
+                                  person.name.contains('Müdür'))
+                              ? (themeService.isDarkMode 
+                                  ? ThemeService.darkPrimaryColor 
+                                  : primaryColor).withOpacity(0.3)
+                              : Colors.transparent,
+                        ),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.1),
+                            blurRadius: 6,
+                            offset: const Offset(0, 2),
                           ),
                         ],
                       ),
-                      if (person.about != null && person.about!.isNotEmpty) ...[
-                        const SizedBox(height: 8),
-                        Text(
-                          person.about!,
-                          style: TextStyle(
-                            fontSize: 12,
-                            color: Colors.grey.shade700,
-                            fontStyle: FontStyle.italic,
-                          ),
-                        ),
-                      ],
-                      if (person.cvUrl != null && person.cvUrl!.isNotEmpty) ...[
-                        const SizedBox(height: 8),
-                        GestureDetector(
-                          onTap: () => _launchURL(person.cvUrl!),
-                          child: Container(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 10,
-                              vertical: 6,
-                            ),
-                            decoration: BoxDecoration(
-                              color: primaryColor.withOpacity(0.1),
-                              borderRadius: BorderRadius.circular(12),
-                              border: Border.all(
-                                color: primaryColor.withOpacity(0.3),
-                              ),
-                            ),
-                            child: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Icon(
-                                  Icons.description,
-                                  size: 14,
-                                  color: primaryColor,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            children: [
+                              Container(
+                                padding: const EdgeInsets.all(6),
+                                decoration: BoxDecoration(
+                                  color: (themeService.isDarkMode 
+                                      ? ThemeService.darkPrimaryColor 
+                                      : primaryColor).withOpacity(0.2),
+                                  borderRadius: BorderRadius.circular(6),
                                 ),
-                                const SizedBox(width: 6),
-                                Text(
-                                  'CV / Özgeçmiş',
+                                child: Icon(
+                                  (person.name.contains('Dekan') ||
+                                          person.name.contains('Müdür'))
+                                      ? Icons.star
+                                      : Icons.person_outline,
+                                  color: themeService.isDarkMode 
+                                      ? ThemeService.darkPrimaryColor 
+                                      : primaryColor,
+                                  size: 16,
+                                ),
+                              ),
+                              const SizedBox(width: 12),
+                              Expanded(
+                                child: Text(
+                                  person.name,
                                   style: TextStyle(
-                                    fontSize: 12,
-                                    color: primaryColor,
-                                    fontWeight: FontWeight.w500,
+                                    fontSize: 14,
+                                    fontWeight:
+                                        (person.name.contains('Dekan') ||
+                                            person.name.contains('Müdür'))
+                                        ? FontWeight.bold
+                                        : FontWeight.normal,
+                                    color: themeService.isDarkMode 
+                                        ? ThemeService.darkTextPrimaryColor 
+                                        : Color(0xFF802629),
                                   ),
                                 ),
-                              ],
-                            ),
+                              ),
+                            ],
                           ),
-                        ),
-                      ],
-                    ],
-                  ),
-                ),
-              );
-            }).toList(),
+                          if (person.about != null && person.about!.isNotEmpty) ...[
+                            const SizedBox(height: 8),
+                            Text(
+                              person.about!,
+                              style: TextStyle(
+                                fontSize: 12,
+                                color: themeService.isDarkMode 
+                                    ? ThemeService.darkTextPrimaryColor 
+                                    : Colors.grey.shade700,
+                                fontStyle: FontStyle.italic,
+                              ),
+                            ),
+                          ],
+                          if (person.cvUrl != null && person.cvUrl!.isNotEmpty) ...[
+                            const SizedBox(height: 8),
+                            GestureDetector(
+                              onTap: () => _launchURL(person.cvUrl!),
+                              child: Container(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 10,
+                                  vertical: 6,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: (themeService.isDarkMode 
+                                      ? ThemeService.darkPrimaryColor 
+                                      : primaryColor).withOpacity(0.1),
+                                  borderRadius: BorderRadius.circular(12),
+                                  border: Border.all(
+                                    color: (themeService.isDarkMode 
+                                        ? ThemeService.darkPrimaryColor 
+                                        : primaryColor).withOpacity(0.3),
+                                  ),
+                                ),
+                                child: Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Icon(
+                                      Icons.description,
+                                      size: 14,
+                                      color: themeService.isDarkMode 
+                                          ? ThemeService.darkPrimaryColor 
+                                          : primaryColor,
+                                    ),
+                                    const SizedBox(width: 6),
+                                    Text(
+                                      'CV / Özgeçmiş',
+                                      style: TextStyle(
+                                        fontSize: 12,
+                                        color: themeService.isDarkMode 
+                                            ? ThemeService.darkPrimaryColor 
+                                            : primaryColor,
+                                        fontWeight: FontWeight.w500,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ],
+                        ],
+                      ),
+                    ),
+                  );
+                }).toList(),
+              ),
+            ),
           ),
-        ),
-      ),
+        );
+      },
     );
   }
 }
