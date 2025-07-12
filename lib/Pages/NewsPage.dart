@@ -51,6 +51,42 @@ class _NewsPageState extends State<NewsPage> {
       'comments': 23,
       'isLiked': false,
     },
+    {
+      'id': 4,
+      'adminName': 'Bilgisayar Mühendisliği Kulübü',
+      'adminAvatar': 'assets/computer_engineering_logo.jpg',
+      'timestamp': '3 saat önce',
+      'content':
+          'Bilgisayar Mühendisliği Bölümü olarak "Yazılım Geliştirme Atölyesi" düzenliyoruz. Katılım için kayıtlar web sitemizde!',
+      'image': 'assets/software_workshop.jpg',
+      'likes': 67,
+      'comments': 19,
+      'isLiked': false,
+    },
+    {
+      'id': 5,
+      'adminName': 'Yapay Zeka Kulübü',
+      'adminAvatar': 'assets/ai_club_logo.jpg',
+      'timestamp': '6 saat önce',
+      'content':
+          'Yapay Zeka Kulübü olarak "Makine Öğrenmesi 101" seminerine davetlisiniz! 📊 Tarih: 20 Mart, Yer: Konferans Salonu.',
+      'image': null,
+      'likes': 92,
+      'comments': 25,
+      'isLiked': false,
+    },
+    {
+      'id': 6,
+      'adminName': 'İç Mimarlık Kulübü',
+      'adminAvatar': 'assets/interior_architecture_logo.jpg',
+      'timestamp': '1 gün önce',
+      'content':
+          'İç Mimarlık Bölümü öğrencilerimizin tasarımlarının sergileneceği "Mekan ve Tasarım" sergisi bu Cuma açılıyor!',
+      'image': 'assets/design_exhibition.jpg',
+      'likes': 53,
+      'comments': 15,
+      'isLiked': true,
+    },
   ];
 
   void _toggleLike(int postId) {
@@ -72,8 +108,8 @@ class _NewsPageState extends State<NewsPage> {
     return Consumer<ThemeService>(
       builder: (context, themeService, child) {
         return Scaffold(
-          backgroundColor: themeService.isDarkMode 
-              ? ThemeService.darkBackgroundColor 
+          backgroundColor: themeService.isDarkMode
+              ? ThemeService.darkBackgroundColor
               : Colors.grey[50],
           appBar: AppBar(
             title: const Text(
@@ -84,13 +120,16 @@ class _NewsPageState extends State<NewsPage> {
                 fontSize: 18,
               ),
             ),
-            backgroundColor: themeService.isDarkMode 
-                ? ThemeService.darkPrimaryColor 
+            backgroundColor: themeService.isDarkMode
+                ? ThemeService.darkPrimaryColor
                 : primaryColor,
             elevation: 0,
             actions: [
               IconButton(
-                icon: const Icon(Icons.notifications_outlined, color: Colors.white),
+                icon: const Icon(
+                  Icons.notifications_outlined,
+                  color: Colors.white,
+                ),
                 onPressed: () {},
               ),
             ],
@@ -121,8 +160,8 @@ class _NewsPageState extends State<NewsPage> {
         return Container(
           margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
           decoration: BoxDecoration(
-            color: themeService.isDarkMode 
-                ? ThemeService.darkCardColor 
+            color: themeService.isDarkMode
+                ? ThemeService.darkCardColor
                 : cardColor,
             borderRadius: BorderRadius.circular(16),
             boxShadow: [
@@ -143,9 +182,11 @@ class _NewsPageState extends State<NewsPage> {
                   children: [
                     CircleAvatar(
                       radius: 20,
-                      backgroundColor: (themeService.isDarkMode 
-                          ? ThemeService.darkPrimaryColor 
-                          : primaryColor).withOpacity(0.1),
+                      backgroundColor:
+                          (themeService.isDarkMode
+                                  ? ThemeService.darkPrimaryColor
+                                  : primaryColor)
+                              .withOpacity(0.1),
                       backgroundImage: AssetImage(post['adminAvatar']),
                     ),
                     const SizedBox(width: 12),
@@ -158,18 +199,18 @@ class _NewsPageState extends State<NewsPage> {
                             style: TextStyle(
                               fontWeight: FontWeight.bold,
                               fontSize: 16,
-                              color: themeService.isDarkMode 
-                                  ? ThemeService.darkTextPrimaryColor 
+                              color: themeService.isDarkMode
+                                  ? ThemeService.darkTextPrimaryColor
                                   : Color(0xFF802629),
                             ),
                           ),
                           Text(
                             post['timestamp'],
                             style: TextStyle(
-                              color: themeService.isDarkMode 
-                                  ? ThemeService.darkTextSecondaryColor 
-                                  : Colors.grey[600], 
-                              fontSize: 12
+                              color: themeService.isDarkMode
+                                  ? ThemeService.darkTextSecondaryColor
+                                  : Colors.grey[600],
+                              fontSize: 12,
                             ),
                           ),
                         ],
@@ -177,10 +218,10 @@ class _NewsPageState extends State<NewsPage> {
                     ),
                     IconButton(
                       icon: Icon(
-                        Icons.more_vert, 
-                        color: themeService.isDarkMode 
-                            ? ThemeService.darkTextSecondaryColor 
-                            : Colors.grey[600]
+                        Icons.more_vert,
+                        color: themeService.isDarkMode
+                            ? ThemeService.darkTextSecondaryColor
+                            : Colors.grey[600],
                       ),
                       onPressed: () {},
                     ),
@@ -196,8 +237,8 @@ class _NewsPageState extends State<NewsPage> {
                   style: TextStyle(
                     fontSize: 14,
                     height: 1.4,
-                    color: themeService.isDarkMode 
-                        ? ThemeService.darkTextPrimaryColor 
+                    color: themeService.isDarkMode
+                        ? ThemeService.darkTextPrimaryColor
                         : Colors.grey[800],
                   ),
                 ),
@@ -206,7 +247,10 @@ class _NewsPageState extends State<NewsPage> {
               // Post Image
               if (post['image'] != null)
                 Container(
-                  margin: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+                  margin: const EdgeInsets.symmetric(
+                    vertical: 12,
+                    horizontal: 16,
+                  ),
                   height: 200,
                   width: double.infinity,
                   decoration: BoxDecoration(
@@ -225,15 +269,15 @@ class _NewsPageState extends State<NewsPage> {
                       post['image'],
                       fit: BoxFit.cover,
                       errorBuilder: (context, error, stackTrace) => Container(
-                        color: themeService.isDarkMode 
-                            ? ThemeService.darkSurfaceColor 
+                        color: themeService.isDarkMode
+                            ? ThemeService.darkSurfaceColor
                             : Colors.grey[300],
                         child: Icon(
-                          Icons.image, 
-                          size: 50, 
-                          color: themeService.isDarkMode 
-                              ? ThemeService.darkTextSecondaryColor 
-                              : Colors.grey[600]
+                          Icons.image,
+                          size: 50,
+                          color: themeService.isDarkMode
+                              ? ThemeService.darkTextSecondaryColor
+                              : Colors.grey[600],
                         ),
                       ),
                     ),
@@ -253,17 +297,19 @@ class _NewsPageState extends State<NewsPage> {
                             post['isLiked']
                                 ? Icons.favorite
                                 : Icons.favorite_border,
-                            color: post['isLiked'] ? Colors.red : (themeService.isDarkMode 
-                                ? ThemeService.darkTextSecondaryColor 
-                                : Colors.grey[600]),
+                            color: post['isLiked']
+                                ? Colors.red
+                                : (themeService.isDarkMode
+                                      ? ThemeService.darkTextSecondaryColor
+                                      : Colors.grey[600]),
                             size: 24,
                           ),
                           const SizedBox(width: 8),
                           Text(
                             '${post['likes']}',
                             style: TextStyle(
-                              color: themeService.isDarkMode 
-                                  ? ThemeService.darkTextSecondaryColor 
+                              color: themeService.isDarkMode
+                                  ? ThemeService.darkTextSecondaryColor
                                   : Colors.grey[700],
                               fontWeight: FontWeight.w500,
                               fontSize: 12,
@@ -279,8 +325,8 @@ class _NewsPageState extends State<NewsPage> {
                         children: [
                           Icon(
                             Icons.chat_bubble_outline,
-                            color: themeService.isDarkMode 
-                                ? ThemeService.darkTextSecondaryColor 
+                            color: themeService.isDarkMode
+                                ? ThemeService.darkTextSecondaryColor
                                 : Colors.grey[600],
                             size: 24,
                           ),
@@ -288,8 +334,8 @@ class _NewsPageState extends State<NewsPage> {
                           Text(
                             '${post['comments']}',
                             style: TextStyle(
-                              color: themeService.isDarkMode 
-                                  ? ThemeService.darkTextSecondaryColor 
+                              color: themeService.isDarkMode
+                                  ? ThemeService.darkTextSecondaryColor
                                   : Colors.grey[700],
                               fontWeight: FontWeight.w500,
                               fontSize: 12,
@@ -303,8 +349,8 @@ class _NewsPageState extends State<NewsPage> {
                       onTap: () {},
                       child: Icon(
                         Icons.share_outlined,
-                        color: themeService.isDarkMode 
-                            ? ThemeService.darkTextSecondaryColor 
+                        color: themeService.isDarkMode
+                            ? ThemeService.darkTextSecondaryColor
                             : Colors.grey[600],
                         size: 24,
                       ),
@@ -335,10 +381,12 @@ class _NewsPageState extends State<NewsPage> {
           builder: (context, themeService, child) {
             return Container(
               decoration: BoxDecoration(
-                color: themeService.isDarkMode 
-                    ? ThemeService.darkCardColor 
+                color: themeService.isDarkMode
+                    ? ThemeService.darkCardColor
                     : cardColor,
-                borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
+                borderRadius: const BorderRadius.vertical(
+                  top: Radius.circular(20),
+                ),
                 boxShadow: [
                   BoxShadow(
                     color: Colors.black.withOpacity(0.1),
@@ -354,8 +402,8 @@ class _NewsPageState extends State<NewsPage> {
                     height: 4,
                     margin: const EdgeInsets.symmetric(vertical: 8),
                     decoration: BoxDecoration(
-                      color: themeService.isDarkMode 
-                          ? ThemeService.darkSurfaceColor 
+                      color: themeService.isDarkMode
+                          ? ThemeService.darkSurfaceColor
                           : Colors.grey[300],
                       borderRadius: BorderRadius.circular(2),
                     ),
@@ -372,8 +420,8 @@ class _NewsPageState extends State<NewsPage> {
                           style: TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.bold,
-                            color: themeService.isDarkMode 
-                                ? ThemeService.darkPrimaryColor 
+                            color: themeService.isDarkMode
+                                ? ThemeService.darkPrimaryColor
                                 : primaryColor,
                           ),
                         ),
@@ -381,20 +429,20 @@ class _NewsPageState extends State<NewsPage> {
                         Text(
                           '${post['comments']} yorum',
                           style: TextStyle(
-                            color: themeService.isDarkMode 
-                                ? ThemeService.darkTextSecondaryColor 
-                                : Colors.grey[600], 
-                            fontSize: 12
+                            color: themeService.isDarkMode
+                                ? ThemeService.darkTextSecondaryColor
+                                : Colors.grey[600],
+                            fontSize: 12,
                           ),
                         ),
                       ],
                     ),
                   ),
                   Divider(
-                    height: 1, 
-                    color: themeService.isDarkMode 
-                        ? ThemeService.darkDividerColor 
-                        : Colors.grey[300]
+                    height: 1,
+                    color: themeService.isDarkMode
+                        ? ThemeService.darkDividerColor
+                        : Colors.grey[300],
                   ),
                   Expanded(
                     child: ListView.builder(
@@ -439,14 +487,16 @@ class _NewsPageState extends State<NewsPage> {
             children: [
               CircleAvatar(
                 radius: 16,
-                backgroundColor: (themeService.isDarkMode 
-                    ? ThemeService.darkPrimaryColor 
-                    : primaryColor).withOpacity(0.1),
+                backgroundColor:
+                    (themeService.isDarkMode
+                            ? ThemeService.darkPrimaryColor
+                            : primaryColor)
+                        .withOpacity(0.1),
                 child: Text(
                   users[index][0],
                   style: TextStyle(
-                    color: themeService.isDarkMode 
-                        ? ThemeService.darkPrimaryColor 
+                    color: themeService.isDarkMode
+                        ? ThemeService.darkPrimaryColor
                         : primaryColor,
                     fontWeight: FontWeight.bold,
                     fontSize: 12,
@@ -463,8 +513,8 @@ class _NewsPageState extends State<NewsPage> {
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
                         fontSize: 14,
-                        color: themeService.isDarkMode 
-                            ? ThemeService.darkPrimaryColor 
+                        color: themeService.isDarkMode
+                            ? ThemeService.darkPrimaryColor
                             : primaryColor,
                       ),
                     ),
@@ -473,8 +523,8 @@ class _NewsPageState extends State<NewsPage> {
                       comments[index],
                       style: TextStyle(
                         fontSize: 12,
-                        color: themeService.isDarkMode 
-                            ? ThemeService.darkTextPrimaryColor 
+                        color: themeService.isDarkMode
+                            ? ThemeService.darkTextPrimaryColor
                             : Colors.grey[700],
                         height: 1.3,
                       ),
@@ -483,10 +533,10 @@ class _NewsPageState extends State<NewsPage> {
                     Text(
                       '${index + 1} saat önce',
                       style: TextStyle(
-                        fontSize: 12, 
-                        color: themeService.isDarkMode 
-                            ? ThemeService.darkTextSecondaryColor 
-                            : Colors.grey[500]
+                        fontSize: 12,
+                        color: themeService.isDarkMode
+                            ? ThemeService.darkTextSecondaryColor
+                            : Colors.grey[500],
                       ),
                     ),
                   ],
@@ -505,15 +555,15 @@ class _NewsPageState extends State<NewsPage> {
         return Container(
           padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
-            color: themeService.isDarkMode 
-                ? ThemeService.darkCardColor 
+            color: themeService.isDarkMode
+                ? ThemeService.darkCardColor
                 : cardColor,
             border: Border(
               top: BorderSide(
-                color: themeService.isDarkMode 
-                    ? ThemeService.darkDividerColor 
-                    : Colors.grey[200]!
-              )
+                color: themeService.isDarkMode
+                    ? ThemeService.darkDividerColor
+                    : Colors.grey[200]!,
+              ),
             ),
           ),
           child: SafeArea(
@@ -521,38 +571,40 @@ class _NewsPageState extends State<NewsPage> {
               children: [
                 CircleAvatar(
                   radius: 16,
-                  backgroundColor: (themeService.isDarkMode 
-                      ? ThemeService.darkPrimaryColor 
-                      : primaryColor).withOpacity(0.1),
+                  backgroundColor:
+                      (themeService.isDarkMode
+                              ? ThemeService.darkPrimaryColor
+                              : primaryColor)
+                          .withOpacity(0.1),
                   child: Icon(
-                    Icons.person, 
-                    color: themeService.isDarkMode 
-                        ? ThemeService.darkPrimaryColor 
-                        : primaryColor, 
-                    size: 18
+                    Icons.person,
+                    color: themeService.isDarkMode
+                        ? ThemeService.darkPrimaryColor
+                        : primaryColor,
+                    size: 18,
                   ),
                 ),
                 const SizedBox(width: 12),
                 Expanded(
                   child: TextField(
                     style: TextStyle(
-                      color: themeService.isDarkMode 
-                          ? ThemeService.darkTextPrimaryColor 
+                      color: themeService.isDarkMode
+                          ? ThemeService.darkTextPrimaryColor
                           : Colors.black,
                     ),
                     decoration: InputDecoration(
                       hintText: 'Bir yorum yazın...',
                       hintStyle: TextStyle(
-                        color: themeService.isDarkMode 
-                            ? ThemeService.darkTextSecondaryColor 
+                        color: themeService.isDarkMode
+                            ? ThemeService.darkTextSecondaryColor
                             : Colors.grey[500],
                       ),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(20),
                         borderSide: BorderSide(
-                          color: themeService.isDarkMode 
-                              ? ThemeService.darkDividerColor 
-                              : Colors.grey[300]!
+                          color: themeService.isDarkMode
+                              ? ThemeService.darkDividerColor
+                              : Colors.grey[300]!,
                         ),
                       ),
                       contentPadding: const EdgeInsets.symmetric(
