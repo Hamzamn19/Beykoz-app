@@ -3,6 +3,8 @@ import 'package:beykoz/data/features_data.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:reorderable_grid_view/reorderable_grid_view.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
+import 'package:beykoz/Services/theme_service.dart';
+import 'package:provider/provider.dart';
 
 class EditFavoritesPage extends StatefulWidget {
   const EditFavoritesPage({super.key});
@@ -93,33 +95,49 @@ class _EditFavoritesPageState extends State<EditFavoritesPage> {
   Widget build(BuildContext context) {
     final selectedLabelsSet = _selectedItems.map((e) => e['label'] as String).toSet();
 
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Favorileri Düzenle (${_selectedItems.length}/8)'),
-        backgroundColor: const Color(0xFF802629),
-        foregroundColor: Colors.white,
-        actions: [IconButton(icon: const Icon(Icons.save), onPressed: _saveFavorites)],
-      ),
-      body: _isLoading
-          ? const Center(child: CircularProgressIndicator())
-          : CustomScrollView(
+    return Consumer<ThemeService>(
+      builder: (context, themeService, child) {
+        return Scaffold(
+          appBar: AppBar(
+            title: Text('Favorileri Düzenle (${_selectedItems.length}/8)'),
+            backgroundColor: themeService.isDarkMode 
+                ? ThemeService.darkPrimaryColor 
+                : const Color(0xFF802629),
+            foregroundColor: Colors.white,
+            actions: [IconButton(icon: const Icon(Icons.save), onPressed: _saveFavorites)],
+          ),
+          body: _isLoading
+              ? const Center(child: CircularProgressIndicator())
+              : CustomScrollView(
         slivers: [
           SliverPadding(
             padding: const EdgeInsets.all(16.0),
             sliver: SliverList(
               delegate: SliverChildListDelegate.fixed(
                   [
-                    const Text(
+                    Text(
                       'Seçili Favoriler (Sürükleyerek Sırala)',
-                      style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Color(0xFF802629)),
+                      style: TextStyle(
+                        fontSize: 18, 
+                        fontWeight: FontWeight.bold, 
+                        color: themeService.isDarkMode 
+                            ? ThemeService.darkTextPrimaryColor 
+                            : Color(0xFF802629)
+                      ),
                     ),
                     const SizedBox(height: 10),
                     _buildSelectedItemsGrid(),
                     const SizedBox(height: 30),
 
-                    const Text(
+                    Text(
                       'Eklenebilecek Diğer Özellikler',
-                      style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Color(0xFF802629)),
+                      style: TextStyle(
+                        fontSize: 18, 
+                        fontWeight: FontWeight.bold, 
+                        color: themeService.isDarkMode 
+                            ? ThemeService.darkTextPrimaryColor 
+                            : Color(0xFF802629)
+                      ),
                     ),
                     const SizedBox(height: 10),
 
@@ -149,6 +167,8 @@ class _EditFavoritesPageState extends State<EditFavoritesPage> {
           ),
         ],
       ),
+        );
+      },
     );
   }
 
@@ -217,27 +237,37 @@ class _EditFavoritesPageState extends State<EditFavoritesPage> {
 
     final bool canExpand = features.length > 4;
 
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(20.0),
-      child: AnimatedSize(
-        duration: const Duration(milliseconds: 300),
-        curve: Curves.easeInOut,
-        alignment: Alignment.topCenter,
-        child: Container(
-          decoration: BoxDecoration(
-            color: const Color(0xFFECECEC),
-            borderRadius: BorderRadius.circular(20.0),
-          ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Padding(
-                padding: const EdgeInsets.only(top: 16.0, left: 16.0, bottom: 8.0),
-                child: Text(
-                  title,
-                  style: const TextStyle(color: Color(0xFF802629), fontSize: 16, fontWeight: FontWeight.bold),
-                ),
+    return Consumer<ThemeService>(
+      builder: (context, themeService, child) {
+        return ClipRRect(
+          borderRadius: BorderRadius.circular(20.0),
+          child: AnimatedSize(
+            duration: const Duration(milliseconds: 300),
+            curve: Curves.easeInOut,
+            alignment: Alignment.topCenter,
+            child: Container(
+              decoration: BoxDecoration(
+                color: themeService.isDarkMode 
+                    ? ThemeService.darkSurfaceColor 
+                    : const Color(0xFFECECEC),
+                borderRadius: BorderRadius.circular(20.0),
               ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.only(top: 16.0, left: 16.0, bottom: 8.0),
+                    child: Text(
+                      title,
+                      style: TextStyle(
+                        color: themeService.isDarkMode 
+                            ? ThemeService.darkTextPrimaryColor 
+                            : Color(0xFF802629), 
+                        fontSize: 16, 
+                        fontWeight: FontWeight.bold
+                      ),
+                    ),
+                  ),
               AnimationLimiter(
                 child: GridView.builder(
                   shrinkWrap: true,
@@ -265,7 +295,12 @@ class _EditFavoritesPageState extends State<EditFavoritesPage> {
               if (canExpand)
                 Center(
                   child: IconButton(
-                    icon: Icon(isExpanded ? Icons.keyboard_arrow_up : Icons.keyboard_arrow_down, color: const Color(0xFF802629)),
+                    icon: Icon(
+                      isExpanded ? Icons.keyboard_arrow_up : Icons.keyboard_arrow_down, 
+                      color: themeService.isDarkMode 
+                          ? ThemeService.darkTextPrimaryColor 
+                          : const Color(0xFF802629)
+                    ),
                     onPressed: onToggle,
                   ),
                 ),
@@ -273,62 +308,68 @@ class _EditFavoritesPageState extends State<EditFavoritesPage> {
           ),
         ),
       ),
+        );
+      },
     );
   }
 
   // GÜNCELLENMİŞ METOT
   Widget _buildGridItem(Map<String, dynamic> item, {required bool isSelected, required VoidCallback onTap, bool isDragging = false}) {
-    return InkWell(
-      onTap: onTap,
-      borderRadius: BorderRadius.circular(16),
-      child: Stack(
-        clipBehavior: Clip.none,
-        children: [
-          SizedBox(
-            width: double.infinity,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                const SizedBox(height: 4),
-                Container(
-                  width: 56.75,
-                  height: 56.75,
-                  alignment: Alignment.center,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(12),
-                    gradient: const LinearGradient(
-                      colors: [Color(0xFF802629), Color(0xFFB2453C)],
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
-                    ),
-                    boxShadow: const [
-                      BoxShadow(
-                        color: Colors.black12,
-                        blurRadius: 6,
-                        offset: Offset(0, 2),
+    return Consumer<ThemeService>(
+      builder: (context, themeService, child) {
+        return InkWell(
+          onTap: onTap,
+          borderRadius: BorderRadius.circular(16),
+          child: Stack(
+            clipBehavior: Clip.none,
+            children: [
+              SizedBox(
+                width: double.infinity,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    const SizedBox(height: 4),
+                    Container(
+                      width: 56.75,
+                      height: 56.75,
+                      alignment: Alignment.center,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(12),
+                        gradient: const LinearGradient(
+                          colors: [Color(0xFF802629), Color(0xFFB2453C)],
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                        ),
+                        boxShadow: const [
+                          BoxShadow(
+                            color: Colors.black12,
+                            blurRadius: 6,
+                            offset: Offset(0, 2),
+                          ),
+                        ],
                       ),
-                    ],
-                  ),
-                  child: Icon(item['icon'], color: Colors.white, size: 30),
-                ),
-                const SizedBox(height: 2),
-                Flexible(
-                  child: Text(
-                    item['label']!,
-                    textAlign: TextAlign.center,
-                    style: const TextStyle(
-                      color: Color(0xFF802629),
-                      fontSize: 12,
-                      fontWeight: FontWeight.bold,
-                      height: 1.1,
+                      child: Icon(item['icon'], color: Colors.white, size: 30),
                     ),
-                    overflow: TextOverflow.ellipsis,
-                    maxLines: 2,
-                  ),
+                    const SizedBox(height: 2),
+                    Flexible(
+                      child: Text(
+                        item['label']!,
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          color: themeService.isDarkMode 
+                              ? ThemeService.darkTextPrimaryColor 
+                              : Color(0xFF802629),
+                          fontSize: 12,
+                          fontWeight: FontWeight.bold,
+                          height: 1.1,
+                        ),
+                        overflow: TextOverflow.ellipsis,
+                        maxLines: 2,
+                      ),
+                    ),
+                  ],
                 ),
-              ],
-            ),
-          ),
+              ),
           if (isSelected && !isDragging)
             Positioned(
               top: -8,
@@ -345,7 +386,13 @@ class _EditFavoritesPageState extends State<EditFavoritesPage> {
                     )
                   ],
                 ),
-                child: const Icon(Icons.cancel, color: Color(0xFF802629), size: 22),
+                child: Icon(
+                  Icons.cancel, 
+                  color: themeService.isDarkMode 
+                      ? ThemeService.darkPrimaryColor 
+                      : Color(0xFF802629), 
+                  size: 22
+                ),
               ),
             ),
           if (!isSelected)
@@ -369,6 +416,8 @@ class _EditFavoritesPageState extends State<EditFavoritesPage> {
             ),
         ],
       ),
+        );
+      },
     );
   }
 

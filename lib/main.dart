@@ -2,6 +2,7 @@ import 'package:beykoz/Pages/LoginPage.dart';
 import 'package:beykoz/Pages/RootPage.dart';
 import 'package:beykoz/Pages/HomePage.dart';
 import 'package:beykoz/Services/auth_service.dart';
+import 'package:beykoz/Services/theme_service.dart';
 import 'package:beykoz/Services/firebase_options.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -15,8 +16,11 @@ void main() async {
     options: DefaultFirebaseOptions.currentPlatform,
   );
   runApp(
-    ChangeNotifierProvider(
-      create: (_) => AuthService(),
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => AuthService()),
+        ChangeNotifierProvider(create: (_) => ThemeService()),
+      ],
       child: const MyApp(),
     ),
   );
@@ -27,11 +31,16 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      home: const AuthWrapper(),
-      routes: {
-        '/login': (context) => const LoginPage(),
+    return Consumer<ThemeService>(
+      builder: (context, themeService, child) {
+        return MaterialApp(
+          debugShowCheckedModeBanner: false,
+          theme: themeService.currentTheme,
+          home: const AuthWrapper(),
+          routes: {
+            '/login': (context) => const LoginPage(),
+          },
+        );
       },
     );
   }

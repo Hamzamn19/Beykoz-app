@@ -11,6 +11,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:beykoz/data/features_data.dart';
 import 'package:beykoz/Pages/EditFavoritesPage.dart';
+import 'package:beykoz/Services/theme_service.dart';
+import 'package:provider/provider.dart';
 
 // Main widget containing the home screen and Bottom Navigation Bar logic
 class HomeScreen extends StatefulWidget {
@@ -97,47 +99,64 @@ class _HomeScreenState extends State<HomeScreen> {
     final isTeacher = _userRole == 'Teacher';
     final isDeveloper = _userRole == 'Developer';
 
-    return Scaffold(
-      body: IndexedStack(index: _selectedIndex, children: _pages),
-      bottomNavigationBar: BottomNavigationBar(
-        items: const <BottomNavigationBarItem>[
-          BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Ana Sayfa'),
-          BottomNavigationBarItem(icon: Icon(Icons.web), label: 'OIS'),
-          BottomNavigationBarItem(icon: Icon(Icons.login), label: 'Online'),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.check_circle),
-            label: 'Yoklama',
+    return Consumer<ThemeService>(
+      builder: (context, themeService, child) {
+        return Scaffold(
+          backgroundColor: themeService.isDarkMode 
+              ? ThemeService.darkBackgroundColor 
+              : ThemeService.lightBackgroundColor,
+          body: IndexedStack(index: _selectedIndex, children: _pages),
+          bottomNavigationBar: BottomNavigationBar(
+            items: const <BottomNavigationBarItem>[
+              BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Ana Sayfa'),
+              BottomNavigationBarItem(icon: Icon(Icons.web), label: 'OIS'),
+              BottomNavigationBarItem(icon: Icon(Icons.login), label: 'Online'),
+              BottomNavigationBarItem(
+                icon: Icon(Icons.check_circle),
+                label: 'Yoklama',
+              ),
+            ],
+            currentIndex: _selectedIndex,
+            selectedItemColor: Colors.white,
+            unselectedItemColor: Colors.white70,
+            backgroundColor: themeService.isDarkMode 
+                ? ThemeService.darkPrimaryColor 
+                : ThemeService.lightPrimaryColor,
+            type: BottomNavigationBarType.fixed,
+            onTap: _onItemTapped,
           ),
-        ],
-        currentIndex: _selectedIndex,
-        selectedItemColor: Colors.white,
-        unselectedItemColor: Colors.grey,
-        backgroundColor: const Color(0xFF802629),
-        type: BottomNavigationBarType.fixed,
-        onTap: _onItemTapped,
-      ),
-      // Ayar çarkı sadece developer için
-      floatingActionButton: isDeveloper
-          ? _buildSettingsButton(context)
-          : null,
-      floatingActionButtonLocation: FloatingActionButtonLocation.endTop,
+          // Ayar çarkı sadece developer için
+          floatingActionButton: isDeveloper
+              ? _buildSettingsButton(context)
+              : null,
+          floatingActionButtonLocation: FloatingActionButtonLocation.endTop,
+        );
+      },
     );
   }
 
   Widget _buildSettingsButton(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.only(top: 40.0, right: 16.0),
-      child: FloatingActionButton(
-        backgroundColor: const Color(0xFFECECEC),
-        foregroundColor: const Color(0xFF802629),
-        onPressed: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => SettingsPage()),
-          );
-        },
-        child: const Icon(Icons.settings),
-      ),
+    return Consumer<ThemeService>(
+      builder: (context, themeService, child) {
+        return Padding(
+          padding: const EdgeInsets.only(top: 40.0, right: 16.0),
+          child: FloatingActionButton(
+            backgroundColor: themeService.isDarkMode 
+                ? ThemeService.darkCardColor 
+                : const Color(0xFFECECEC),
+            foregroundColor: themeService.isDarkMode 
+                ? ThemeService.darkPrimaryColor 
+                : const Color(0xFF802629),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => SettingsPage()),
+              );
+            },
+            child: const Icon(Icons.settings),
+          ),
+        );
+      },
     );
   }
 }
@@ -152,8 +171,8 @@ class DesignedHomePage extends StatefulWidget {
 }
 
 class _DesignedHomePageState extends State<DesignedHomePage> {
-  static const Color primaryColor = Color(0xFF802629);
-  static const Color cardColor = Color(0xFFECECEC);
+  late Color primaryColor;
+  late Color cardColor;
 
   List<Map<String, dynamic>> _frequentlyUsedItems = [];
   bool _isLoadingFavorites = true;
@@ -162,6 +181,18 @@ class _DesignedHomePageState extends State<DesignedHomePage> {
   void initState() {
     super.initState();
     _loadUserFavorites();
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final themeService = Provider.of<ThemeService>(context, listen: false);
+    primaryColor = themeService.isDarkMode 
+        ? ThemeService.darkPrimaryColor 
+        : ThemeService.lightPrimaryColor;
+    cardColor = themeService.isDarkMode 
+        ? ThemeService.darkCardColor 
+        : ThemeService.lightCardColor;
   }
 
   Future<void> _loadUserFavorites() async {
@@ -200,127 +231,140 @@ class _DesignedHomePageState extends State<DesignedHomePage> {
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      child: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              _buildTopButtons(context),
-              const SizedBox(height: 24),
-              _buildSectionTitle(
-                'FAVORİLER',
-                onPressed: () async {
-                  final result = await Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const EditFavoritesPage(),
-                    ),
-                  );
-                  if (result == true) {
-                    _loadUserFavorites();
-                  }
-                },
-              ),
-              const SizedBox(height: 12),
-              _isLoadingFavorites
-                  ? const Center(child: CircularProgressIndicator())
-                  : _buildFrequentlyUsedGrid(),
-              const SizedBox(height: 5),
-              Center(
-                child: ElevatedButton(
-                  onPressed: () {
-                    showModalBottomSheet(
-                      context: context,
-                      isScrollControlled: true,
-                      backgroundColor: Colors.transparent,
-                      builder: (context) => const AllFeaturesSheet(),
-                    );
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: cardColor,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(20),
-                    ),
-                    padding: const EdgeInsets.symmetric(
-                      vertical: 0,
-                      horizontal: 150,
+    return Consumer<ThemeService>(
+      builder: (context, themeService, child) {
+        return SafeArea(
+          child: SingleChildScrollView(
+            child: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  _buildTopButtons(context),
+                  const SizedBox(height: 24),
+                  _buildSectionTitle(
+                    'FAVORİLER',
+                    onPressed: () async {
+                      final result = await Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const EditFavoritesPage(),
+                        ),
+                      );
+                      if (result == true) {
+                        _loadUserFavorites();
+                      }
+                    },
+                  ),
+                  const SizedBox(height: 12),
+                  _isLoadingFavorites
+                      ? const Center(child: CircularProgressIndicator())
+                      : _buildFrequentlyUsedGrid(),
+                  const SizedBox(height: 5),
+                  Center(
+                    child: ElevatedButton(
+                      onPressed: () {
+                        showModalBottomSheet(
+                          context: context,
+                          isScrollControlled: true,
+                          backgroundColor: Colors.transparent,
+                          builder: (context) => const AllFeaturesSheet(),
+                        );
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: cardColor,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                        padding: const EdgeInsets.symmetric(
+                          vertical: 0,
+                          horizontal: 150,
+                        ),
+                      ),
+                      child: Text(
+                        'TÜMÜ',
+                        style: TextStyle(
+                          fontSize: 15, 
+                          color: primaryColor,
+                        ),
+                      ),
                     ),
                   ),
-                  child: const Text(
-                    'TÜMÜ',
-                    style: TextStyle(fontSize: 15, color: Color(0xFF802629)),
-                  ),
-                ),
-              ),
-              const SizedBox(height: 15),
-              _buildSectionTitle('DUYURULAR'),
-              const SizedBox(height: 12),
+                  const SizedBox(height: 15),
+                  _buildSectionTitle('DUYURULAR'),
+                  const SizedBox(height: 12),
 
-              // DEĞİŞİKLİK 1: Kartlar artık tıklanabilir ve ilgili linklere yönlendirir
-              _buildAnnouncementCard(
-                context: context,
-                imagePath: 'assets/images/mezuniyettoreni.jpg',
-                url: 'https://www.beykoz.edu.tr/haber/5581-2025-mezuniyet-toreni',
+                  // DEĞİŞİKLİK 1: Kartlar artık tıklanabilir ve ilgili linklere yönlendirir
+                  _buildAnnouncementCard(
+                    context: context,
+                    imagePath: 'assets/images/mezuniyettoreni.jpg',
+                    url: 'https://www.beykoz.edu.tr/haber/5581-2025-mezuniyet-toreni',
+                  ),
+                  const SizedBox(height: 16),
+                  _buildAnnouncementCard(
+                    context: context,
+                    imagePath: 'assets/images/yazogretimi.jpg',
+                    url:
+                        'https://www.beykoz.edu.tr/haber/5616-2024-2025-yaz-ogretiminde-acilabilecek-dersler-duyurusu',
+                  ),
+                  const SizedBox(height: 90),
+                ],
               ),
-              const SizedBox(height: 16),
-              _buildAnnouncementCard(
-                context: context,
-                imagePath: 'assets/images/yazogretimi.jpg',
-                url:
-                    'https://www.beykoz.edu.tr/haber/5616-2024-2025-yaz-ogretiminde-acilabilecek-dersler-duyurusu',
-              ),
-              const SizedBox(height: 90),
-            ],
+            ),
           ),
-        ),
-      ),
+        );
+      },
     );
   }
 
   Widget _buildTopButtons(BuildContext context) {
-    return Row(
-      children: [
-        Expanded(
-          flex: 3,
-          child: GestureDetector(
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) =>
-                      const WebViewPage(url: 'https://www.beykoz.edu.tr/'),
-                ),
-              );
-            },
-            child: Align(
-              alignment: Alignment.centerLeft,
-              child: Image.asset(
-                'assets/images/logo.png',
-                fit: BoxFit.contain,
-                height: 48,
-              ),
-            ),
-          ),
-        ),
-        const SizedBox(width: 16),
-        Expanded(
-          flex: 2,
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: [
-              _buildCircularButton(
-                icon: Icons.settings,
-                backgroundColor: const Color(0xFFECECEC),
-                iconColor: const Color(0xFF802629),
-                onPressed: () {
+    return Consumer<ThemeService>(
+      builder: (context, themeService, child) {
+        return Row(
+          children: [
+            Expanded(
+              flex: 3,
+              child: GestureDetector(
+                onTap: () {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => SettingsPage()),
+                    MaterialPageRoute(
+                      builder: (context) =>
+                          const WebViewPage(url: 'https://www.beykoz.edu.tr/'),
+                    ),
                   );
                 },
+                child: Align(
+                  alignment: Alignment.centerLeft,
+                  child: Image.asset(
+                    'assets/images/logo.png',
+                    fit: BoxFit.contain,
+                    height: 48,
+                  ),
+                ),
               ),
+            ),
+            const SizedBox(width: 16),
+            Expanded(
+              flex: 2,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: [
+                  _buildCircularButton(
+                    icon: Icons.settings,
+                    backgroundColor: themeService.isDarkMode 
+                        ? ThemeService.darkCardColor 
+                        : const Color(0xFFECECEC),
+                    iconColor: themeService.isDarkMode 
+                        ? ThemeService.darkPrimaryColor 
+                        : const Color(0xFF802629),
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => SettingsPage()),
+                      );
+                    },
+                  ),
               // Zil düğmesini açılır menü ile değiştirme
               PopupMenuButton<String>(
                 offset: const Offset(0, 50),
@@ -439,6 +483,8 @@ class _DesignedHomePageState extends State<DesignedHomePage> {
           ),
         ),
       ],
+        );
+      },
     );
   }
 
@@ -506,113 +552,119 @@ class _DesignedHomePageState extends State<DesignedHomePage> {
   }
 
   Widget _buildFrequentlyUsedGrid() {
-    // ... (This part of the code is unchanged)
-    final List<Map<String, dynamic>> frequentlyUsed = [
-      {
-        'label': 'Transkript',
-        'url': 'https://ois.beykoz.edu.tr/ogrenciler/belge/transkript',
-        'icon': FontAwesomeIcons.fileInvoice, // DEĞİŞTİRİLDİ
-      },
-      {
-        'label': 'Karne',
-        'url': 'https://ois.beykoz.edu.tr/ogrenciler/belge/ogrkarne',
-        'icon': FontAwesomeIcons.award, // DEĞİŞTİRİLDİ
-      },
-      {
-        'label': 'Ders Programı',
-        'url': 'https://ois.beykoz.edu.tr/ogrenciler/belge/ogrdersprogrami',
-        'icon': FontAwesomeIcons.calendarWeek, // DEĞİŞTİRİLDİ
-      },
-      {
-        'label': 'Hazırlık Karne',
-        'url': 'https://ois.beykoz.edu.tr/hazirlik/hazirliksinav/ogrpreptranskript',
-        'icon': FontAwesomeIcons.bookReader, // DEĞİŞTİRİLDİ
-      },
-      {
-        'label': 'Ders Onay Belgesi',
-        'url': 'https://ois.beykoz.edu.tr/ogrenciler/belge/dersdanismanonay',
-        'icon': FontAwesomeIcons.stamp, // DEĞİŞTİRİLDİ
-      },
-      {
-        'label': 'Kesin Kayıt Belgesi',
-        'url': 'https://ois.beykoz.edu.tr/ogrenciler/belge/kesinkayitbelgesi',
-        'icon': FontAwesomeIcons.idCard, // DEĞİŞTİRİLDİ
-      },
-      {
-        'label': 'Online Belge Talep',
-        'url': 'https://ois.beykoz.edu.tr/ogrenciler/belgetalep/duzenle2',
-        'icon': FontAwesomeIcons.paperPlane, // DEĞİŞTİRİLDİ
-      },
-      {
-        'label': 'Sınav Programı',
-        'url': 'https://ois.beykoz.edu.tr/ogrenciler/belge/sinavprogrami',
-        'icon': FontAwesomeIcons.calendarCheck, // DEĞİŞTİRİLDİ
-      },
-    ];
-    return GridView.builder(
-      shrinkWrap: true,
-      physics: const NeverScrollableScrollPhysics(),
-      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 4,
-        crossAxisSpacing: 12,
-        mainAxisSpacing: 0,
-        childAspectRatio: 0.8,
-      ),
-      itemCount: _frequentlyUsedItems.length,
-      itemBuilder: (context, index) {
-        final item = _frequentlyUsedItems[index];
-        return InkWell(
-          onTap: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => WebViewPage(
-                  url: item['url']!,
-                  username: null,
-                  password: null,
-                ),
+    return Consumer<ThemeService>(
+      builder: (context, themeService, child) {
+        // ... (This part of the code is unchanged)
+        final List<Map<String, dynamic>> frequentlyUsed = [
+          {
+            'label': 'Transkript',
+            'url': 'https://ois.beykoz.edu.tr/ogrenciler/belge/transkript',
+            'icon': FontAwesomeIcons.fileInvoice, // DEĞİŞTİRİLDİ
+          },
+          {
+            'label': 'Karne',
+            'url': 'https://ois.beykoz.edu.tr/ogrenciler/belge/ogrkarne',
+            'icon': FontAwesomeIcons.award, // DEĞİŞTİRİLDİ
+          },
+          {
+            'label': 'Ders Programı',
+            'url': 'https://ois.beykoz.edu.tr/ogrenciler/belge/ogrdersprogrami',
+            'icon': FontAwesomeIcons.calendarWeek, // DEĞİŞTİRİLDİ
+          },
+          {
+            'label': 'Hazırlık Karne',
+            'url': 'https://ois.beykoz.edu.tr/hazirlik/hazirliksinav/ogrpreptranskript',
+            'icon': FontAwesomeIcons.bookReader, // DEĞİŞTİRİLDİ
+          },
+          {
+            'label': 'Ders Onay Belgesi',
+            'url': 'https://ois.beykoz.edu.tr/ogrenciler/belge/dersdanismanonay',
+            'icon': FontAwesomeIcons.stamp, // DEĞİŞTİRİLDİ
+          },
+          {
+            'label': 'Kesin Kayıt Belgesi',
+            'url': 'https://ois.beykoz.edu.tr/ogrenciler/belge/kesinkayitbelgesi',
+            'icon': FontAwesomeIcons.idCard, // DEĞİŞTİRİLDİ
+          },
+          {
+            'label': 'Online Belge Talep',
+            'url': 'https://ois.beykoz.edu.tr/ogrenciler/belgetalep/duzenle2',
+            'icon': FontAwesomeIcons.paperPlane, // DEĞİŞTİRİLDİ
+          },
+          {
+            'label': 'Sınav Programı',
+            'url': 'https://ois.beykoz.edu.tr/ogrenciler/belge/sinavprogrami',
+            'icon': FontAwesomeIcons.calendarCheck, // DEĞİŞTİRİLDİ
+          },
+        ];
+        return GridView.builder(
+          shrinkWrap: true,
+          physics: const NeverScrollableScrollPhysics(),
+          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: 4,
+            crossAxisSpacing: 12,
+            mainAxisSpacing: 0,
+            childAspectRatio: 0.8,
+          ),
+          itemCount: _frequentlyUsedItems.length,
+          itemBuilder: (context, index) {
+            final item = _frequentlyUsedItems[index];
+            return InkWell(
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => WebViewPage(
+                      url: item['url']!,
+                      username: null,
+                      password: null,
+                    ),
+                  ),
+                );
+              },
+              borderRadius: BorderRadius.circular(16),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Container(
+                    width: 56.75,
+                    height: 56.75,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(12),
+                      gradient: const LinearGradient(
+                        colors: [Color(0xFF802629), Color(0xFFB2453C)],
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                      ),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black12,
+                          blurRadius: 6,
+                          offset: const Offset(0, 2),
+                        ),
+                      ],
+                    ),
+                    child: Icon(item['icon'], color: Colors.white, size: 30),
+                  ),
+                  const SizedBox(height: 5),
+                  Text(
+                    item['label']!,
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      color: themeService.isDarkMode 
+                          ? ThemeService.darkTextPrimaryColor 
+                          : Color(0xFF802629),
+                      fontSize: 12,
+                      fontWeight: FontWeight.bold,
+                      height: 1.1,
+                    ),
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ],
               ),
             );
           },
-          borderRadius: BorderRadius.circular(16),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Container(
-                width: 56.75,
-                height: 56.75,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(12),
-                  gradient: const LinearGradient(
-                    colors: [Color(0xFF802629), Color(0xFFB2453C)],
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                  ),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black12,
-                      blurRadius: 6,
-                      offset: const Offset(0, 2),
-                    ),
-                  ],
-                ),
-                child: Icon(item['icon'], color: Colors.white, size: 30),
-              ),
-              const SizedBox(height: 5),
-              Text(
-                item['label']!,
-                textAlign: TextAlign.center,
-                style: const TextStyle(
-                  color: Color(0xFF802629),
-                  fontSize: 12,
-                  fontWeight: FontWeight.bold,
-                  height: 1.1,
-                ),
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
-              ),
-            ],
-          ),
         );
       },
     );

@@ -6,6 +6,8 @@ import 'dart:async';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:beykoz/Pages/TeacherAttendancePage.dart';
 import 'package:beykoz/Pages/StudentAttendancePage.dart';
+import 'package:beykoz/Services/theme_service.dart';
+import 'package:provider/provider.dart';
 
 class AttendanceScreen extends StatefulWidget {
   final String? role;
@@ -265,196 +267,254 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      child: Column(
-        children: [
-          SizedBox(height: 24),
-          Center(
-            child: Image.asset(
-              'assets/images/logo.png',
-              height: 64,
+    return Consumer<ThemeService>(
+      builder: (context, themeService, child) {
+        return SafeArea(
+          child: Container(
+            color: themeService.isDarkMode 
+                ? ThemeService.darkBackgroundColor 
+                : ThemeService.lightBackgroundColor,
+            child: Column(
+              children: [
+                SizedBox(height: 24),
+                Center(
+                  child: Image.asset(
+                    'assets/images/logo.png',
+                    height: 64,
+                  ),
+                ),
+                SizedBox(height: 16),
+                Expanded(
+                  child: Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        _buildRoleSelector(),
+                        const SizedBox(height: 16),
+                        _buildPermissionStatus(),
+                        const SizedBox(height: 16),
+                        const SizedBox(height: 16),
+                        _buildDebugLogs(),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
             ),
           ),
-          SizedBox(height: 16),
-          Expanded(
-            child: Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  _buildRoleSelector(),
-                  const SizedBox(height: 16),
-                  _buildPermissionStatus(),
-                  const SizedBox(height: 16),
-                  const SizedBox(height: 16),
-                  _buildDebugLogs(),
-                ],
-              ),
-            ),
-          ),
-        ],
-      ),
+        );
+      },
     );
   }
 
   Widget _buildRoleSelector() {
-    return Card(
-      color: const Color(0xFFECECEC),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 12),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            const Text(
-              'Rolünüzü Seçin',
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-                color: Color(0xFF802629),
-              ),
-              textAlign: TextAlign.center,
-            ),
-            const SizedBox(height: 16),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+    return Consumer<ThemeService>(
+      builder: (context, themeService, child) {
+        return Card(
+          color: themeService.isDarkMode 
+              ? ThemeService.darkCardColor 
+              : const Color(0xFFECECEC),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 12),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                _buildRoleButton('Öğretmen', 'teacher'),
-                _buildRoleButton('Öğrenci', 'student'),
+                Text(
+                  'Rolünüzü Seçin',
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    color: themeService.isDarkMode 
+                        ? ThemeService.darkPrimaryColor 
+                        : const Color(0xFF802629),
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 16),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    _buildRoleButton('Öğretmen', 'teacher'),
+                    _buildRoleButton('Öğrenci', 'student'),
+                  ],
+                ),
               ],
             ),
-          ],
-        ),
-      ),
+          ),
+        );
+      },
     );
   }
 
   Widget _buildRoleButton(String label, String value) {
-    final bool selected = _role == value;
-    return ElevatedButton(
-      onPressed: () {
-        if (value == 'teacher') {
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => TeacherAttendancePage()),
-          );
-        } else if (value == 'student') {
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => StudentAttendancePage()),
-          );
-        }
+    return Consumer<ThemeService>(
+      builder: (context, themeService, child) {
+        final bool selected = _role == value;
+        return ElevatedButton(
+          onPressed: () {
+            if (value == 'teacher') {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => TeacherAttendancePage()),
+              );
+            } else if (value == 'student') {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => StudentAttendancePage()),
+              );
+            }
+          },
+          style: ElevatedButton.styleFrom(
+            backgroundColor: selected 
+                ? (themeService.isDarkMode ? ThemeService.darkPrimaryColor : const Color(0xFF802629))
+                : (themeService.isDarkMode ? ThemeService.darkCardColor : const Color(0xFFECECEC)),
+            foregroundColor: selected 
+                ? Colors.white 
+                : (themeService.isDarkMode ? ThemeService.darkPrimaryColor : const Color(0xFF802629)),
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+          ),
+          child: Text(label, style: const TextStyle(fontSize: 16)),
+        );
       },
-      style: ElevatedButton.styleFrom(
-        backgroundColor: selected ? const Color(0xFF802629) : const Color(0xFFECECEC),
-        foregroundColor: selected ? Colors.white : const Color(0xFF802629),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-      ),
-      child: Text(label, style: const TextStyle(fontSize: 16)),
     );
   }
 
   Widget _buildDebugLogs() {
-    return Card(
-      color: const Color(0xFFF5F5F5),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Text(
-              'Debug Logs',
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-                color: Color(0xFF802629),
-              ),
-            ),
-            const SizedBox(height: 8),
-            Container(
-              height: 120,
-              padding: const EdgeInsets.all(8),
-              decoration: BoxDecoration(
-                color: Colors.black87,
-                borderRadius: BorderRadius.circular(8),
-              ),
-              child: ListView.builder(
-                itemCount: _debugLogs.length,
-                itemBuilder: (context, index) {
-                  return Text(
-                    _debugLogs[index],
-                    style: const TextStyle(
-                      color: Colors.green,
-                      fontSize: 12,
-                      fontFamily: 'monospace',
-                    ),
-                  );
-                },
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildPermissionStatus() {
-    return Card(
-      color: _permissionsGranted ? const Color(0xFFE8F5E8) : const Color(0xFFFFEBEE),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-      child: Padding(
-        padding: const EdgeInsets.all(12.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
+    return Consumer<ThemeService>(
+      builder: (context, themeService, child) {
+        return Card(
+          color: themeService.isDarkMode 
+              ? ThemeService.darkCardColor 
+              : const Color(0xFFF5F5F5),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Icon(
-                  _permissionsGranted ? Icons.check_circle : Icons.warning,
-                  color: _permissionsGranted ? Colors.green : Colors.orange,
+                Text(
+                  'Debug Logs',
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                    color: themeService.isDarkMode 
+                        ? ThemeService.darkPrimaryColor 
+                        : const Color(0xFF802629),
+                  ),
                 ),
-                const SizedBox(width: 8),
-                Expanded(
-                  child: Text(
-                    _permissionsGranted 
-                      ? 'Konum izni verildi - BLE çalışabilir' 
-                      : 'Konum izni gerekli (BLE tarama için)',
-                    style: TextStyle(
-                      color: _permissionsGranted ? Colors.green : Colors.orange,
-                      fontWeight: FontWeight.bold,
-                    ),
+                const SizedBox(height: 8),
+                Container(
+                  height: 120,
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: Colors.black87,
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: ListView.builder(
+                    itemCount: _debugLogs.length,
+                    itemBuilder: (context, index) {
+                      return Text(
+                        _debugLogs[index],
+                        style: const TextStyle(
+                          color: Colors.green,
+                          fontSize: 12,
+                          fontFamily: 'monospace',
+                        ),
+                      );
+                    },
                   ),
                 ),
               ],
             ),
-            if (!_permissionsGranted) ...[
-              const SizedBox(height: 8),
-              const Text(
-                'Bluetooth Low Energy taraması için konum izni gereklidir. '
-                'Lütfen konum servislerini etkinleştirin ve konum iznini verin.',
-                style: TextStyle(fontSize: 12, color: Colors.grey),
-              ),
-              const SizedBox(height: 8),
-              Row(
-                children: [
-                  Expanded(
-                    child: TextButton(
-                      onPressed: _checkAndRequestPermissions,
-                      child: const Text('İzin Ver'),
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildPermissionStatus() {
+    return Consumer<ThemeService>(
+      builder: (context, themeService, child) {
+        return Card(
+          color: _permissionsGranted 
+              ? (themeService.isDarkMode ? Colors.green.shade900 : const Color(0xFFE8F5E8))
+              : (themeService.isDarkMode ? Colors.orange.shade900 : const Color(0xFFFFEBEE)),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+          child: Padding(
+            padding: const EdgeInsets.all(12.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    Icon(
+                      _permissionsGranted ? Icons.check_circle : Icons.warning,
+                      color: _permissionsGranted ? Colors.green : Colors.orange,
+                    ),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: Text(
+                        _permissionsGranted 
+                          ? 'Konum izni verildi - BLE çalışabilir' 
+                          : 'Konum izni gerekli (BLE tarama için)',
+                        style: TextStyle(
+                          color: _permissionsGranted ? Colors.green : Colors.orange,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                if (!_permissionsGranted) ...[
+                  const SizedBox(height: 8),
+                  Text(
+                    'Bluetooth Low Energy taraması için konum izni gereklidir. '
+                    'Lütfen konum servislerini etkinleştirin ve konum iznini verin.',
+                    style: TextStyle(
+                      fontSize: 12, 
+                      color: themeService.isDarkMode 
+                          ? ThemeService.darkTextSecondaryColor 
+                          : Colors.grey
                     ),
                   ),
-                  TextButton(
-                    onPressed: _openAppSettings,
-                    child: const Text('Ayarlar'),
+                  const SizedBox(height: 8),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: TextButton(
+                          onPressed: _checkAndRequestPermissions,
+                          child: Text(
+                            'İzin Ver',
+                            style: TextStyle(
+                              color: themeService.isDarkMode 
+                                  ? ThemeService.darkPrimaryColor 
+                                  : ThemeService.lightPrimaryColor,
+                            ),
+                          ),
+                        ),
+                      ),
+                      TextButton(
+                        onPressed: _openAppSettings,
+                        child: Text(
+                          'Ayarlar',
+                          style: TextStyle(
+                            color: themeService.isDarkMode 
+                                ? ThemeService.darkPrimaryColor 
+                                : ThemeService.lightPrimaryColor,
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
                 ],
-              ),
-            ],
-          ],
-        ),
-      ),
+              ],
+            ),
+          ),
+        );
+      },
     );
   }
 } 

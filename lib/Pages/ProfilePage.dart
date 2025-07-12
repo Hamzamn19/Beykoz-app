@@ -4,6 +4,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 import 'dart:developer' as developer;
 import 'package:beykoz/Pages/LoginPage.dart';
+import 'package:beykoz/Services/theme_service.dart';
+import 'package:provider/provider.dart';
 
 // Student data model (no changes)
 class Student {
@@ -49,8 +51,8 @@ class ProfilePage extends StatefulWidget {
 }
 
 class _ProfilePageState extends State<ProfilePage> {
-  final Color universityColor = const Color(0xFF802629);
-  final Color lightUniversityColor = const Color(0xFFB85A5E);
+  late Color universityColor;
+  late Color lightUniversityColor;
 
   Student? _student;
   bool _isLoading = true;
@@ -65,6 +67,18 @@ class _ProfilePageState extends State<ProfilePage> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _fetchDataAndSetState();
     });
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final themeService = Provider.of<ThemeService>(context, listen: false);
+    universityColor = themeService.isDarkMode 
+        ? ThemeService.darkPrimaryColor 
+        : ThemeService.lightPrimaryColor;
+    lightUniversityColor = themeService.isDarkMode 
+        ? ThemeService.darkSecondaryColor 
+        : ThemeService.lightSecondaryColor;
   }
 
   Future<void> _fetchDataAndSetState({bool forceRefresh = false}) async {
@@ -142,14 +156,21 @@ class _ProfilePageState extends State<ProfilePage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: RefreshIndicator(
-        color: universityColor,
-        onRefresh: () async {
-          await _fetchDataAndSetState(forceRefresh: true);
-        },
-        child: _buildBody(),
-      ),
+    return Consumer<ThemeService>(
+      builder: (context, themeService, child) {
+        return Scaffold(
+          backgroundColor: themeService.isDarkMode 
+              ? ThemeService.darkBackgroundColor 
+              : ThemeService.lightBackgroundColor,
+          body: RefreshIndicator(
+            color: universityColor,
+            onRefresh: () async {
+              await _fetchDataAndSetState(forceRefresh: true);
+            },
+            child: _buildBody(),
+          ),
+        );
+      },
     );
   }
 
@@ -333,16 +354,22 @@ class _ProfilePageState extends State<ProfilePage> {
                 ],
               ),
               const SizedBox(height: 25),
-              Align(
-                alignment: Alignment.centerLeft,
-                child: Text(
-                  'Personal Information',
-                  style: TextStyle(
-                    fontSize: 22,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.grey[800],
-                  ),
-                ),
+              Consumer<ThemeService>(
+                builder: (context, themeService, child) {
+                  return Align(
+                    alignment: Alignment.centerLeft,
+                    child: Text(
+                      'Personal Information',
+                      style: TextStyle(
+                        fontSize: 22,
+                        fontWeight: FontWeight.bold,
+                        color: themeService.isDarkMode 
+                            ? ThemeService.darkTextPrimaryColor 
+                            : ThemeService.lightTextPrimaryColor,
+                      ),
+                    ),
+                  );
+                },
               ),
               const SizedBox(height: 15),
               _buildModernInfoCard(
@@ -381,6 +408,14 @@ class _ProfilePageState extends State<ProfilePage> {
                   ),
                   const SizedBox(width: 15),
                   Expanded(
+                    child: _buildDarkModeToggle(),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 15),
+              Row(
+                children: [
+                  Expanded(
                     child: _buildActionButton('Logout', Icons.logout, () async {
                       await FirebaseAuth.instance.signOut();
                       Navigator.of(context).pushAndRemoveUntil(
@@ -407,49 +442,59 @@ class _ProfilePageState extends State<ProfilePage> {
     IconData icon,
     Color color,
   ) {
-    return Container(
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.05),
-            blurRadius: 10,
-            offset: const Offset(0, 5),
+    return Consumer<ThemeService>(
+      builder: (context, themeService, child) {
+        return Container(
+          padding: const EdgeInsets.all(20),
+          decoration: BoxDecoration(
+            color: themeService.isDarkMode 
+                ? ThemeService.darkCardColor 
+                : ThemeService.lightCardColor,
+            borderRadius: BorderRadius.circular(16),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.05),
+                blurRadius: 10,
+                offset: const Offset(0, 5),
+              ),
+            ],
           ),
-        ],
-      ),
-      child: Column(
-        children: [
-          Container(
-            padding: const EdgeInsets.all(12),
-            decoration: BoxDecoration(
-              color: color.withOpacity(0.1),
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: Icon(icon, color: color, size: 24),
+          child: Column(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: color.withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Icon(icon, color: color, size: 24),
+              ),
+              const SizedBox(height: 12),
+              Text(
+                value,
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                  color: themeService.isDarkMode 
+                      ? ThemeService.darkTextPrimaryColor 
+                      : ThemeService.lightTextPrimaryColor,
+                ),
+              ),
+              const SizedBox(height: 4),
+              Text(
+                title,
+                style: TextStyle(
+                  fontSize: 12,
+                  color: themeService.isDarkMode 
+                      ? ThemeService.darkTextSecondaryColor 
+                      : ThemeService.lightTextSecondaryColor,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+            ],
           ),
-          const SizedBox(height: 12),
-          Text(
-            value,
-            style: const TextStyle(
-              fontSize: 20,
-              fontWeight: FontWeight.bold,
-              color: Colors.black87,
-            ),
-          ),
-          const SizedBox(height: 4),
-          Text(
-            title,
-            style: TextStyle(
-              fontSize: 12,
-              color: Colors.grey[600],
-              fontWeight: FontWeight.w500,
-            ),
-          ),
-        ],
-      ),
+        );
+      },
     );
   }
 
@@ -459,59 +504,106 @@ class _ProfilePageState extends State<ProfilePage> {
     required String value,
     required Color color,
   }) {
-    return Container(
-      margin: const EdgeInsets.only(bottom: 15),
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.05),
-            blurRadius: 10,
-            offset: const Offset(0, 2),
+    return Consumer<ThemeService>(
+      builder: (context, themeService, child) {
+        return Container(
+          margin: const EdgeInsets.only(bottom: 15),
+          padding: const EdgeInsets.all(20),
+          decoration: BoxDecoration(
+            color: themeService.isDarkMode 
+                ? ThemeService.darkCardColor 
+                : ThemeService.lightCardColor,
+            borderRadius: BorderRadius.circular(16),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.05),
+                blurRadius: 10,
+                offset: const Offset(0, 2),
+              ),
+            ],
           ),
-        ],
-      ),
-      child: Row(
-        children: [
-          Container(
-            padding: const EdgeInsets.all(12),
-            decoration: BoxDecoration(
-              color: color.withOpacity(0.1),
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: Icon(icon, color: color, size: 24),
-          ),
-          const SizedBox(width: 16),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  label,
-                  style: TextStyle(
-                    fontSize: 14,
-                    color: Colors.grey[600],
-                    fontWeight: FontWeight.w500,
-                  ),
+          child: Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: color.withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(12),
                 ),
-                const SizedBox(height: 4),
+                child: Icon(icon, color: color, size: 24),
+              ),
+              const SizedBox(width: 16),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      label,
+                      style: TextStyle(
+                        fontSize: 14,
+                        color: themeService.isDarkMode 
+                            ? ThemeService.darkTextSecondaryColor 
+                            : ThemeService.lightTextSecondaryColor,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      value,
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                        color: themeService.isDarkMode 
+                            ? ThemeService.darkTextPrimaryColor 
+                            : ThemeService.lightTextPrimaryColor,
+                      ),
+                      overflow: TextOverflow.ellipsis,
+                      maxLines: 2,
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildDarkModeToggle() {
+    return Consumer<ThemeService>(
+      builder: (context, themeService, child) {
+        return SizedBox(
+          height: 55,
+          child: ElevatedButton(
+            onPressed: () => themeService.toggleTheme(),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: themeService.isDarkMode
+                  ? Colors.orange.shade50
+                  : universityColor.withOpacity(0.1),
+              foregroundColor: themeService.isDarkMode ? Colors.orange : universityColor,
+              elevation: 0,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(16),
+              ),
+            ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(
+                  themeService.isDarkMode ? Icons.light_mode : Icons.dark_mode,
+                  size: 22,
+                ),
+                const SizedBox(width: 8),
                 Text(
-                  value,
-                  style: const TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w600,
-                    color: Colors.black87,
-                  ),
-                  overflow: TextOverflow.ellipsis,
-                  maxLines: 2,
+                  themeService.isDarkMode ? 'Light Mode' : 'Dark Mode',
+                  style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
                 ),
               ],
             ),
           ),
-        ],
-      ),
+        );
+      },
     );
   }
 
