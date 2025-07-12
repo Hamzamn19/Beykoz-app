@@ -21,13 +21,13 @@ class _RootScreenState extends State<RootScreen> {
   int _selectedIndex = 0;
 
   // --- Değişiklik burada ---
-  // ProfilePage(), OtherPages() ile değiştirildi
+  // ProfilePage() is used for the person icon
   final List<Widget> _pages = [
     DesignedHomePage(),
     NewsPage(),
     AttendanceScreen(),
     WebviewPageSelector(),
-    OtherPages(), // <-- Yeni sayfa burada
+    ProfilePage(), // <-- Changed to ProfilePage for person icon
   ];
 
   @override
@@ -132,7 +132,7 @@ class CustomNavBar extends StatelessWidget {
                       // --- Değişiklik burada ---
                       // Simge كانت 'person' الآن أصبحت 'menu' لصفحة OtherPages
                       _NavBarIcon(
-                        icon: Icons.menu, // <-- تم التغيير هنا
+                        icon: Icons.person, // <-- تم التغيير هنا
                         selected: selectedIndex == 4,
                         onTap: () => onTabSelected(4),
                       ),
