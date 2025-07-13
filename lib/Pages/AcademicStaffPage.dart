@@ -694,29 +694,6 @@ class _AcademicStaffPageState extends State<AcademicStaffPage>
         const LinearGradient(colors: [Color(0xFF802629), Color(0xFFB2453C)]),
         [
           PersonData(
-            name: 'Prof. Dr. Didem Kurt (Dekan)',
-            about:
-                'Grafik tasarım ve görsel iletişimde önde gelen isimlerdendir.',
-            cvUrl: 'https://www.beykoz.edu.tr/cv/didem_kurt.pdf',
-          ),
-          PersonData(
-            name: 'Doç. Dr. Alper Sönmez',
-            about: 'Endüstriyel tasarım ve ürün geliştirme konusunda uzmandır.',
-            cvUrl: 'https://www.beykoz.edu.tr/cv/alper_sonmez.pdf',
-          ),
-          PersonData(
-            name: 'Dr. Öğr. Üyesi Nazlı Can',
-            about:
-                'İç mimarlık ve mekan tasarımı alanında dersler vermektedir.',
-            cvUrl: 'https://www.beykoz.edu.tr/cv/nazli_can.pdf',
-          ),
-          PersonData(
-            name: 'Araş. Gör. Fatih Kaplan',
-            about:
-                'Moda tasarımı ve tekstil sanatları üzerine araştırmalar yapmaktadır.',
-            cvUrl: 'https://www.beykoz.edu.tr/cv/fatih_kaplan.pdf',
-          ),
-          PersonData(
             name: 'Prof. Dr. Bengisu BAYRAK SHAHMIRI',
             about: 'Dekan',
             cvUrl: '',
@@ -829,11 +806,6 @@ class _AcademicStaffPageState extends State<AcademicStaffPage>
           ),
           PersonData(
             name: 'Dr. Öğr. Üyesi Beste Nur İSKENDER AYDIN',
-            about: 'Sanat ve Tasarım Fakültesi akademik kadrosu.',
-            cvUrl: '',
-          ),
-          PersonData(
-            name: 'Öğr. Gör. Çise GÖKÇE',
             about: 'Sanat ve Tasarım Fakültesi akademik kadrosu.',
             cvUrl: '',
           ),
