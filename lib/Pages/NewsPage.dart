@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/gestures.dart';
 import 'package:beykoz/Services/theme_service.dart';
 import 'package:provider/provider.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class NewsPage extends StatefulWidget {
   const NewsPage({super.key});
@@ -17,12 +19,12 @@ class _NewsPageState extends State<NewsPage> {
   List<Map<String, dynamic>> posts = [
     {
       'id': 1,
-      'adminName': 'Beykoz Üniversitesi',
-      'adminAvatar': 'assets/beykoz_logo.jpg',
+      'adminName': 'Yöntek Kulübü',
+      'adminAvatar': 'assets/images/beykoz.logo.png',
       'timestamp': '2 saat önce',
       'content':
-          'Bahar dönemi kayıt işlemleri 15 Mart tarihinde başlayacaktır. Detaylı bilgi için öğrenci işleri birimine başvurunuz.',
-      'image': 'assets/kayit.jpg',
+          '🎯 Beykoz Üniversitesi YÖNTEK Kulübü\'nden Bir İlk Daha!\n💻 Geleceğin Başarı Stratejileri 2025 Kayıt Formu Yayında! : https://forms.gle/BvmWdeodPDP77ij8A\n\nGeleceği şekillendiren iş dünyasına bir adım daha yaklaşmak ister misin?\n\nBeykoz Üniversitesi Yönetim ve Teknoloji Kulübü (YÖNTEK) olarak; teknoloji tutkunlarını, psikoloji severleri, ilham dolu hikayelerin aşığı olanları ve yazılım meraklılarını bir araya getirecek büyük bir zirveye imza atıyoruz!\n\n🔹 Alanında uzman konuşmacılar\n🔹 İlham veren başarı hikayeleri\n🔹 Kariyer fırsatları, staj olanakları ve networking şansı\n🔹 Kahoot yarışmalı eğlenceli oturumlar\n🔹 Katılımcılara özel sertifikalı hediye eğitimler\n\n📍 Zirve Detayları\n📅 Tarih: 16 Mayıs Cuma\n📌 Yer: Beykoz Üniversitesi Lisans Yerleşkesi – Konferans Salonu (4. Kat)\n🕐 Saat: 12.00 – 15.30\n\n🎁 Katılımcılara Hediye Eğitimler ve Ödüller:\n\n🏆 Birinci olan katılımcıya ve kulüp üyelerine özel:\n\nDevNet Associate Eğitimi\n▫️ 70 saat – 23 uygulamalı lab\n▫️ Sertifikalı ve rozetli\n\nEthical Hacker Eğitimi\n▫️ 70 saat – 34 uygulamalı lab\n▫️ Sertifikalı ve rozetli\n\n🎓 Zirveye katılan tüm öğrencilere:\n\nNetwork Defense – 27 saat (Beginner düzey, rozetli)\n\nPython 1 – 30 saat (rozetli)\n\nPython 2 – 40 saat (rozetli)\n\nCyber Threat Management – 16 saat (rozetli)\n\n💥 2. Oturumda Kahoot Yarışması Sizi Bekliyor!\nBilgini sınamak, eğlenmek ve ödüller kazanmak için bu fırsatı kaçırma!\n\n📝 Katılım ücretsizdir.\n📢 Not: Tüm katılımcılara e-sertifika verilecektir.\n📌 Kontenjan sınırlıdır – hemen kayıt ol!\n\n\nMini Zirve!!!',
+      'image': 'assets/images/yontek2.png',
       'likes': 45,
       'comments': 12,
       'isLiked': false,
@@ -30,11 +32,11 @@ class _NewsPageState extends State<NewsPage> {
     {
       'id': 2,
       'adminName': 'Beykoz Üniversitesi',
-      'adminAvatar': 'assets/beykoz_logo.jpg',
+      'adminAvatar': 'assets/images/beykoz.logo.png',
       'timestamp': '5 saat önce',
       'content':
           'Üniversitemiz spor festivaline tüm öğrencilerimizi davet ediyoruz! 🎉 Kayıtlar başladı.',
-      'image': 'assets/festival.jpg',
+      'image': 'assets/images/festival.png',
       'likes': 128,
       'comments': 34,
       'isLiked': true,
@@ -42,7 +44,7 @@ class _NewsPageState extends State<NewsPage> {
     {
       'id': 3,
       'adminName': 'Beykoz Üniversitesi',
-      'adminAvatar': 'assets/beykoz_logo.jpg',
+      'adminAvatar': 'assets/images/beykoz.logo.png',
       'timestamp': '1 gün önce',
       'content':
           'Final sınavları programı açıklandı. Öğrenci bilgi sisteminden kontrol edebilirsiniz.',
@@ -54,11 +56,11 @@ class _NewsPageState extends State<NewsPage> {
     {
       'id': 4,
       'adminName': 'Bilgisayar Mühendisliği Kulübü',
-      'adminAvatar': 'assets/computer_engineering_logo.jpg',
+      'adminAvatar': 'assets/images/beykoz.logo.png',
       'timestamp': '3 saat önce',
       'content':
-          'Bilgisayar Mühendisliği Bölümü olarak "Yazılım Geliştirme Atölyesi" düzenliyoruz. Katılım için kayıtlar web sitemizde!',
-      'image': 'assets/software_workshop.jpg',
+          'Mühendislik dünyasının en yaratıcı projelerini bir araya getiren organizasyonumuzda, Yılın Mühendislik Projesi Ödülünün sahibini çok yakında açıklıyoruz!\n\nBirbirinden etkileyici, yenilikçi ve ilham verici projeler arasından seçim yapmak bizler için oldukça zordu.\n\n📅 Ödül törenimizde büyük heyecana ortak olun, mühendisliğin geleceğine yön veren projeyi birlikte kutlayalım!',
+      'image': 'assets/images/engineering.png',
       'likes': 67,
       'comments': 19,
       'isLiked': false,
@@ -66,7 +68,7 @@ class _NewsPageState extends State<NewsPage> {
     {
       'id': 5,
       'adminName': 'Yapay Zeka Kulübü',
-      'adminAvatar': 'assets/ai_club_logo.jpg',
+      'adminAvatar': 'assets/images/beykoz.logo.png',
       'timestamp': '6 saat önce',
       'content':
           'Yapay Zeka Kulübü olarak "Makine Öğrenmesi 101" seminerine davetlisiniz! 📊 Tarih: 20 Mart, Yer: Konferans Salonu.',
@@ -77,12 +79,12 @@ class _NewsPageState extends State<NewsPage> {
     },
     {
       'id': 6,
-      'adminName': 'İç Mimarlık Kulübü',
-      'adminAvatar': 'assets/interior_architecture_logo.jpg',
+      'adminName': 'Yöntek Kulübü',
+      'adminAvatar': 'assets/images/beykoz.logo.png',
       'timestamp': '1 gün önce',
       'content':
-          'İç Mimarlık Bölümü öğrencilerimizin tasarımlarının sergileneceği "Mekan ve Tasarım" sergisi bu Cuma açılıyor!',
-      'image': 'assets/design_exhibition.jpg',
+          '💻 Beykoz Üniversitesi YÖNTEK Kulübü Sunar  🚀\n\nYÖNTEK Kulübü olarak, siber güvenlik ve kariyer yönetimi konularında sizi inanılmaz bir webinara davet ediyoruz 🌟\n\n🔒 Siber Güvenlik Uzmanı Gökay Bekşen ile 6 Ocak Pazartesi günü saat 20.00\'de Google Meets üzerinden buluşuyoruz! Bu harika etkinlikte:\n✨ Siber güvenliğin bilinmeyen dünyasına adım atacak,\n✨ Kariyer yönetimi hakkında altın değerinde tavsiyeler alacak,\n✨ Alanında uzman bir isme birebir sorular sorma fırsatını yakalayacaksınız!\n\n💡 Üstelik etkinliğimiz tamamen ücretsiz ve katılımcılarımıza özel sertifikalı!\n\n📆 Tarih: 6 Ocak Pazartesi\n⏰ Saat: 20.00\n📍 Platform: Google Meets\n📋 Kayıt Formu: https://forms.gle/ApLkGfSdTorZnhgf7\n\n🌐 Teknolojiye meraklıysanız, kariyerinizi daha güvenli ve bilinçli adımlarla şekillendirmek istiyorsanız, bu fırsatı kaçırmayın! 😎\n\n📣 Hadi, formu doldurun ve aramıza katılın. 🌟',
+      'image': 'assets/images/yöntek.png',
       'likes': 53,
       'comments': 15,
       'isLiked': true,
@@ -101,6 +103,13 @@ class _NewsPageState extends State<NewsPage> {
         }
       }
     });
+  }
+
+  Future<void> _launchURL(String url) async {
+    final Uri uri = Uri.parse(url);
+    if (!await launchUrl(uri, mode: LaunchMode.externalApplication)) {
+      throw Exception('Could not launch $url');
+    }
   }
 
   @override
@@ -232,16 +241,7 @@ class _NewsPageState extends State<NewsPage> {
               // Post Content
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16),
-                child: Text(
-                  post['content'],
-                  style: TextStyle(
-                    fontSize: 14,
-                    height: 1.4,
-                    color: themeService.isDarkMode
-                        ? ThemeService.darkTextPrimaryColor
-                        : Colors.grey[800],
-                  ),
-                ),
+                child: _buildPostContent(post['content'], themeService),
               ),
 
               // Post Image
@@ -249,9 +249,9 @@ class _NewsPageState extends State<NewsPage> {
                 Container(
                   margin: const EdgeInsets.symmetric(
                     vertical: 12,
-                    horizontal: 16,
+                    horizontal: 8,
                   ),
-                  height: 200,
+                  height: 400,
                   width: double.infinity,
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(12),
@@ -267,7 +267,8 @@ class _NewsPageState extends State<NewsPage> {
                     borderRadius: BorderRadius.circular(12),
                     child: Image.asset(
                       post['image'],
-                      fit: BoxFit.cover,
+                      fit: BoxFit
+                          .fitWidth, // Genişliği doldur, sağ-sol boşluk olmasın
                       errorBuilder: (context, error, stackTrace) => Container(
                         color: themeService.isDarkMode
                             ? ThemeService.darkSurfaceColor
@@ -363,6 +364,73 @@ class _NewsPageState extends State<NewsPage> {
         );
       },
     );
+  }
+
+  Widget _buildPostContent(String content, ThemeService themeService) {
+    // Basit yaklaşım: Link varsa RichText, yoksa normal Text
+    if (content.contains('https://')) {
+      final List<TextSpan> spans = [];
+      final parts = content.split('https://');
+
+      for (int i = 0; i < parts.length; i++) {
+        if (i == 0) {
+          spans.add(TextSpan(text: parts[i]));
+        } else {
+          // Link kısmını bul
+          final linkPart = parts[i];
+          final spaceIndex = linkPart.indexOf(' ');
+          final url = spaceIndex != -1
+              ? 'https://' + linkPart.substring(0, spaceIndex)
+              : 'https://' + linkPart;
+          final remainingText = spaceIndex != -1
+              ? linkPart.substring(spaceIndex)
+              : '';
+
+          // Link span'ı ekle
+          spans.add(
+            TextSpan(
+              text: url,
+              style: TextStyle(
+                color: themeService.isDarkMode
+                    ? Colors.blue[300]
+                    : primaryColor,
+                decoration: TextDecoration.underline,
+              ),
+              recognizer: TapGestureRecognizer()..onTap = () => _launchURL(url),
+            ),
+          );
+
+          // Kalan metni ekle
+          if (remainingText.isNotEmpty) {
+            spans.add(TextSpan(text: remainingText));
+          }
+        }
+      }
+
+      return RichText(
+        text: TextSpan(
+          children: spans,
+          style: TextStyle(
+            fontSize: 14,
+            height: 1.4,
+            color: themeService.isDarkMode
+                ? ThemeService.darkTextPrimaryColor
+                : Colors.grey[800],
+          ),
+        ),
+      );
+    } else {
+      return Text(
+        content,
+        style: TextStyle(
+          fontSize: 14,
+          height: 1.4,
+          color: themeService.isDarkMode
+              ? ThemeService.darkTextPrimaryColor
+              : Colors.grey[800],
+        ),
+      );
+    }
   }
 
   void _showCommentsBottomSheet(
