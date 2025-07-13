@@ -80,8 +80,8 @@ class _AcademicStaffPageState extends State<AcademicStaffPage>
     return Consumer<ThemeService>(
       builder: (context, themeService, child) {
         return Scaffold(
-          backgroundColor: themeService.isDarkMode 
-              ? ThemeService.darkBackgroundColor 
+          backgroundColor: themeService.isDarkMode
+              ? ThemeService.darkBackgroundColor
               : Colors.white,
           body: CustomScrollView(
             slivers: [
@@ -118,9 +118,7 @@ class _AcademicStaffPageState extends State<AcademicStaffPage>
           expandedHeight: 200.0,
           floating: false,
           pinned: true,
-          iconTheme: const IconThemeData(
-            color: Colors.white,
-          ),
+          iconTheme: const IconThemeData(color: Colors.white),
           flexibleSpace: FlexibleSpaceBar(
             title: const Text(
               'Akademik Kadro',
@@ -175,8 +173,8 @@ class _AcademicStaffPageState extends State<AcademicStaffPage>
               ),
             ),
           ),
-          backgroundColor: themeService.isDarkMode 
-              ? ThemeService.darkPrimaryColor 
+          backgroundColor: themeService.isDarkMode
+              ? ThemeService.darkPrimaryColor
               : primaryColor,
         );
       },
@@ -208,7 +206,11 @@ class _AcademicStaffPageState extends State<AcademicStaffPage>
                       ),
                     ],
                   ),
-                  child: const Icon(Icons.school, color: Colors.white, size: 30),
+                  child: const Icon(
+                    Icons.school,
+                    color: Colors.white,
+                    size: 30,
+                  ),
                 ),
                 const SizedBox(width: 16),
                 Expanded(
@@ -220,8 +222,8 @@ class _AcademicStaffPageState extends State<AcademicStaffPage>
                         style: TextStyle(
                           fontSize: 20,
                           fontWeight: FontWeight.bold,
-                          color: themeService.isDarkMode 
-                              ? ThemeService.darkTextPrimaryColor 
+                          color: themeService.isDarkMode
+                              ? ThemeService.darkTextPrimaryColor
                               : Color(0xFF802629),
                         ),
                       ),
@@ -229,10 +231,10 @@ class _AcademicStaffPageState extends State<AcademicStaffPage>
                       Text(
                         'Fakülteler ve Yüksekokullar',
                         style: TextStyle(
-                          fontSize: 14, 
-                          color: themeService.isDarkMode 
-                              ? ThemeService.darkTextSecondaryColor 
-                              : Colors.grey
+                          fontSize: 14,
+                          color: themeService.isDarkMode
+                              ? ThemeService.darkTextSecondaryColor
+                              : Colors.grey,
                         ),
                       ),
                     ],
@@ -252,8 +254,8 @@ class _AcademicStaffPageState extends State<AcademicStaffPage>
         return Container(
           padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
-            color: themeService.isDarkMode 
-                ? ThemeService.darkCardColor 
+            color: themeService.isDarkMode
+                ? ThemeService.darkCardColor
                 : cardColor,
             borderRadius: BorderRadius.circular(16),
             boxShadow: [
@@ -307,19 +309,19 @@ class _AcademicStaffPageState extends State<AcademicStaffPage>
               style: TextStyle(
                 fontSize: 20,
                 fontWeight: FontWeight.bold,
-                color: themeService.isDarkMode 
-                    ? ThemeService.darkTextPrimaryColor 
+                color: themeService.isDarkMode
+                    ? ThemeService.darkTextPrimaryColor
                     : Color(0xFF802629),
               ),
             ),
             Text(
-              label, 
+              label,
               style: TextStyle(
-                fontSize: 12, 
-                color: themeService.isDarkMode 
-                    ? ThemeService.darkTextSecondaryColor 
-                    : Colors.grey
-              )
+                fontSize: 12,
+                color: themeService.isDarkMode
+                    ? ThemeService.darkTextSecondaryColor
+                    : Colors.grey,
+              ),
             ),
           ],
         );
@@ -335,25 +337,133 @@ class _AcademicStaffPageState extends State<AcademicStaffPage>
         const LinearGradient(colors: [Color(0xFF802629), Color(0xFFB2453C)]),
         [
           PersonData(
-            name: 'Prof. Dr. Ayşe Yılmaz (Dekan)',
-            about: 'İşletme Yönetimi alanında uzmandır.',
-            cvUrl: 'https://www.beykoz.edu.tr/cv/ayse_yilmaz.pdf',
+            name: 'Prof. Dr. İlker KIYMETLİ ŞEN',
+            about: 'Dekan V.',
+            cvUrl: 'https://www.beykoz.edu.tr/cv/ilker_kiymetli_sen.pdf',
           ),
           PersonData(
-            name: 'Doç. Dr. Can Demir',
-            about: 'Pazarlama stratejileri üzerine çalışmaktadır.',
-            cvUrl: 'https://www.beykoz.edu.tr/cv/can_demir.pdf',
+            name: 'Dr. Öğr. Üyesi Aslıhan BEKAROĞLU ÖZATAR',
+            about: 'Dekan Yardımcısı',
+            cvUrl: 'https://www.beykoz.edu.tr/cv/aslihan_bekaroglu_ozatar.pdf',
           ),
           PersonData(
-            name: 'Dr. Öğr. Üyesi Elif Kaya',
-            about: 'İnsan kaynakları yönetimi konularında ders vermektedir.',
-            cvUrl: 'https://www.beykoz.edu.tr/cv/elif_kaya.pdf',
+            name: 'Dr. Öğr. Üyesi Aysun VARAN',
+            about: 'Dekan Yardımcısı',
+            cvUrl: 'https://www.beykoz.edu.tr/cv/aysun_varan.pdf',
           ),
           PersonData(
-            name: 'Araş. Gör. Mert Coşkun',
+            name: 'Prof. Dr. Ezgi UZEL AYDINOCAK',
+            about: 'Lojistik Yönetimi (İngilizce) Bölüm Başkanı',
+            cvUrl: 'https://www.beykoz.edu.tr/cv/ezgi_uzel_aydinocak.pdf',
+          ),
+          PersonData(
+            name: 'Doç. Dr. Mehmet YEŞİLYAPRAK',
+            about: 'İşletme (Türkçe) Bölüm Başkanı',
+            cvUrl: 'https://www.beykoz.edu.tr/cv/mehmet_yesilyaprak.pdf',
+          ),
+          PersonData(
+            name: 'Dr. Öğr. Üyesi Neslihan BALCI VAROL',
             about:
-                'Girişimcilik ve inovasyon üzerine araştırmalar yapmaktadır.',
-            cvUrl: 'https://www.beykoz.edu.tr/cv/mert_coskun.pdf',
+                'Uluslararası Ticaret ve Finansman (İngilizce) Bölüm Başkanı',
+            cvUrl: 'https://www.beykoz.edu.tr/cv/neslihan_balci_varol.pdf',
+          ),
+          PersonData(
+            name: 'Dr. Öğr. Üyesi Özgür Burçak GÜRSOY YENİLMEZ',
+            about: 'İşletme (İngilizce) Bölüm Başkanı',
+            cvUrl:
+                'https://www.beykoz.edu.tr/cv/ozgur_burcak_gursoy_yenilmez.pdf',
+          ),
+          PersonData(name: 'Elif BURAK', about: 'Fakülte Sekreteri', cvUrl: ''),
+          PersonData(
+            name: 'Prof. Dr. Osman Zihni ZAİM',
+            about: 'İşletme ve Yönetim Bilimleri Fakültesi akademik kadrosu.',
+            cvUrl: '',
+          ),
+          PersonData(
+            name: 'Prof. Dr. Baki AKSU',
+            about: 'İşletme ve Yönetim Bilimleri Fakültesi akademik kadrosu.',
+            cvUrl: '',
+          ),
+          PersonData(
+            name: 'Prof. Dr. M. Mustafa ERDOĞDU',
+            about: 'İşletme ve Yönetim Bilimleri Fakültesi akademik kadrosu.',
+            cvUrl: '',
+          ),
+          PersonData(
+            name: 'Prof. Dr. K. Evren BOLGÜN',
+            about: 'İşletme ve Yönetim Bilimleri Fakültesi akademik kadrosu.',
+            cvUrl: '',
+          ),
+          PersonData(
+            name: 'Prof. Dr. Tolga YAZICI',
+            about: 'İşletme ve Yönetim Bilimleri Fakültesi akademik kadrosu.',
+            cvUrl: '',
+          ),
+          PersonData(
+            name: 'Doç. Dr. Ümit Deniz İLHAN',
+            about: 'İşletme ve Yönetim Bilimleri Fakültesi akademik kadrosu.',
+            cvUrl: '',
+          ),
+          PersonData(
+            name: 'Doç. Dr. Sezin AÇIK TAŞAR',
+            about: 'İşletme ve Yönetim Bilimleri Fakültesi akademik kadrosu.',
+            cvUrl: '',
+          ),
+          PersonData(
+            name: 'Dr. Öğr. Üyesi Aslıhan BEKAROĞLU ÖZATAR',
+            about: 'İşletme ve Yönetim Bilimleri Fakültesi akademik kadrosu.',
+            cvUrl: '',
+          ),
+
+          PersonData(
+            name: 'Dr. Öğr. Üyesi Emre ERGÜVEN',
+            about: 'İşletme ve Yönetim Bilimleri Fakültesi akademik kadrosu.',
+            cvUrl: '',
+          ),
+          PersonData(
+            name: 'Dr. Öğr. Üyesi Cihan TINAZTEPE ÇAĞLAR',
+            about: 'İşletme ve Yönetim Bilimleri Fakültesi akademik kadrosu.',
+            cvUrl: '',
+          ),
+          PersonData(
+            name: 'Dr. Öğr. Üyesi Hüsniye FIRAT',
+            about: 'İşletme ve Yönetim Bilimleri Fakültesi akademik kadrosu.',
+            cvUrl: '',
+          ),
+          PersonData(
+            name: 'Dr. Öğr. Üyesi Nesli ÇANKIRI KIRAN',
+            about: 'İşletme ve Yönetim Bilimleri Fakültesi akademik kadrosu.',
+            cvUrl: '',
+          ),
+          PersonData(
+            name: 'Dr. Öğr. Üyesi Esra Nur GÖKHAN',
+            about: 'İşletme ve Yönetim Bilimleri Fakültesi akademik kadrosu.',
+            cvUrl: '',
+          ),
+          PersonData(
+            name: 'Dr. Öğr. Üyesi Hande SAĞLAM',
+            about: 'İşletme ve Yönetim Bilimleri Fakültesi akademik kadrosu.',
+            cvUrl: '',
+          ),
+          PersonData(
+            name: 'Araş. Gör. Güler SAĞLAM',
+            about: 'İşletme ve Yönetim Bilimleri Fakültesi akademik kadrosu.',
+            cvUrl: '',
+          ),
+          PersonData(
+            name: 'Araş. Gör. Ezgi ÇOLAK',
+            about: 'İşletme ve Yönetim Bilimleri Fakültesi akademik kadrosu.',
+            cvUrl: '',
+          ),
+          PersonData(
+            name: 'Araş. Gör. İlkay AKBAŞ',
+            about: 'İşletme ve Yönetim Bilimleri Fakültesi akademik kadrosu.',
+            cvUrl: '',
+          ),
+          PersonData(
+            name: 'Araş. Gör. Ergün Pirsefa YILDIRIM',
+            about: 'İşletme ve Yönetim Bilimleri Fakültesi akademik kadrosu.',
+            cvUrl: '',
           ),
         ],
         'https://www.beykoz.edu.tr/kadro/isletme-ve-yonetim-bilimleri-fakultesi-akademik-kadro',
@@ -364,25 +474,100 @@ class _AcademicStaffPageState extends State<AcademicStaffPage>
         const LinearGradient(colors: [Color(0xFF802629), Color(0xFFB2453C)]),
         [
           PersonData(
-            name: 'Prof. Dr. Zeynep Arslan (Dekan)',
-            about: 'Sosyoloji ve kültür araştırmaları alanında tanınmıştır.',
-            cvUrl: 'https://www.beykoz.edu.tr/cv/zeynep_arslan.pdf',
+            name: 'Prof. Dr. Mansur BEYAZYÜREK',
+            about: 'Dekan',
+            cvUrl: '',
           ),
           PersonData(
-            name: 'Doç. Dr. Burak Tekin',
-            about: 'Politika bilimi ve uluslararası ilişkiler uzmanıdır.',
-            cvUrl: 'https://www.beykoz.edu.tr/cv/burak_tekin.pdf',
+            name: 'Prof. Dr. Hatice Gülsen ERDEN',
+            about: 'Sosyal Bilimler Fakültesi akademik kadrosu.',
+            cvUrl: '',
           ),
           PersonData(
-            name: 'Dr. Öğr. Üyesi Gamze Şahin',
-            about: 'Psikoloji ve bilişsel bilimler üzerine çalışmaktadır.',
-            cvUrl: 'https://www.beykoz.edu.tr/cv/gamze_sahin.pdf',
+            name: 'Prof. Dr. Zeynep HAMAMCI',
+            about: 'Sosyal Bilimler Fakültesi akademik kadrosu.',
+            cvUrl: '',
           ),
           PersonData(
-            name: 'Araş. Gör. Deniz Aksoy',
+            name: 'Prof. Dr. Burak KÜNTAY',
+            about: 'Sosyal Bilimler Fakültesi akademik kadrosu.',
+            cvUrl: '',
+          ),
+          PersonData(
+            name: 'Prof. Dr. Ahmet Kasım HAN',
+            about: 'Sosyal Bilimler Fakültesi akademik kadrosu.',
+            cvUrl: '',
+          ),
+          PersonData(
+            name: 'Prof. Dr. Ragıp Kutay KARACA',
+            about: 'Sosyal Bilimler Fakültesi akademik kadrosu.',
+            cvUrl: '',
+          ),
+          PersonData(
+            name: 'Prof. Dr. Ali ÇİVRİL',
+            about: 'Sosyal Bilimler Fakültesi akademik kadrosu.',
+            cvUrl: '',
+          ),
+          PersonData(
+            name: 'Doç. Dr. Pınar SAYAN',
             about:
-                'Eğitim bilimleri ve öğretim teknolojileri üzerine yoğunlaşmıştır.',
-            cvUrl: 'https://www.beykoz.edu.tr/cv/deniz_aksoy.pdf',
+                'Dekan Yardımcısı/ Siyaset Bilimi ve Uluslararası İlişkiler Bölüm Başkanı',
+            cvUrl: '',
+          ),
+          PersonData(
+            name: 'Doç. Dr. Pınar KURT COMBİL',
+            about: 'Psikoloji Bölüm Başkanı',
+            cvUrl: '',
+          ),
+          PersonData(
+            name: 'Dr. Öğr. Üyesi Hakkı BAŞGÜNEY',
+            about: 'Sosyal Bilimler Fakültesi akademik kadrosu.',
+            cvUrl: '',
+          ),
+          PersonData(
+            name: 'Dr. Öğr. Üyesi Seval ÜNLÜ GÖK',
+            about: 'Sosyal Bilimler Fakültesi akademik kadrosu.',
+            cvUrl: '',
+          ),
+          PersonData(
+            name: 'Dr. Öğr. Üyesi Özgül AKINCI',
+            about: 'Sosyal Bilimler Fakültesi akademik kadrosu.',
+            cvUrl: '',
+          ),
+          PersonData(
+            name: 'Dr. Öğr. Üyesi Eda YILMAZER',
+            about: 'Dekan Yardımcısı',
+            cvUrl: '',
+          ),
+          PersonData(
+            name: 'Dr. Öğr. Üyesi Özge SARIYER YILMAZ',
+            about: 'Sosyal Bilimler Fakültesi akademik kadrosu.',
+            cvUrl: '',
+          ),
+          PersonData(
+            name: 'Dr. Öğr. Üyesi Müge AKKOYUN',
+            about: 'Sosyal Bilimler Fakültesi akademik kadrosu.',
+            cvUrl: '',
+          ),
+          PersonData(
+            name: 'Dr. Öğr. Üyesi Pelin HAZER',
+            about: 'Sosyal Bilimler Fakültesi akademik kadrosu.',
+            cvUrl: '',
+          ),
+          PersonData(
+            name: 'Araş. Gör. Emir AYDOĞAN',
+            about: 'Sosyal Bilimler Fakültesi akademik kadrosu.',
+            cvUrl: '',
+          ),
+          PersonData(
+            name: 'Araş. Gör. Nihan PASAFÇIOĞLU',
+            about: 'Sosyal Bilimler Fakültesi akademik kadrosu.',
+            cvUrl: '',
+          ),
+          PersonData(
+            name: 'Araş. Gör. Merve TAŞDELEN',
+            about: 'Sosyal Bilimler Fakültesi akademik kadrosu.',
+            cvUrl: '',
           ),
         ],
         'https://www.beykoz.edu.tr/kadro/sbf-akademik-kadro',
@@ -408,10 +593,97 @@ class _AcademicStaffPageState extends State<AcademicStaffPage>
             cvUrl: 'https://www.beykoz.edu.tr/uploads/staffs/693.pdf',
           ),
           PersonData(
-            name: 'Araş. Gör. Serra Gül',
-            about:
-                'Elektrik-elektronik mühendisliği ve sinyal işleme üzerine çalışmaktadır.',
-            cvUrl: 'https://www.beykoz.edu.tr/cv/serra_gul.pdf',
+            name: 'Dr. Öğr. Üyesi Meltem KAYHAN',
+            about: 'Endüstri Mühendisliği Bölüm Başkanı',
+            cvUrl: 'https://www.beykoz.edu.tr/cv/meltem_kayhan.pdf',
+          ),
+          PersonData(
+            name: 'Dr. Öğr. Üyesi Gizem TEMELCAN ERGENECOŞAR',
+            about: 'Dekan Yardımcısı/ Yazılım Mühendisliği Bölüm Başkanı',
+            cvUrl:
+                'https://www.beykoz.edu.tr/cv/gizem_temelcan_ergenecosar.pdf',
+          ),
+
+          PersonData(
+            name: 'Prof. Dr. Selahattin KURU',
+            about: 'Mühendislik ve Mimarlık Fakültesi akademik kadrosu.',
+            cvUrl: 'https://www.beykoz.edu.tr/cv/selahattin_kuru.pdf',
+          ),
+          PersonData(
+            name: 'Prof. Dr. Abdurazzag Alı A ABURAS',
+            about: 'Mühendislik ve Mimarlık Fakültesi akademik kadrosu.',
+            cvUrl: 'https://www.beykoz.edu.tr/cv/abdurazzag_ali_aburas.pdf',
+          ),
+          PersonData(
+            name: 'Prof. Dr. Ercan SOLAK',
+            about: 'Mühendislik ve Mimarlık Fakültesi akademik kadrosu.',
+            cvUrl: 'https://www.beykoz.edu.tr/cv/ercan_solak.pdf',
+          ),
+          PersonData(
+            name: 'Prof. Dr. Erhan BÜTÜN',
+            about: 'Mühendislik ve Mimarlık Fakültesi akademik kadrosu.',
+            cvUrl: 'https://www.beykoz.edu.tr/cv/erhan_butun.pdf',
+          ),
+          PersonData(
+            name: 'Doç. Dr. Nevzat Evrim ÖNAL',
+            about: 'Mühendislik ve Mimarlık Fakültesi akademik kadrosu.',
+            cvUrl: 'https://www.beykoz.edu.tr/cv/nevzat_evrim_onal.pdf',
+          ),
+          PersonData(
+            name: 'Dr. Öğr. Üyesi İlhan GARİP',
+            about: 'Mühendislik ve Mimarlık Fakültesi akademik kadrosu.',
+            cvUrl: 'https://www.beykoz.edu.tr/cv/ilhan_garip.pdf',
+          ),
+          PersonData(
+            name: 'Dr. Öğr. Üyesi Özlem GEYLANİ',
+            about: 'Mühendislik ve Mimarlık Fakültesi akademik kadrosu.',
+            cvUrl: 'https://www.beykoz.edu.tr/cv/ozlem_geylani.pdf',
+          ),
+          PersonData(
+            name: 'Dr. Öğr. Üyesi Engin SANSARCI',
+            about: 'Mühendislik ve Mimarlık Fakültesi akademik kadrosu.',
+            cvUrl: 'https://www.beykoz.edu.tr/cv/engin_sansarci.pdf',
+          ),
+          PersonData(
+            name: 'Dr. Öğr. Üyesi Özlem Feyza ERKAN',
+            about: 'Mühendislik ve Mimarlık Fakültesi akademik kadrosu.',
+            cvUrl: 'https://www.beykoz.edu.tr/cv/ozlem_feyza_erkan.pdf',
+          ),
+          PersonData(
+            name: 'Dr. Öğr. Üyesi Dürdane YILMAZ',
+            about: 'Mühendislik ve Mimarlık Fakültesi akademik kadrosu.',
+            cvUrl: 'https://www.beykoz.edu.tr/cv/durdane_yilmaz.pdf',
+          ),
+          PersonData(
+            name: 'Dr. Öğr. Üyesi Rahime Hande CANBİLEN OMACAN',
+            about: 'Mühendislik ve Mimarlık Fakültesi akademik kadrosu.',
+            cvUrl:
+                'https://www.beykoz.edu.tr/cv/rahime_hande_canbilen_omacan.pdf',
+          ),
+          PersonData(
+            name: 'Dr. Öğr. Üyesi Serra ERSOY ŞAHİN',
+            about: 'Mühendislik ve Mimarlık Fakültesi akademik kadrosu.',
+            cvUrl: 'https://www.beykoz.edu.tr/cv/serra_ersoy_sahin.pdf',
+          ),
+          PersonData(
+            name: 'Araş. Gör. Elif Bilge ŞAHİN',
+            about: 'Mühendislik ve Mimarlık Fakültesi akademik kadrosu.',
+            cvUrl: 'https://www.beykoz.edu.tr/cv/elif_bilge_sahin.pdf',
+          ),
+          PersonData(
+            name: 'Araş. Gör. Ümran AYDIN',
+            about: 'Mühendislik ve Mimarlık Fakültesi akademik kadrosu.',
+            cvUrl: 'https://www.beykoz.edu.tr/cv/umran_aydin.pdf',
+          ),
+          PersonData(
+            name: 'Araş. Gör. Alp Eren KIYAK',
+            about: 'Mühendislik ve Mimarlık Fakültesi akademik kadrosu.',
+            cvUrl: 'https://www.beykoz.edu.tr/cv/alp_eren_kiyak.pdf',
+          ),
+          PersonData(
+            name: 'Araş. Gör. Roza Mercan ESKİN',
+            about: 'Mühendislik ve Mimarlık Fakültesi akademik kadrosu.',
+            cvUrl: 'https://www.beykoz.edu.tr/cv/roza_mercan_eskin.pdf',
           ),
         ],
         'https://www.beykoz.edu.tr/kadro/mmf-akademik-kadro',
@@ -444,6 +716,167 @@ class _AcademicStaffPageState extends State<AcademicStaffPage>
                 'Moda tasarımı ve tekstil sanatları üzerine araştırmalar yapmaktadır.',
             cvUrl: 'https://www.beykoz.edu.tr/cv/fatih_kaplan.pdf',
           ),
+          PersonData(
+            name: 'Prof. Dr. Bengisu BAYRAK SHAHMIRI',
+            about: 'Dekan',
+            cvUrl: '',
+          ),
+          PersonData(
+            name: 'Doç. Dr. Çeyiz MAKAL FAIRCLOUGH',
+            about: 'Dekan Yardımcısı',
+            cvUrl: '',
+          ),
+          PersonData(
+            name: 'Dr. Öğr. Üyesi Banu Burçin ÖZTUNÇ',
+            about: 'Dekan Yardımcısı',
+            cvUrl: '',
+          ),
+          PersonData(
+            name: 'Prof. Dr. Pınar Seden MERAL',
+            about: 'İletişim ve Tasarımı Bölüm Başkanı',
+            cvUrl: '',
+          ),
+          PersonData(
+            name: 'Doç. Dr. Merva KELEKÇİ OLGUN',
+            about: 'Grafik Tasarım Bölüm Başkanı',
+            cvUrl: '',
+          ),
+          PersonData(
+            name: 'Dr. Öğr. Üyesi Bihter Erdem OKUMUŞ',
+            about: 'İç Mimarlık ve Çevre Tasarımı Bölüm Başkanı',
+            cvUrl: '',
+          ),
+          PersonData(
+            name: 'Dr. Öğr. Üyesi Ahu SAMAV UĞURSOY',
+            about: 'Halkla İlişkiler ve Reklamcılık Bölüm Başkanı',
+            cvUrl: '',
+          ),
+          PersonData(
+            name: 'Dr. Öğr. Üyesi Zeynep KUNT',
+            about: 'Radyo, Televizyon ve Sinema Bölüm Başkanı',
+            cvUrl: '',
+          ),
+          PersonData(
+            name: 'Dr. Öğr. Üyesi Serap NAZIR',
+            about: 'Gastronomi ve Mutfak Sanatları Bölüm Başkanı',
+            cvUrl: '',
+          ),
+          PersonData(
+            name: 'Dr. Öğr. Üyesi Orkun YÖNTEM',
+            about: 'Dijital Oyun Tasarımı Bölüm Başkanı',
+            cvUrl: '',
+          ),
+          PersonData(
+            name: 'Dr. Öğr. Üyesi Gökhan Aydın',
+            about: 'Çizgi Film ve Animasyon Bölüm Başkanı',
+            cvUrl: '',
+          ),
+          PersonData(name: 'Nida Maraş', about: 'Fakülte Sekreteri', cvUrl: ''),
+          PersonData(
+            name: 'Prof. Dr. Armağan GÖKÇEARSLAN',
+            about: 'Sanat ve Tasarım Fakültesi akademik kadrosu.',
+            cvUrl: '',
+          ),
+          PersonData(
+            name: 'Doç. Dr. Emre Ahmet SEÇMEN',
+            about: 'Sanat ve Tasarım Fakültesi akademik kadrosu.',
+            cvUrl: '',
+          ),
+          PersonData(
+            name: 'Dr. Öğr. Üyesi Füsun Deniz ÖZDEN',
+            about: 'Sanat ve Tasarım Fakültesi akademik kadrosu.',
+            cvUrl: '',
+          ),
+          PersonData(
+            name: 'Dr. Öğr. Üyesi Gökçe SÖZEN',
+            about: 'Sanat ve Tasarım Fakültesi akademik kadrosu.',
+            cvUrl: '',
+          ),
+          PersonData(
+            name: 'Dr. Öğr. Üyesi Anıl SAYAN',
+            about: 'Sanat ve Tasarım Fakültesi akademik kadrosu.',
+            cvUrl: '',
+          ),
+          PersonData(
+            name: 'Dr. Öğr. Üyesi Selcen Nur ERİKÇİ ÇELİK',
+            about: 'Sanat ve Tasarım Fakültesi akademik kadrosu.',
+            cvUrl: '',
+          ),
+          PersonData(
+            name: 'Dr. Öğr. Üyesi İrem AYAN DANACILAR',
+            about: 'Sanat ve Tasarım Fakültesi akademik kadrosu.',
+            cvUrl: '',
+          ),
+          PersonData(
+            name: 'Dr. Öğr. Üyesi Serap BOZKURT',
+            about: 'Sanat ve Tasarım Fakültesi akademik kadrosu.',
+            cvUrl: '',
+          ),
+          PersonData(
+            name: 'Dr. Öğr. Üyesi Ali Aşur DELEN',
+            about: 'Sanat ve Tasarım Fakültesi akademik kadrosu.',
+            cvUrl: '',
+          ),
+          PersonData(
+            name: 'Dr. Öğr. Üyesi Nur Ertürk',
+            about: 'Sanat ve Tasarım Fakültesi akademik kadrosu.',
+            cvUrl: '',
+          ),
+          PersonData(
+            name: 'Dr. Öğr. Üyesi Selda KARAHAN',
+            about: 'Sanat ve Tasarım Fakültesi akademik kadrosu.',
+            cvUrl: '',
+          ),
+          PersonData(
+            name: 'Dr. Öğr. Üyesi Beste Nur İSKENDER AYDIN',
+            about: 'Sanat ve Tasarım Fakültesi akademik kadrosu.',
+            cvUrl: '',
+          ),
+          PersonData(
+            name: 'Öğr. Gör. Çise GÖKÇE',
+            about: 'Sanat ve Tasarım Fakültesi akademik kadrosu.',
+            cvUrl: '',
+          ),
+          PersonData(
+            name: 'Araş. Gör. Münür İPEK',
+            about: 'Sanat ve Tasarım Fakültesi akademik kadrosu.',
+            cvUrl: '',
+          ),
+          PersonData(
+            name: 'Araş. Gör. Setenay GÜLTEKİN',
+            about: 'Sanat ve Tasarım Fakültesi akademik kadrosu.',
+            cvUrl: '',
+          ),
+          PersonData(
+            name: 'Araş. Gör. Aylin Berna ZAMANDAR BAŞOĞLU',
+            about: 'Sanat ve Tasarım Fakültesi akademik kadrosu.',
+            cvUrl: '',
+          ),
+          PersonData(
+            name: 'Araş. Gör. Ayşenur ERTEN',
+            about: 'Sanat ve Tasarım Fakültesi akademik kadrosu.',
+            cvUrl: '',
+          ),
+          PersonData(
+            name: 'Araş. Gör. Betül TAŞ',
+            about: 'Sanat ve Tasarım Fakültesi akademik kadrosu.',
+            cvUrl: '',
+          ),
+          PersonData(
+            name: 'Araş. Gör. Erdinç KAYGUSUZ',
+            about: 'Sanat ve Tasarım Fakültesi akademik kadrosu.',
+            cvUrl: '',
+          ),
+          PersonData(
+            name: 'Araş. Gör. Feyza ASLAN',
+            about: 'Sanat ve Tasarım Fakültesi akademik kadrosu.',
+            cvUrl: '',
+          ),
+          PersonData(
+            name: 'Araş. Gör. Muhammet YILDIZ',
+            about: 'Sanat ve Tasarım Fakültesi akademik kadrosu.',
+            cvUrl: '',
+          ),
         ],
         'https://www.beykoz.edu.tr/kadro/stf-akademik-kadro',
       ),
@@ -453,24 +886,77 @@ class _AcademicStaffPageState extends State<AcademicStaffPage>
         const LinearGradient(colors: [Color(0xFF802629), Color(0xFFB2453C)]),
         [
           PersonData(
-            name: 'Prof. Dr. Mehmet Özkan (Müdür)',
-            about: 'Lojistik ve tedarik zinciri yönetimi konusunda deneyimli.',
-            cvUrl: 'https://www.beykoz.edu.tr/cv/mehmet_ozkan.pdf',
+            name: 'Dr. Öğr. Üyesi Nesli ÇANKIRI KIRAN',
+            about: 'Müdür',
+            cvUrl: '',
           ),
           PersonData(
-            name: 'Doç. Dr. Sibel Kırık',
-            about: 'Uluslararası taşımacılık ve gümrükleme üzerine çalışıyor.',
-            cvUrl: 'https://www.beykoz.edu.tr/cv/sibel_kirik.pdf',
+            name: 'Dr. Öğr. Üyesi Cansu ŞAHİN KÖLEMEN',
+            about: 'Müdür Yardımcısı / Bilgisayar Teknolojileri Bölüm Başkanı',
+            cvUrl: '',
           ),
           PersonData(
-            name: 'Dr. Öğr. Üyesi Hasan Yalçın',
-            about: 'Depo yönetimi ve envanter kontrolü dersleri veriyor.',
-            cvUrl: 'https://www.beykoz.edu.tr/cv/hasan_yalcin.pdf',
+            name: 'Öğr. Gör. Ebru TEPEÇAM',
+            about: 'Müdür Yardımcısı / Ulaştırma Hizmetleri Bölüm Başkanı',
+            cvUrl: '',
           ),
           PersonData(
-            name: 'Öğr. Gör. Aylin Öztürk',
-            about: 'Lojistik teknolojileri ve yazılımları üzerine odaklanmış.',
-            cvUrl: 'https://www.beykoz.edu.tr/cv/aylin_ozturk.pdf',
+            name: 'Öğr. Gör. Arzu ÖZÇELİK',
+            about: 'Sivil Havacılık Kabin Hizmetleri (Türkçe) Program Başkanı',
+            cvUrl: '',
+          ),
+          PersonData(
+            name: 'Öğr. Gör. Hande İpek ARSLAN',
+            about:
+                'Sivil Havacılık Kabin Hizmetleri (İngilizce) Program Başkanı',
+            cvUrl: '',
+          ),
+          PersonData(
+            name: 'Öğr. Gör. Pervin Ahu ÇERÇİ',
+            about: 'Dış Ticaret Bölüm Başkanı / Dış Ticaret Program Başkanı',
+            cvUrl: '',
+          ),
+          PersonData(
+            name: 'Dr. Öğr. Üyesi Duygu YAMAN',
+            about: 'Lojistik Program Başkanı / Hava Lojistiği Program Başkanı',
+            cvUrl: '',
+          ),
+          PersonData(
+            name: 'Öğr. Gör. Elif İLHAN',
+            about: 'Sivil Hava Ulaştırma İşletmeciliği Program Başkanı',
+            cvUrl: '',
+          ),
+          PersonData(
+            name: 'Dr. Öğr. Üyesi Burak ÇAKALOZ',
+            about: 'Deniz ve Liman İşletmeciliği Program Başkanı',
+            cvUrl: '',
+          ),
+          PersonData(
+            name: 'Öğr. Gör. Saliha UYAK ÇELİK',
+            about:
+                'Pazarlama ve Reklamcılık Bölüm Başkanı / E-Ticaret ve Pazarlama Program Başkanı',
+            cvUrl: '',
+          ),
+          PersonData(
+            name: 'Öğr. Gör. Özhan GÖRÇÜN',
+            about: 'Raylı Sistemler Program Başkanı',
+            cvUrl: '',
+          ),
+          PersonData(
+            name: 'Öğr. Gör. Fatih Zahid GENÇ',
+            about: 'Bilişim Güvenliği Teknolojisi Program Başkanı',
+            cvUrl: '',
+          ),
+          PersonData(
+            name: 'Öğr. Gör. Buket DÖNMEZ',
+            about: 'Bilgisayar Programcılığı Program Başkanı',
+            cvUrl: '',
+          ),
+          PersonData(
+            name: 'Öğr. Gör. Başak KURU',
+            about:
+                'Yönetim ve Organizasyon Bölüm Başkanı/ Lojistik Programları Başkanı',
+            cvUrl: '',
           ),
         ],
         'https://www.beykoz.edu.tr/kadro/blmyo-akademik-kadro',
@@ -481,25 +967,44 @@ class _AcademicStaffPageState extends State<AcademicStaffPage>
         const LinearGradient(colors: [Color(0xFF802629), Color(0xFFB2453C)]),
         [
           PersonData(
-            name: 'Prof. Dr. Sarah Johnson (Müdür)',
-            about: 'İngiliz dili ve edebiyatı uzmanı.',
-            cvUrl: 'https://www.beykoz.edu.tr/cv/sarah_johnson.pdf',
+            name: 'Öğr. Gör. Pınar PAMUK',
+            about: 'Yabancı Diller Yüksekokulu akademik kadrosu.',
+            cvUrl: '',
           ),
           PersonData(
-            name: 'Doç. Dr. Maria Garcia',
-            about:
-                'İspanyolca ve dil öğrenme metodolojileri üzerine çalışıyor.',
-            cvUrl: 'https://www.beykoz.edu.tr/cv/maria_garcia.pdf',
+            name: 'Öğr. Gör. Mediha BANBAL',
+            about: 'Yabancı Diller Yüksekokulu akademik kadrosu.',
+            cvUrl: '',
           ),
           PersonData(
-            name: 'Dr. Öğr. Üyesi Jean Pierre',
-            about: 'Fransızca dilbilgisi ve kültürü dersleri veriyor.',
-            cvUrl: 'https://www.beykoz.edu.tr/cv/jean_pierre.pdf',
+            name: 'Öğr. Gör. Aisulu DOSZHANOVA',
+            about: 'Yabancı Diller Yüksekokulu akademik kadrosu.',
+            cvUrl: '',
           ),
           PersonData(
-            name: 'Öğr. Gör. Kemal Erdoğan',
-            about: 'Türkçe yabancı dil olarak öğretimi üzerine odaklanmış.',
-            cvUrl: 'https://www.beykoz.edu.tr/cv/kemal_erdogan.pdf',
+            name: 'Öğr. Gör. Muhammet GÜNDÜZ',
+            about: 'Yabancı Diller Yüksekokulu akademik kadrosu.',
+            cvUrl: '',
+          ),
+          PersonData(
+            name: 'Öğr. Gör. Zeynep DAĞ',
+            about: 'Yabancı Diller Yüksekokulu akademik kadrosu.',
+            cvUrl: '',
+          ),
+          PersonData(
+            name: 'Öğr. Gör. Viktoriya SAYGIN',
+            about: 'Yabancı Diller Yüksekokulu akademik kadrosu.',
+            cvUrl: '',
+          ),
+          PersonData(
+            name: 'Öğr. Gör. Reza SAHMANIASL',
+            about: 'Yabancı Diller Yüksekokulu akademik kadrosu.',
+            cvUrl: '',
+          ),
+          PersonData(
+            name: 'Öğr. Gör. Farideh MORADI GOLOSHEJERDI',
+            about: 'Yabancı Diller Yüksekokulu akademik kadrosu.',
+            cvUrl: '',
           ),
         ],
         'https://www.beykoz.edu.tr/kadro/ydy-akademik-kadro',
@@ -510,25 +1015,40 @@ class _AcademicStaffPageState extends State<AcademicStaffPage>
         const LinearGradient(colors: [Color(0xFF802629), Color(0xFFB2453C)]),
         [
           PersonData(
-            name: 'Prof. Dr. Ahmet Demir (Müdür)',
-            about: 'Elektronik ve otomasyon sistemleri uzmanı.',
-            cvUrl: 'https://www.beykoz.edu.tr/cv/ahmet_demir.pdf',
+            name: 'Öğr. Gör. Kadir ŞEKER',
+            about: 'Meslek Yüksekokulu akademik kadrosu.',
+            cvUrl: '',
           ),
           PersonData(
-            name: 'Doç. Dr. Fatma Koç',
+            name: 'Prof. Dr. Kaan MERİÇ',
+            about: 'Meslek Yüksekokulu akademik kadrosu.',
+            cvUrl: '',
+          ),
+          PersonData(
+            name: 'Dr. Öğr. Üyesi Amil HÜSEYNOV',
+            about: 'Meslek Yüksekokulu akademik kadrosu.',
+            cvUrl: '',
+          ),
+          PersonData(
+            name: 'Öğr. Gör. Zehra KAYA',
             about:
-                'Bilgisayar programcılığı ve web geliştirme üzerine çalışıyor.',
-            cvUrl: 'https://www.beykoz.edu.tr/cv/fatma_koc.pdf',
+                'Paz. ve Rek. Bölümü Başkan V.-Sos. Hizm. ve Dan. Bölüm Başkanı',
+            cvUrl: '',
           ),
           PersonData(
-            name: 'Dr. Öğr. Üyesi Osman Kara',
-            about: 'Muhasebe ve finans uygulamaları dersleri veriyor.',
-            cvUrl: 'https://www.beykoz.edu.tr/cv/osman_kara.pdf',
+            name: 'Öğr. Gör. Nebi ARAZ',
+            about: 'Tıbbi Hizmetler ve Teknikler Bölüm Başkanı',
+            cvUrl: '',
           ),
           PersonData(
-            name: 'Öğr. Gör. Zehra Aktaş',
-            about: 'Sağlık hizmetleri yönetimi ve etik üzerine odaklanmış.',
-            cvUrl: 'https://www.beykoz.edu.tr/cv/zehra_aktas.pdf',
+            name: 'Öğr. Gör. Özge DEMİR',
+            about: 'Meslek Yüksekokulu akademik kadrosu.',
+            cvUrl: '',
+          ),
+          PersonData(
+            name: 'Öğr. Gör. Yasemin GÜNTER',
+            about: 'Meslek Yüksekokulu akademik kadrosu.',
+            cvUrl: '',
           ),
         ],
         'https://www.beykoz.edu.tr/kadro/myo-akademik-kadro',
@@ -538,27 +1058,33 @@ class _AcademicStaffPageState extends State<AcademicStaffPage>
         Icons.flight,
         const LinearGradient(colors: [Color(0xFF802629), Color(0xFFB2453C)]),
         [
+          PersonData(name: 'Prof. Dr. Erhan BÜTÜN', about: 'Müdür', cvUrl: ''),
           PersonData(
-            name: 'Prof. Dr. Pilot Cenk Uçar (Müdür)',
-            about: 'Havacılık yönetimi ve pilotajda deneyimli.',
-            cvUrl: 'https://www.beykoz.edu.tr/cv/cenk_ucar.pdf',
+            name: 'Doç. Dr. Nigar Çağla MUTLUCAN',
+            about: 'Müdür Yardımcısı',
+            cvUrl: '',
           ),
           PersonData(
-            name: 'Doç. Dr. Ayşegül Havacı',
-            about:
-                'Hava trafik kontrolü ve güvenlik sistemleri üzerine çalışıyor.',
-            cvUrl: 'https://www.beykoz.edu.tr/cv/aysegul_havaci.pdf',
+            name: 'Dr. Öğr. Üyesi Behiye BEĞENDİK',
+            about: 'Havacılık Yönetimi Bölüm Başkanı',
+            cvUrl: '',
           ),
           PersonData(
-            name: 'Dr. Öğr. Üyesi Mert Skywalker',
-            about: 'Uçak bakım ve onarım teknolojileri dersleri veriyor.',
-            cvUrl: 'https://www.beykoz.edu.tr/cv/mert_skywalker.pdf',
+            name: 'Dr. Öğr. Üyesi Caner ŞENTÜRK',
+            about: 'Sivil Havacılık Yüksekokulu akademik kadrosu.',
+            cvUrl: '',
           ),
           PersonData(
-            name: 'Öğr. Gör. Gökhan Jetli',
-            about: 'Kabın hizmetleri ve yolcu güvenliği üzerine odaklanmış.',
-            cvUrl: 'https://www.beykoz.edu.tr/cv/gokhan_jetli.pdf',
+            name: 'Dr. Öğr. Üyesi Melike Mehveş PAMUK',
+            about: 'Sivil Havacılık Yüksekokulu akademik kadrosu.',
+            cvUrl: '',
           ),
+          PersonData(
+            name: 'Araş. Gör. Serhan KARADENİZ',
+            about: 'Sivil Havacılık Yüksekokulu akademik kadrosu.',
+            cvUrl: '',
+          ),
+          PersonData(name: 'Elif BURAK', about: 'Fakülte Sekreteri', cvUrl: ''),
         ],
         'https://www.beykoz.edu.tr/kadro/shy-akademik-kadro',
       ),
@@ -572,8 +1098,8 @@ class _AcademicStaffPageState extends State<AcademicStaffPage>
             return Container(
               padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
               decoration: BoxDecoration(
-                color: themeService.isDarkMode 
-                    ? ThemeService.darkPrimaryColor 
+                color: themeService.isDarkMode
+                    ? ThemeService.darkPrimaryColor
                     : primaryColor,
                 borderRadius: BorderRadius.circular(8),
               ),
@@ -609,11 +1135,13 @@ class _AcademicStaffPageState extends State<AcademicStaffPage>
       builder: (context, themeService, child) {
         return Card(
           elevation: 0,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
           child: Container(
             decoration: BoxDecoration(
-              color: themeService.isDarkMode 
-                  ? ThemeService.darkCardColor 
+              color: themeService.isDarkMode
+                  ? ThemeService.darkCardColor
                   : cardColor,
               borderRadius: BorderRadius.circular(16),
               boxShadow: [
@@ -627,9 +1155,11 @@ class _AcademicStaffPageState extends State<AcademicStaffPage>
             child: Theme(
               data: Theme.of(context).copyWith(
                 dividerColor: Colors.transparent,
-                splashColor: (themeService.isDarkMode 
-                    ? ThemeService.darkPrimaryColor 
-                    : primaryColor).withOpacity(0.1),
+                splashColor:
+                    (themeService.isDarkMode
+                            ? ThemeService.darkPrimaryColor
+                            : primaryColor)
+                        .withOpacity(0.1),
               ),
               child: ExpansionTile(
                 tilePadding: const EdgeInsets.symmetric(
@@ -657,8 +1187,8 @@ class _AcademicStaffPageState extends State<AcademicStaffPage>
                   style: TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.bold,
-                    color: themeService.isDarkMode 
-                        ? ThemeService.darkTextPrimaryColor 
+                    color: themeService.isDarkMode
+                        ? ThemeService.darkTextPrimaryColor
                         : Color(0xFF802629),
                   ),
                 ),
@@ -668,10 +1198,10 @@ class _AcademicStaffPageState extends State<AcademicStaffPage>
                     Text(
                       '${faculty.staff.length} akademisyen',
                       style: TextStyle(
-                        fontSize: 12, 
-                        color: themeService.isDarkMode 
-                            ? ThemeService.darkTextSecondaryColor 
-                            : Colors.grey.shade600
+                        fontSize: 12,
+                        color: themeService.isDarkMode
+                            ? ThemeService.darkTextSecondaryColor
+                            : Colors.grey.shade600,
                       ),
                     ),
                     GestureDetector(
@@ -682,33 +1212,37 @@ class _AcademicStaffPageState extends State<AcademicStaffPage>
                           vertical: 4,
                         ),
                         decoration: BoxDecoration(
-                          color: (themeService.isDarkMode 
-                              ? ThemeService.darkPrimaryColor 
-                              : primaryColor).withOpacity(0.1),
+                          color:
+                              (themeService.isDarkMode
+                                      ? ThemeService.darkPrimaryColor
+                                      : primaryColor)
+                                  .withOpacity(0.1),
                           borderRadius: BorderRadius.circular(12),
                           border: Border.all(
-                            color: (themeService.isDarkMode 
-                                ? ThemeService.darkPrimaryColor 
-                                : primaryColor).withOpacity(0.3)
+                            color:
+                                (themeService.isDarkMode
+                                        ? ThemeService.darkPrimaryColor
+                                        : primaryColor)
+                                    .withOpacity(0.3),
                           ),
                         ),
                         child: Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
                             Icon(
-                              Icons.link, 
-                              size: 14, 
-                              color: themeService.isDarkMode 
-                                  ? ThemeService.darkPrimaryColor 
-                                  : primaryColor
+                              Icons.link,
+                              size: 14,
+                              color: themeService.isDarkMode
+                                  ? ThemeService.darkPrimaryColor
+                                  : primaryColor,
                             ),
                             const SizedBox(width: 4),
                             Text(
                               'Fakülte Sayfası',
                               style: TextStyle(
                                 fontSize: 12,
-                                color: themeService.isDarkMode 
-                                    ? ThemeService.darkPrimaryColor 
+                                color: themeService.isDarkMode
+                                    ? ThemeService.darkPrimaryColor
                                     : primaryColor,
                                 fontWeight: FontWeight.w500,
                               ),
@@ -725,27 +1259,32 @@ class _AcademicStaffPageState extends State<AcademicStaffPage>
 
                   return AnimatedContainer(
                     duration: Duration(milliseconds: 200 + (index * 50)),
-                    margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+                    margin: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 4,
+                    ),
                     child: Container(
                       padding: const EdgeInsets.all(12),
                       decoration: BoxDecoration(
                         color:
                             (person.name.contains('Dekan') ||
                                 person.name.contains('Müdür'))
-                            ? (themeService.isDarkMode 
-                                ? ThemeService.darkPrimaryColor 
-                                : primaryColor).withOpacity(0.1)
-                            : (themeService.isDarkMode 
-                                ? ThemeService.darkCardColor 
-                                : cardColor),
+                            ? (themeService.isDarkMode
+                                      ? ThemeService.darkPrimaryColor
+                                      : primaryColor)
+                                  .withOpacity(0.1)
+                            : (themeService.isDarkMode
+                                  ? ThemeService.darkCardColor
+                                  : cardColor),
                         borderRadius: BorderRadius.circular(8),
                         border: Border.all(
                           color:
                               (person.name.contains('Dekan') ||
                                   person.name.contains('Müdür'))
-                              ? (themeService.isDarkMode 
-                                  ? ThemeService.darkPrimaryColor 
-                                  : primaryColor).withOpacity(0.3)
+                              ? (themeService.isDarkMode
+                                        ? ThemeService.darkPrimaryColor
+                                        : primaryColor)
+                                    .withOpacity(0.3)
                               : Colors.transparent,
                         ),
                         boxShadow: [
@@ -764,9 +1303,11 @@ class _AcademicStaffPageState extends State<AcademicStaffPage>
                               Container(
                                 padding: const EdgeInsets.all(6),
                                 decoration: BoxDecoration(
-                                  color: (themeService.isDarkMode 
-                                      ? ThemeService.darkPrimaryColor 
-                                      : primaryColor).withOpacity(0.2),
+                                  color:
+                                      (themeService.isDarkMode
+                                              ? ThemeService.darkPrimaryColor
+                                              : primaryColor)
+                                          .withOpacity(0.2),
                                   borderRadius: BorderRadius.circular(6),
                                 ),
                                 child: Icon(
@@ -774,8 +1315,8 @@ class _AcademicStaffPageState extends State<AcademicStaffPage>
                                           person.name.contains('Müdür'))
                                       ? Icons.star
                                       : Icons.person_outline,
-                                  color: themeService.isDarkMode 
-                                      ? ThemeService.darkPrimaryColor 
+                                  color: themeService.isDarkMode
+                                      ? ThemeService.darkPrimaryColor
                                       : primaryColor,
                                   size: 16,
                                 ),
@@ -791,28 +1332,30 @@ class _AcademicStaffPageState extends State<AcademicStaffPage>
                                             person.name.contains('Müdür'))
                                         ? FontWeight.bold
                                         : FontWeight.normal,
-                                    color: themeService.isDarkMode 
-                                        ? ThemeService.darkTextPrimaryColor 
+                                    color: themeService.isDarkMode
+                                        ? ThemeService.darkTextPrimaryColor
                                         : Color(0xFF802629),
                                   ),
                                 ),
                               ),
                             ],
                           ),
-                          if (person.about != null && person.about!.isNotEmpty) ...[
+                          if (person.about != null &&
+                              person.about!.isNotEmpty) ...[
                             const SizedBox(height: 8),
                             Text(
                               person.about!,
                               style: TextStyle(
                                 fontSize: 12,
-                                color: themeService.isDarkMode 
-                                    ? ThemeService.darkTextPrimaryColor 
+                                color: themeService.isDarkMode
+                                    ? ThemeService.darkTextPrimaryColor
                                     : Colors.grey.shade700,
                                 fontStyle: FontStyle.italic,
                               ),
                             ),
                           ],
-                          if (person.cvUrl != null && person.cvUrl!.isNotEmpty) ...[
+                          if (person.cvUrl != null &&
+                              person.cvUrl!.isNotEmpty) ...[
                             const SizedBox(height: 8),
                             GestureDetector(
                               onTap: () => _launchURL(person.cvUrl!),
@@ -822,14 +1365,18 @@ class _AcademicStaffPageState extends State<AcademicStaffPage>
                                   vertical: 6,
                                 ),
                                 decoration: BoxDecoration(
-                                  color: (themeService.isDarkMode 
-                                      ? ThemeService.darkPrimaryColor 
-                                      : primaryColor).withOpacity(0.1),
+                                  color:
+                                      (themeService.isDarkMode
+                                              ? ThemeService.darkPrimaryColor
+                                              : primaryColor)
+                                          .withOpacity(0.1),
                                   borderRadius: BorderRadius.circular(12),
                                   border: Border.all(
-                                    color: (themeService.isDarkMode 
-                                        ? ThemeService.darkPrimaryColor 
-                                        : primaryColor).withOpacity(0.3),
+                                    color:
+                                        (themeService.isDarkMode
+                                                ? ThemeService.darkPrimaryColor
+                                                : primaryColor)
+                                            .withOpacity(0.3),
                                   ),
                                 ),
                                 child: Row(
@@ -838,8 +1385,8 @@ class _AcademicStaffPageState extends State<AcademicStaffPage>
                                     Icon(
                                       Icons.description,
                                       size: 14,
-                                      color: themeService.isDarkMode 
-                                          ? ThemeService.darkPrimaryColor 
+                                      color: themeService.isDarkMode
+                                          ? ThemeService.darkPrimaryColor
                                           : primaryColor,
                                     ),
                                     const SizedBox(width: 6),
@@ -847,8 +1394,8 @@ class _AcademicStaffPageState extends State<AcademicStaffPage>
                                       'CV / Özgeçmiş',
                                       style: TextStyle(
                                         fontSize: 12,
-                                        color: themeService.isDarkMode 
-                                            ? ThemeService.darkPrimaryColor 
+                                        color: themeService.isDarkMode
+                                            ? ThemeService.darkPrimaryColor
                                             : primaryColor,
                                         fontWeight: FontWeight.w500,
                                       ),
