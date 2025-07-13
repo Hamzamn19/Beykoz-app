@@ -856,77 +856,157 @@ class _AcademicStaffPageState extends State<AcademicStaffPage>
         const LinearGradient(colors: [Color(0xFF802629), Color(0xFFB2453C)]),
         [
           PersonData(
+            name: 'Dr. Öğr. Üyesi Burak ÇAKALOZ',
+            about: 'Deniz ve Liman İşletmeciliği Program Başkanı',
+            cvUrl: 'https://www.beykoz.edu.tr/uploads/staffs/24.pdf',
+          ),
+          PersonData(
+            name: 'Dr. Öğr. Üyesi Burak Nedim AKTAŞ',
+            about: 'Beykoz Lojistik Meslek Yüksekokulu akademik kadrosu.',
+            cvUrl: 'https://www.beykoz.edu.tr/uploads/staffs/675.pdf',
+          ),
+          PersonData(
             name: 'Dr. Öğr. Üyesi Nesli ÇANKIRI KIRAN',
             about: 'Müdür',
-            cvUrl: '',
+            cvUrl: 'https://www.beykoz.edu.tr/personel/27.pdf',
           ),
           PersonData(
             name: 'Dr. Öğr. Üyesi Cansu ŞAHİN KÖLEMEN',
             about: 'Müdür Yardımcısı / Bilgisayar Teknolojileri Bölüm Başkanı',
-            cvUrl: '',
+            cvUrl: 'https://www.beykoz.edu.tr/personel/225.pdf',
+          ),
+          PersonData(
+            name: 'Dr. Öğr. Üyesi Duygu YAMAN',
+            about: 'Lojistik Program Başkanı / Hava Lojistiği Program Başkanı',
+            cvUrl: 'https://www.beykoz.edu.tr/uploads/staffs/356.pdf',
+          ),
+          PersonData(
+            name: 'Dr. Öğr. Üyesi Mehmet Bilgin SÜME',
+            about: 'Beykoz Lojistik Meslek Yüksekokulu akademik kadrosu.',
+            cvUrl: 'https://www.beykoz.edu.tr/uploads/staffs/942.pdf',
+          ),
+          PersonData(
+            name: 'Öğr. Gör. Önder YERAL',
+            about: 'Beykoz Lojistik Meslek Yüksekokulu akademik kadrosu.',
+            cvUrl: 'https://www.beykoz.edu.tr/personel/15.pdf',
+          ),
+          PersonData(
+            name: 'Öğr. Gör. Buket DÖNMEZ',
+            about: 'Bilgisayar Programcılığı Program Başkanı',
+            cvUrl: 'https://www.beykoz.edu.tr/uploads/staffs/878.pdf',
+          ),
+          PersonData(
+            name: 'Öğr. Gör. Özhan GÖRÇÜN',
+            about: 'Raylı Sistemler Program Başkanı',
+            cvUrl: 'https://www.beykoz.edu.tr/uploads/staffs/783.pdf',
           ),
           PersonData(
             name: 'Öğr. Gör. Ebru TEPEÇAM',
             about: 'Müdür Yardımcısı / Ulaştırma Hizmetleri Bölüm Başkanı',
-            cvUrl: '',
+            cvUrl: 'https://www.beykoz.edu.tr/personel/580.pdf',
           ),
           PersonData(
-            name: 'Öğr. Gör. Arzu ÖZÇELİK',
-            about: 'Sivil Havacılık Kabin Hizmetleri (Türkçe) Program Başkanı',
-            cvUrl: '',
+            name: 'Öğr. Gör. Mediha BANBAL',
+            about: 'Beykoz Lojistik Meslek Yüksekokulu akademik kadrosu.',
+            cvUrl: 'https://www.beykoz.edu.tr/uploads/staffs/29.pdf',
+          ),
+          PersonData(
+            name: 'Öğr. Gör. Oğuzhan ÇAÇAMER',
+            about: 'Beykoz Lojistik Meslek Yüksekokulu akademik kadrosu.',
+            cvUrl: 'https://www.beykoz.edu.tr/uploads/staffs/28.pdf',
+          ),
+          PersonData(
+            name: 'Öğr. Gör. Nigar BABAYEVA',
+            about: 'Beykoz Lojistik Meslek Yüksekokulu akademik kadrosu.',
+            cvUrl: 'https://www.beykoz.edu.tr/personel/709.pdf',
+          ),
+          PersonData(
+            name: 'Öğr. Gör. Fatih Zahid GENÇ',
+            about: 'Bilişim Güvenliği Teknolojisi Program Başkanı',
+            cvUrl: 'https://www.beykoz.edu.tr/uploads/staffs/879.pdf',
+          ),
+          PersonData(
+            name: 'Öğr. Gör. Pervin Ahu ÇERÇİ',
+            about: 'Dış Ticaret Bölüm Başkanı / Dış Ticaret Program Başkanı',
+            cvUrl: 'https://www.beykoz.edu.tr/uploads/staffs/222.pdf',
           ),
           PersonData(
             name: 'Öğr. Gör. Hande İpek ARSLAN',
             about:
                 'Sivil Havacılık Kabin Hizmetleri (İngilizce) Program Başkanı',
-            cvUrl: '',
+            cvUrl: 'https://www.beykoz.edu.tr/personel/357.pdf',
           ),
           PersonData(
-            name: 'Öğr. Gör. Pervin Ahu ÇERÇİ',
-            about: 'Dış Ticaret Bölüm Başkanı / Dış Ticaret Program Başkanı',
-            cvUrl: '',
+            name: 'Öğr. Gör. Nebi ARAZ',
+            about: 'Beykoz Lojistik Meslek Yüksekokulu akademik kadrosu.',
+            cvUrl: 'https://www.beykoz.edu.tr/uploads/staffs/362.pdf',
           ),
           PersonData(
-            name: 'Dr. Öğr. Üyesi Duygu YAMAN',
-            about: 'Lojistik Program Başkanı / Hava Lojistiği Program Başkanı',
-            cvUrl: '',
+            name: 'Öğr. Gör. Arzu ÖZÇELİK',
+            about: 'Sivil Havacılık Kabin Hizmetleri (Türkçe) Program Başkanı',
+            cvUrl: 'https://www.beykoz.edu.tr/uploads/staffs/414.pdf',
           ),
           PersonData(
             name: 'Öğr. Gör. Elif İLHAN',
             about: 'Sivil Hava Ulaştırma İşletmeciliği Program Başkanı',
-            cvUrl: '',
+            cvUrl: 'https://www.beykoz.edu.tr/personel/415.pdf',
           ),
           PersonData(
-            name: 'Dr. Öğr. Üyesi Burak ÇAKALOZ',
-            about: 'Deniz ve Liman İşletmeciliği Program Başkanı',
-            cvUrl: '',
+            name: 'Öğr. Gör. Gürkan ŞASİ',
+            about: 'Beykoz Lojistik Meslek Yüksekokulu akademik kadrosu.',
+            cvUrl: 'https://www.beykoz.edu.tr/personel/413.pdf',
           ),
           PersonData(
-            name: 'Öğr. Gör. Saliha UYAK ÇELİK',
-            about:
-                'Pazarlama ve Reklamcılık Bölüm Başkanı / E-Ticaret ve Pazarlama Program Başkanı',
-            cvUrl: '',
+            name: 'Öğr. Gör. Cem KAZAN',
+            about: 'Beykoz Lojistik Meslek Yüksekokulu akademik kadrosu.',
+            cvUrl: 'https://www.beykoz.edu.tr/uploads/staffs/582.pdf',
           ),
           PersonData(
-            name: 'Öğr. Gör. Özhan GÖRÇÜN',
-            about: 'Raylı Sistemler Program Başkanı',
-            cvUrl: '',
-          ),
-          PersonData(
-            name: 'Öğr. Gör. Fatih Zahid GENÇ',
-            about: 'Bilişim Güvenliği Teknolojisi Program Başkanı',
-            cvUrl: '',
-          ),
-          PersonData(
-            name: 'Öğr. Gör. Buket DÖNMEZ',
-            about: 'Bilgisayar Programcılığı Program Başkanı',
-            cvUrl: '',
+            name: 'Öğr. Gör. Zehra KAYA',
+            about: 'Beykoz Lojistik Meslek Yüksekokulu akademik kadrosu.',
+            cvUrl: 'https://www.beykoz.edu.tr/personel/676.pdf',
           ),
           PersonData(
             name: 'Öğr. Gör. Başak KURU',
             about:
                 'Yönetim ve Organizasyon Bölüm Başkanı/ Lojistik Programları Başkanı',
-            cvUrl: '',
+            cvUrl: 'https://www.beykoz.edu.tr/personel/831.pdf',
+          ),
+          PersonData(
+            name: 'Öğr. Gör. Saliha UYAK ÇELİK',
+            about:
+                'Pazarlama ve Reklamcılık Bölüm Başkanı / E-Ticaret ve Pazarlama Program Başkanı',
+            cvUrl: 'https://www.beykoz.edu.tr/uploads/staffs/838.pdf',
+          ),
+          PersonData(
+            name: 'Öğr. Gör. Semanur YALÇIN',
+            about: 'Beykoz Lojistik Meslek Yüksekokulu akademik kadrosu.',
+            cvUrl: 'https://www.beykoz.edu.tr/uploads/staffs/941.pdf',
+          ),
+          PersonData(
+            name: 'Öğr. Gör. Utkan ÖNDER',
+            about: 'Beykoz Lojistik Meslek Yüksekokulu akademik kadrosu.',
+            cvUrl: 'https://www.beykoz.edu.tr/personel/683.pdf',
+          ),
+          PersonData(
+            name: 'Öğr. Gör. Abdullah ALAGÖZ',
+            about: 'Beykoz Lojistik Meslek Yüksekokulu akademik kadrosu.',
+            cvUrl: 'https://www.beykoz.edu.tr/uploads/staffs/888.pdf',
+          ),
+          PersonData(
+            name: 'Öğr. Gör. Alper ŞEN',
+            about: 'Beykoz Lojistik Meslek Yüksekokulu akademik kadrosu.',
+            cvUrl: 'https://www.beykoz.edu.tr/uploads/staffs/1013.pdf',
+          ),
+          PersonData(
+            name: 'Öğr. Gör. Fatih BİNGÜL',
+            about: 'Beykoz Lojistik Meslek Yüksekokulu akademik kadrosu.',
+            cvUrl: 'https://www.beykoz.edu.tr/uploads/staffs/940.pdf',
+          ),
+          PersonData(
+            name: 'Öğr. Gör. Yusuf Gökhan YILDIZ',
+            about: 'Beykoz Lojistik Meslek Yüksekokulu akademik kadrosu.',
+            cvUrl: 'https://www.beykoz.edu.tr/uploads/staffs/1016.pdf',
           ),
         ],
         'https://www.beykoz.edu.tr/kadro/blmyo-akademik-kadro',
