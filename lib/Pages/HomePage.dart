@@ -17,6 +17,7 @@ import 'package:url_launcher/url_launcher.dart';
 import 'Transportation.dart';
 import 'AcademicStaffPage.dart';
 import 'RootPage.dart';
+import 'package:beykoz/Pages/MessengerPage.dart';
 
 // Main widget containing the home screen and Bottom Navigation Bar logic
 class HomeScreen extends StatefulWidget {
