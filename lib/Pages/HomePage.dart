@@ -118,29 +118,40 @@ class _HomeScreenState extends State<HomeScreen> {
     return Consumer<ThemeService>(
       builder: (context, themeService, child) {
         return Scaffold(
-          backgroundColor: themeService.isDarkMode 
-              ? ThemeService.darkBackgroundColor 
+          backgroundColor: themeService.isDarkMode
+              ? ThemeService.darkBackgroundColor
               : ThemeService.lightBackgroundColor,
           body: IndexedStack(index: _selectedIndex, children: _pages),
-          bottomNavigationBar: _isDrawerOpen ? null : BottomNavigationBar(
-            items: const <BottomNavigationBarItem>[
-              BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Ana Sayfa'),
-              BottomNavigationBarItem(icon: Icon(Icons.web), label: 'OIS'),
-              BottomNavigationBarItem(icon: Icon(Icons.login), label: 'Online'),
-              BottomNavigationBarItem(
-                icon: Icon(Icons.check_circle),
-                label: 'Yoklama',
-              ),
-            ],
-            currentIndex: _selectedIndex,
-            selectedItemColor: Colors.white,
-            unselectedItemColor: Colors.white70,
-            backgroundColor: themeService.isDarkMode 
-                ? ThemeService.darkPrimaryColor 
-                : ThemeService.lightPrimaryColor,
-            type: BottomNavigationBarType.fixed,
-            onTap: _onItemTapped,
-          ),
+          bottomNavigationBar: _isDrawerOpen
+              ? null
+              : BottomNavigationBar(
+                  items: const <BottomNavigationBarItem>[
+                    BottomNavigationBarItem(
+                      icon: Icon(Icons.home),
+                      label: 'Ana Sayfa',
+                    ),
+                    BottomNavigationBarItem(
+                      icon: Icon(Icons.web),
+                      label: 'OIS',
+                    ),
+                    BottomNavigationBarItem(
+                      icon: Icon(Icons.login),
+                      label: 'Online',
+                    ),
+                    BottomNavigationBarItem(
+                      icon: Icon(Icons.check_circle),
+                      label: 'Yoklama',
+                    ),
+                  ],
+                  currentIndex: _selectedIndex,
+                  selectedItemColor: Colors.white,
+                  unselectedItemColor: Colors.white70,
+                  backgroundColor: themeService.isDarkMode
+                      ? ThemeService.darkPrimaryColor
+                      : ThemeService.lightPrimaryColor,
+                  type: BottomNavigationBarType.fixed,
+                  onTap: _onItemTapped,
+                ),
           floatingActionButton: isDeveloper
               ? _buildSettingsButton(context)
               : null,
@@ -156,11 +167,11 @@ class _HomeScreenState extends State<HomeScreen> {
         return Padding(
           padding: const EdgeInsets.only(top: 40.0, right: 16.0),
           child: FloatingActionButton(
-            backgroundColor: themeService.isDarkMode 
-                ? ThemeService.darkCardColor 
+            backgroundColor: themeService.isDarkMode
+                ? ThemeService.darkCardColor
                 : const Color(0xFFECECEC),
-            foregroundColor: themeService.isDarkMode 
-                ? ThemeService.darkPrimaryColor 
+            foregroundColor: themeService.isDarkMode
+                ? ThemeService.darkPrimaryColor
                 : const Color(0xFF802629),
             onPressed: () {
               Navigator.push(
@@ -182,7 +193,13 @@ class DesignedHomePage extends StatefulWidget {
   final bool isDrawerOpen;
   final void Function(bool) setDrawerOpen;
   final void Function(int)? setSelectedIndex;
-  const DesignedHomePage({super.key, this.userRole, required this.isDrawerOpen, required this.setDrawerOpen, this.setSelectedIndex});
+  const DesignedHomePage({
+    super.key,
+    this.userRole,
+    required this.isDrawerOpen,
+    required this.setDrawerOpen,
+    this.setSelectedIndex,
+  });
 
   @override
   State<DesignedHomePage> createState() => _DesignedHomePageState();
@@ -209,27 +226,15 @@ class _DesignedHomePageState extends State<DesignedHomePage>
       duration: const Duration(milliseconds: 300),
       vsync: this,
     );
-    _slideAnimation = Tween<double>(
-      begin: 0.0,
-      end: 1.0,
-    ).animate(CurvedAnimation(
-      parent: _animationController,
-      curve: Curves.easeInOut,
-    ));
-    _scaleAnimation = Tween<double>(
-      begin: 1.0,
-      end: 0.9,
-    ).animate(CurvedAnimation(
-      parent: _animationController,
-      curve: Curves.easeInOut,
-    ));
-    _fadeAnimation = Tween<double>(
-      begin: 0.0,
-      end: 1.0,
-    ).animate(CurvedAnimation(
-      parent: _animationController,
-      curve: Curves.easeInOut,
-    ));
+    _slideAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(parent: _animationController, curve: Curves.easeInOut),
+    );
+    _scaleAnimation = Tween<double>(begin: 1.0, end: 0.9).animate(
+      CurvedAnimation(parent: _animationController, curve: Curves.easeInOut),
+    );
+    _fadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(parent: _animationController, curve: Curves.easeInOut),
+    );
   }
 
   @override
@@ -265,17 +270,17 @@ class _DesignedHomePageState extends State<DesignedHomePage>
           .collection('students')
           .doc(user.email)
           .get();
-      
+
       if (studentDoc.exists) {
         final role = studentDoc.data()?['role'] as String?;
-        
+
         if (role == 'teachers') {
           // For teachers, fetch from teachers collection using email
           final teacherDoc = await FirebaseFirestore.instance
               .collection('teachers')
               .doc(user.email)
               .get();
-              
+
           if (teacherDoc.exists) {
             setState(() {
               _userName = teacherDoc.data()?['name'] as String? ?? 'Kullanıcı';
@@ -288,13 +293,13 @@ class _DesignedHomePageState extends State<DesignedHomePage>
         } else {
           // For students, get student number and fetch from students collection
           final studentNumber = studentDoc.data()?['studentNumber'] as String?;
-          
+
           if (studentNumber != null) {
             final nameDoc = await FirebaseFirestore.instance
                 .collection('students')
                 .doc(studentNumber)
                 .get();
-                
+
             if (nameDoc.exists) {
               setState(() {
                 _userName = nameDoc.data()?['name'] as String? ?? 'Kullanıcı';
@@ -326,11 +331,11 @@ class _DesignedHomePageState extends State<DesignedHomePage>
   void didChangeDependencies() {
     super.didChangeDependencies();
     final themeService = Provider.of<ThemeService>(context, listen: false);
-    primaryColor = themeService.isDarkMode 
-        ? ThemeService.darkPrimaryColor 
+    primaryColor = themeService.isDarkMode
+        ? ThemeService.darkPrimaryColor
         : ThemeService.lightPrimaryColor;
-    cardColor = themeService.isDarkMode 
-        ? ThemeService.darkCardColor 
+    cardColor = themeService.isDarkMode
+        ? ThemeService.darkCardColor
         : ThemeService.lightCardColor;
   }
 
@@ -375,11 +380,15 @@ class _DesignedHomePageState extends State<DesignedHomePage>
         return GestureDetector(
           onHorizontalDragEnd: (details) {
             // Open sidebar: swipe right (velocity > 0), only if closed
-            if (!widget.isDrawerOpen && details.primaryVelocity != null && details.primaryVelocity! > 300) {
+            if (!widget.isDrawerOpen &&
+                details.primaryVelocity != null &&
+                details.primaryVelocity! > 300) {
               _toggleDrawer();
             }
             // Close sidebar: swipe left (velocity < 0), only if open
-            if (widget.isDrawerOpen && details.primaryVelocity != null && details.primaryVelocity! < -300) {
+            if (widget.isDrawerOpen &&
+                details.primaryVelocity != null &&
+                details.primaryVelocity! < -300) {
               _toggleDrawer();
             }
           },
@@ -395,7 +404,8 @@ class _DesignedHomePageState extends State<DesignedHomePage>
                   child: GestureDetector(
                     behavior: HitTestBehavior.translucent,
                     onHorizontalDragEnd: (details) {
-                      if (details.primaryVelocity != null && details.primaryVelocity! > 300) {
+                      if (details.primaryVelocity != null &&
+                          details.primaryVelocity! > 300) {
                         _toggleDrawer();
                       }
                     },
@@ -408,7 +418,8 @@ class _DesignedHomePageState extends State<DesignedHomePage>
                 builder: (context, child) {
                   return Transform.translate(
                     offset: Offset(
-                      _slideAnimation.value * (MediaQuery.of(context).size.width * 0.8),
+                      _slideAnimation.value *
+                          (MediaQuery.of(context).size.width * 0.8),
                       0,
                     ),
                     child: Transform.scale(
@@ -428,7 +439,8 @@ class _DesignedHomePageState extends State<DesignedHomePage>
                                     final result = await Navigator.push(
                                       context,
                                       MaterialPageRoute(
-                                        builder: (context) => const EditFavoritesPage(),
+                                        builder: (context) =>
+                                            const EditFavoritesPage(),
                                       ),
                                     );
                                     if (result == true) {
@@ -438,7 +450,9 @@ class _DesignedHomePageState extends State<DesignedHomePage>
                                 ),
                                 const SizedBox(height: 12),
                                 _isLoadingFavorites
-                                    ? const Center(child: CircularProgressIndicator())
+                                    ? const Center(
+                                        child: CircularProgressIndicator(),
+                                      )
                                     : _buildFrequentlyUsedGrid(),
                                 const SizedBox(height: 5),
                                 Center(
@@ -448,7 +462,8 @@ class _DesignedHomePageState extends State<DesignedHomePage>
                                         context: context,
                                         isScrollControlled: true,
                                         backgroundColor: Colors.transparent,
-                                        builder: (context) => const AllFeaturesSheet(),
+                                        builder: (context) =>
+                                            const AllFeaturesSheet(),
                                       );
                                     },
                                     style: ElevatedButton.styleFrom(
@@ -464,7 +479,7 @@ class _DesignedHomePageState extends State<DesignedHomePage>
                                     child: Text(
                                       'TÜMÜ',
                                       style: TextStyle(
-                                        fontSize: 15, 
+                                        fontSize: 15,
                                         color: primaryColor,
                                       ),
                                     ),
@@ -475,8 +490,10 @@ class _DesignedHomePageState extends State<DesignedHomePage>
                                 const SizedBox(height: 12),
                                 _buildAnnouncementCard(
                                   context: context,
-                                  imagePath: 'assets/images/mezuniyettoreni.jpg',
-                                  url: 'https://www.beykoz.edu.tr/haber/5581-2025-mezuniyet-toreni',
+                                  imagePath:
+                                      'assets/images/mezuniyettoreni.jpg',
+                                  url:
+                                      'https://www.beykoz.edu.tr/haber/5581-2025-mezuniyet-toreni',
                                 ),
                                 const SizedBox(height: 16),
                                 _buildAnnouncementCard(
@@ -499,9 +516,7 @@ class _DesignedHomePageState extends State<DesignedHomePage>
                 Positioned.fill(
                   child: GestureDetector(
                     onTap: _toggleDrawer,
-                    child: Container(
-                      color: Colors.black.withOpacity(0.3),
-                    ),
+                    child: Container(color: Colors.black.withOpacity(0.3)),
                   ),
                 ),
               AnimatedBuilder(
@@ -509,7 +524,9 @@ class _DesignedHomePageState extends State<DesignedHomePage>
                 builder: (context, child) {
                   return Transform.translate(
                     offset: Offset(
-                      -MediaQuery.of(context).size.width * 0.8 * (1 - _slideAnimation.value),
+                      -MediaQuery.of(context).size.width *
+                          0.8 *
+                          (1 - _slideAnimation.value),
                       0,
                     ),
                     child: _buildSidebar(context, themeService),
@@ -529,17 +546,20 @@ class _DesignedHomePageState extends State<DesignedHomePage>
         // Üst bölümün yüksekliğini sabit tutmak için bir SizedBox ekliyoruz.
         return SizedBox(
           height: 48, // Logonun orijinal yüksekliği ile aynı
-          child: Stack( // <-- Yapıyı Stack olarak değiştiriyoruz
+          child: Stack(
+            // <-- Yapıyı Stack olarak değiştiriyoruz
             children: [
               // 1. Ortalanmış Logo
-              Center( // <-- Logoyu tam ortaya almak için Center widget'ı kullanıyoruz
+              Center(
+                // <-- Logoyu tam ortaya almak için Center widget'ı kullanıyoruz
                 child: GestureDetector(
                   onTap: () {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) =>
-                        const WebViewPage(url: 'https://www.beykoz.edu.tr/'),
+                        builder: (context) => const WebViewPage(
+                          url: 'https://www.beykoz.edu.tr/',
+                        ),
                       ),
                     );
                   },
@@ -567,10 +587,12 @@ class _DesignedHomePageState extends State<DesignedHomePage>
               ),
 
               // 3. Sağa Yaslanmış Butonlar
-              Align( // <-- Butonları sağa yaslamak için Align widget'ı kullanıyoruz
+              Align(
+                // <-- Butonları sağa yaslamak için Align widget'ı kullanıyoruz
                 alignment: Alignment.centerRight,
                 child: Row(
-                  mainAxisSize: MainAxisSize.min, // Row'un sadece çocuklar kadar yer kaplamasını sağlar
+                  mainAxisSize: MainAxisSize
+                      .min, // Row'un sadece çocuklar kadar yer kaplamasını sağlar
                   children: [
                     _buildCircularButton(
                       icon: Icons.settings,
@@ -583,7 +605,9 @@ class _DesignedHomePageState extends State<DesignedHomePage>
                       onPressed: () {
                         Navigator.push(
                           context,
-                          MaterialPageRoute(builder: (context) => SettingsPage()),
+                          MaterialPageRoute(
+                            builder: (context) => SettingsPage(),
+                          ),
                         );
                       },
                     ),
@@ -682,17 +706,20 @@ class _DesignedHomePageState extends State<DesignedHomePage>
           },
           {
             'label': 'Hazırlık Karne',
-            'url': 'https://ois.beykoz.edu.tr/hazirlik/hazirliksinav/ogrpreptranskript',
+            'url':
+                'https://ois.beykoz.edu.tr/hazirlik/hazirliksinav/ogrpreptranskript',
             'icon': FontAwesomeIcons.bookReader, // DEĞİŞTİRİLDİ
           },
           {
             'label': 'Ders Onay Belgesi',
-            'url': 'https://ois.beykoz.edu.tr/ogrenciler/belge/dersdanismanonay',
+            'url':
+                'https://ois.beykoz.edu.tr/ogrenciler/belge/dersdanismanonay',
             'icon': FontAwesomeIcons.stamp, // DEĞİŞTİRİLDİ
           },
           {
             'label': 'Kesin Kayıt Belgesi',
-            'url': 'https://ois.beykoz.edu.tr/ogrenciler/belge/kesinkayitbelgesi',
+            'url':
+                'https://ois.beykoz.edu.tr/ogrenciler/belge/kesinkayitbelgesi',
             'icon': FontAwesomeIcons.idCard, // DEĞİŞTİRİLDİ
           },
           {
@@ -760,8 +787,8 @@ class _DesignedHomePageState extends State<DesignedHomePage>
                     item['label']!,
                     textAlign: TextAlign.center,
                     style: TextStyle(
-                      color: themeService.isDarkMode 
-                          ? ThemeService.darkTextPrimaryColor 
+                      color: themeService.isDarkMode
+                          ? ThemeService.darkTextPrimaryColor
                           : Color(0xFF802629),
                       fontSize: 12,
                       fontWeight: FontWeight.bold,
@@ -790,11 +817,7 @@ class _DesignedHomePageState extends State<DesignedHomePage>
         // Tıklandığında WebViewPage'i aç ve ilgili URL'i gönder.
         Navigator.push(
           context,
-          MaterialPageRoute(
-            builder: (context) => WebViewPage(
-              url: url,
-            ),
-          ),
+          MaterialPageRoute(builder: (context) => WebViewPage(url: url)),
         );
       },
       borderRadius: BorderRadius.circular(16),
@@ -819,37 +842,46 @@ class _DesignedHomePageState extends State<DesignedHomePage>
         icon: Icons.podcasts,
         color: Colors.green,
         label: 'Spotify Podcast',
-        onTap: () => _launchUrl('https://open.spotify.com/show/3PDrCJDBv8GK7B3slOm9ZE'),
+        onTap: () =>
+            _launchUrl('https://open.spotify.com/show/3PDrCJDBv8GK7B3slOm9ZE'),
       ),
       _SidebarItem(
         icon: Icons.menu_book,
         color: Colors.blue,
         label: 'Beykoz Yayınları',
-        onTap: () => _launchUrl('https://www.beykoz.edu.tr/icerik/2872-beykoz-yayinlari'),
+        onTap: () => _launchUrl(
+          'https://www.beykoz.edu.tr/icerik/2872-beykoz-yayinlari',
+        ),
       ),
       _SidebarItem(
         icon: Icons.local_library,
         color: Colors.orange,
         label: 'Kütüphane',
-        onTap: () => _launchUrl('https://www.beykoz.edu.tr/icerik/3233-kutuphane'),
+        onTap: () =>
+            _launchUrl('https://www.beykoz.edu.tr/icerik/3233-kutuphane'),
       ),
       _SidebarItem(
         icon: Icons.account_balance,
         color: Colors.purple,
         label: 'Kurumsal Kimlik\nKılavuzu',
-        onTap: () => _launchUrl('https://www.beykoz.edu.tr/icerik/90-kurumsal-kimlik-kilavuzu'),
+        onTap: () => _launchUrl(
+          'https://www.beykoz.edu.tr/icerik/90-kurumsal-kimlik-kilavuzu',
+        ),
       ),
       _SidebarItem(
         icon: Icons.newspaper,
         color: Colors.red,
         label: 'Basında Beykoz',
-        onTap: () => _launchUrl('https://www.beykoz.edu.tr/haber/92-basinda-beykoz'),
+        onTap: () =>
+            _launchUrl('https://www.beykoz.edu.tr/haber/92-basinda-beykoz'),
       ),
       _SidebarItem(
         icon: Icons.campaign,
         color: Colors.teal,
         label: 'Basın Bültenleri',
-        onTap: () => _launchUrl('https://www.beykoz.edu.tr/icerik/5274-basin-bultenleri'),
+        onTap: () => _launchUrl(
+          'https://www.beykoz.edu.tr/icerik/5274-basin-bultenleri',
+        ),
       ),
       _SidebarItem(
         icon: Icons.directions_bus,
@@ -885,11 +917,12 @@ class _DesignedHomePageState extends State<DesignedHomePage>
         label: 'Web Portal',
         onTap: () {
           _toggleDrawer();
-          if (widget.setSelectedIndex != null) {
-            Future.delayed(const Duration(milliseconds: 250), () {
-              widget.setSelectedIndex!(3); // 3 is the index of WebviewPageSelector
-            });
-          }
+          Future.delayed(const Duration(milliseconds: 250), () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => WebviewPageSelector()),
+            );
+          });
         },
       ),
     ];
@@ -925,44 +958,44 @@ class _DesignedHomePageState extends State<DesignedHomePage>
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               // Top row: greeting and close icon
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    CircleAvatar(
-                      backgroundColor: themeService.isDarkMode
-                          ? ThemeService.darkPrimaryColor
-                          : ThemeService.lightPrimaryColor,
-                      radius: 22,
-                      child: Icon(Icons.school, color: Colors.white, size: 22),
-                    ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            'Hoş Geldiniz',
-                            style: TextStyle(
-                              color: textColor,
-                              fontWeight: FontWeight.w600,
-                              fontSize: 15,
-                            ),
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  CircleAvatar(
+                    backgroundColor: themeService.isDarkMode
+                        ? ThemeService.darkPrimaryColor
+                        : ThemeService.lightPrimaryColor,
+                    radius: 22,
+                    child: Icon(Icons.school, color: Colors.white, size: 22),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Hoş Geldiniz',
+                          style: TextStyle(
+                            color: textColor,
+                            fontWeight: FontWeight.w600,
+                            fontSize: 15,
                           ),
-                          Text(
-                            _userName ?? 'Kullanıcı',
-                            style: TextStyle(
-                              color: textColor.withOpacity(0.8),
-                              fontWeight: FontWeight.w400,
-                              fontSize: 13,
-                            ),
-                            overflow: TextOverflow.ellipsis,
+                        ),
+                        Text(
+                          _userName ?? 'Kullanıcı',
+                          style: TextStyle(
+                            color: textColor.withOpacity(0.8),
+                            fontWeight: FontWeight.w400,
+                            fontSize: 13,
                           ),
-                        ],
-                      ),
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ],
                     ),
-                    // Removed the IconButton (cross/close)
-                  ],
-                ),
+                  ),
+                  // Removed the IconButton (cross/close)
+                ],
+              ),
               const SizedBox(height: 18),
               Text(
                 'Önemli Bağlantılar ve Servisler',
@@ -977,7 +1010,8 @@ class _DesignedHomePageState extends State<DesignedHomePage>
               Expanded(
                 child: ListView.separated(
                   itemCount: sidebarItems.length,
-                  separatorBuilder: (context, index) => const SizedBox(height: 2),
+                  separatorBuilder: (context, index) =>
+                      const SizedBox(height: 2),
                   itemBuilder: (context, index) {
                     final item = sidebarItems[index];
                     return ListTile(
@@ -994,7 +1028,10 @@ class _DesignedHomePageState extends State<DesignedHomePage>
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(12),
                       ),
-                      contentPadding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                      contentPadding: const EdgeInsets.symmetric(
+                        horizontal: 8,
+                        vertical: 2,
+                      ),
                       hoverColor: themeService.isDarkMode
                           ? Colors.white.withOpacity(0.04)
                           : Colors.black.withOpacity(0.03),
@@ -1087,7 +1124,7 @@ class _WebViewPageState extends State<WebViewPage>
                 username = username.substring(0, atIndex);
               }
               final loginJs =
-              '''
+                  '''
                 (function() {
                   var username = "$username";
                   var password = "${widget.password}";

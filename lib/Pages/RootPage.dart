@@ -7,6 +7,7 @@ import 'dart:convert';
 import 'NewsPage.dart';
 import 'ProfilePage.dart';
 import 'Otherpages.dart'; // <-- Yeni sayfayı içe aktar
+import 'MessengerPage.dart'; // <-- Mesajlar sayfasını ekle
 import 'package:beykoz/Services/theme_service.dart';
 import 'package:provider/provider.dart';
 
@@ -25,6 +26,7 @@ class _RootScreenState extends State<RootScreen> {
       _isDrawerOpen = value;
     });
   }
+
   void _setSelectedIndex(int index) {
     setState(() {
       _selectedIndex = index;
@@ -39,7 +41,7 @@ class _RootScreenState extends State<RootScreen> {
     ),
     NewsPage(),
     AttendanceScreen(),
-    WebviewPageSelector(),
+    MessengerPage(), // <-- WebviewPageSelector yerine MessengerPage
     ProfilePage(),
   ];
 
@@ -48,8 +50,8 @@ class _RootScreenState extends State<RootScreen> {
     return Consumer<ThemeService>(
       builder: (context, themeService, child) {
         return Scaffold(
-          backgroundColor: themeService.isDarkMode 
-              ? ThemeService.darkBackgroundColor 
+          backgroundColor: themeService.isDarkMode
+              ? ThemeService.darkBackgroundColor
               : ThemeService.lightBackgroundColor,
           body: Stack(
             children: [
@@ -92,13 +94,13 @@ class CustomNavBar extends StatelessWidget {
     return Consumer<ThemeService>(
       builder: (context, themeService, child) {
         final double width = MediaQuery.of(context).size.width;
-        final primaryColor = themeService.isDarkMode 
-            ? ThemeService.darkPrimaryColor 
+        final primaryColor = themeService.isDarkMode
+            ? ThemeService.darkPrimaryColor
             : ThemeService.lightPrimaryColor;
-        final cardColor = themeService.isDarkMode 
-            ? ThemeService.darkCardColor 
+        final cardColor = themeService.isDarkMode
+            ? ThemeService.darkCardColor
             : ThemeService.lightCardColor;
-        
+
         return SizedBox(
           width: width,
           height: 90,
@@ -139,14 +141,13 @@ class CustomNavBar extends StatelessWidget {
                       ),
                       const SizedBox(width: 48), // Space for center button
                       _NavBarIcon(
-                        icon: Icons.language,
+                        icon:
+                            Icons.chat, // <-- Web portal yerine mesajlar ikonu
                         selected: selectedIndex == 3,
                         onTap: () => onTabSelected(3),
                       ),
-                      // --- Değişiklik burada ---
-                      // Simge كانت 'person' الآن أصبحت 'menu' لصفحة OtherPages
                       _NavBarIcon(
-                        icon: Icons.person, // <-- تم التغيير هنا
+                        icon: Icons.person,
                         selected: selectedIndex == 4,
                         onTap: () => onTabSelected(4),
                       ),
@@ -169,19 +170,17 @@ class CustomNavBar extends StatelessWidget {
                       height: 64,
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
-                        color: selectedIndex == 2
-                            ? primaryColor
-                            : cardColor,
+                        color: selectedIndex == 2 ? primaryColor : cardColor,
                         border: Border.all(color: cardColor, width: 4),
                       ),
                       child: Icon(
                         Icons.qr_code,
                         size: 32,
-                        color: selectedIndex == 2 
-                            ? Colors.white 
-                            : (themeService.isDarkMode 
-                                ? ThemeService.darkTextSecondaryColor 
-                                : Colors.grey),
+                        color: selectedIndex == 2
+                            ? Colors.white
+                            : (themeService.isDarkMode
+                                  ? ThemeService.darkTextSecondaryColor
+                                  : Colors.grey),
                       ),
                     ),
                   ),
@@ -210,17 +209,20 @@ class _NavBarIcon extends StatelessWidget {
   Widget build(BuildContext context) {
     return Consumer<ThemeService>(
       builder: (context, themeService, child) {
-        final primaryColor = themeService.isDarkMode 
-            ? ThemeService.darkPrimaryColor 
+        final primaryColor = themeService.isDarkMode
+            ? ThemeService.darkPrimaryColor
             : ThemeService.lightPrimaryColor;
-        final iconColor = themeService.isDarkMode 
-            ? ThemeService.darkTextSecondaryColor 
+        final iconColor = themeService.isDarkMode
+            ? ThemeService.darkTextSecondaryColor
             : Colors.grey;
-        
+
         return GestureDetector(
           onTap: onTap,
           child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 10.0),
+            padding: const EdgeInsets.symmetric(
+              horizontal: 8.0,
+              vertical: 10.0,
+            ),
             child: Icon(
               icon,
               color: selected ? primaryColor : iconColor.withOpacity(0.4),
@@ -241,8 +243,8 @@ class WebviewPageSelector extends StatelessWidget {
     return Consumer<ThemeService>(
       builder: (context, themeService, child) {
         return Scaffold(
-          backgroundColor: themeService.isDarkMode 
-              ? ThemeService.darkBackgroundColor 
+          backgroundColor: themeService.isDarkMode
+              ? ThemeService.darkBackgroundColor
               : Color(0xFFF8F8F8),
           body: Center(
             child: Padding(
@@ -252,7 +254,9 @@ class WebviewPageSelector extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   SizedBox(height: 48),
-                  Center(child: Image.asset('assets/images/logo.png', height: 80)),
+                  Center(
+                    child: Image.asset('assets/images/logo.png', height: 80),
+                  ),
                   SizedBox(height: 24),
                   Text(
                     'Web Portals',
@@ -260,8 +264,8 @@ class WebviewPageSelector extends StatelessWidget {
                     style: TextStyle(
                       fontSize: 28,
                       fontWeight: FontWeight.bold,
-                      color: themeService.isDarkMode 
-                          ? ThemeService.darkPrimaryColor 
+                      color: themeService.isDarkMode
+                          ? ThemeService.darkPrimaryColor
                           : Color(0xFF802629),
                       letterSpacing: 1.2,
                     ),
@@ -312,8 +316,8 @@ class _MinimalButton extends StatelessWidget {
     return Consumer<ThemeService>(
       builder: (context, themeService, child) {
         return Material(
-          color: themeService.isDarkMode 
-              ? ThemeService.darkCardColor 
+          color: themeService.isDarkMode
+              ? ThemeService.darkCardColor
               : Colors.white,
           borderRadius: BorderRadius.circular(16),
           elevation: 2,
@@ -328,8 +332,8 @@ class _MinimalButton extends StatelessWidget {
                 style: TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.w600,
-                  color: themeService.isDarkMode 
-                      ? ThemeService.darkPrimaryColor 
+                  color: themeService.isDarkMode
+                      ? ThemeService.darkPrimaryColor
                       : Color(0xFF802629),
                   letterSpacing: 1.1,
                 ),
