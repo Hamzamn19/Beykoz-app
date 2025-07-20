@@ -18,6 +18,7 @@ import 'Transportation.dart';
 import 'AcademicStaffPage.dart';
 import 'RootPage.dart';
 import 'package:beykoz/Pages/MessengerPage.dart';
+import 'package:beykoz/Pages/demo/CourseSchedulePage.dart';
 
 // Main widget containing the home screen and Bottom Navigation Bar logic
 class HomeScreen extends StatefulWidget {
@@ -746,18 +747,32 @@ class _DesignedHomePageState extends State<DesignedHomePage>
           itemBuilder: (context, index) {
             final item = _frequentlyUsedItems[index];
             return InkWell(
+              //  ***** هنا يبدأ التعديل *****
               onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => WebViewPage(
-                      url: item['url']!,
-                      username: null,
-                      password: null,
+                // التحقق من عنوان الزر
+                if (item['label'] == 'Ders Programı') {
+                  // إذا كان "Ders Programı"، انتقل إلى الصفحة الجديدة
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const CourseSchedulePage(),
                     ),
-                  ),
-                );
+                  );
+                } else {
+                  // بالنسبة لجميع الأزرار الأخرى، حافظ على السلوك الأصلي
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => WebViewPage(
+                        url: item['url']!,
+                        username: null,
+                        password: null,
+                      ),
+                    ),
+                  );
+                }
               },
+              //  ***** هنا ينتهي التعديل *****
               borderRadius: BorderRadius.circular(16),
               child: Column(
                 mainAxisSize: MainAxisSize.min,
