@@ -19,6 +19,7 @@ import 'AcademicStaffPage.dart';
 import 'RootPage.dart';
 import 'package:beykoz/Pages/MessengerPage.dart';
 import 'package:beykoz/Pages/demo/CourseSchedulePage.dart';
+import 'package:beykoz/Pages/demo/transcript_page.dart';
 
 // Main widget containing the home screen and Bottom Navigation Bar logic
 class HomeScreen extends StatefulWidget {
@@ -693,45 +694,45 @@ class _DesignedHomePageState extends State<DesignedHomePage>
           {
             'label': 'Transkript',
             'url': 'https://ois.beykoz.edu.tr/ogrenciler/belge/transkript',
-            'icon': FontAwesomeIcons.fileInvoice, // DEĞİŞTİRİLDİ
+            'icon': FontAwesomeIcons.fileInvoice,
           },
           {
             'label': 'Karne',
             'url': 'https://ois.beykoz.edu.tr/ogrenciler/belge/ogrkarne',
-            'icon': FontAwesomeIcons.award, // DEĞİŞTİRİLDİ
+            'icon': FontAwesomeIcons.award,
           },
           {
             'label': 'Ders Programı',
             'url': 'https://ois.beykoz.edu.tr/ogrenciler/belge/ogrdersprogrami',
-            'icon': FontAwesomeIcons.calendarWeek, // DEĞİŞTİRİLDİ
+            'icon': FontAwesomeIcons.calendarWeek,
           },
           {
             'label': 'Hazırlık Karne',
             'url':
                 'https://ois.beykoz.edu.tr/hazirlik/hazirliksinav/ogrpreptranskript',
-            'icon': FontAwesomeIcons.bookReader, // DEĞİŞTİRİLDİ
+            'icon': FontAwesomeIcons.bookReader,
           },
           {
             'label': 'Ders Onay Belgesi',
             'url':
                 'https://ois.beykoz.edu.tr/ogrenciler/belge/dersdanismanonay',
-            'icon': FontAwesomeIcons.stamp, // DEĞİŞTİRİLDİ
+            'icon': FontAwesomeIcons.stamp,
           },
           {
             'label': 'Kesin Kayıt Belgesi',
             'url':
                 'https://ois.beykoz.edu.tr/ogrenciler/belge/kesinkayitbelgesi',
-            'icon': FontAwesomeIcons.idCard, // DEĞİŞTİRİLDİ
+            'icon': FontAwesomeIcons.idCard,
           },
           {
             'label': 'Online Belge Talep',
             'url': 'https://ois.beykoz.edu.tr/ogrenciler/belgetalep/duzenle2',
-            'icon': FontAwesomeIcons.paperPlane, // DEĞİŞTİRİLDİ
+            'icon': FontAwesomeIcons.paperPlane,
           },
           {
             'label': 'Sınav Programı',
             'url': 'https://ois.beykoz.edu.tr/ogrenciler/belge/sinavprogrami',
-            'icon': FontAwesomeIcons.calendarCheck, // DEĞİŞTİRİLDİ
+            'icon': FontAwesomeIcons.calendarCheck,
           },
         ];
         return GridView.builder(
@@ -747,19 +748,30 @@ class _DesignedHomePageState extends State<DesignedHomePage>
           itemBuilder: (context, index) {
             final item = _frequentlyUsedItems[index];
             return InkWell(
-              //  ***** هنا يبدأ التعديل *****
+              // ***** بداية التعديل الكامل لمنطق النقر *****
               onTap: () {
-                // التحقق من عنوان الزر
+                // التحقق إذا كان الزر هو "Ders Programı"
                 if (item['label'] == 'Ders Programı') {
-                  // إذا كان "Ders Programı"، انتقل إلى الصفحة الجديدة
                   Navigator.push(
                     context,
                     MaterialPageRoute(
                       builder: (context) => const CourseSchedulePage(),
                     ),
                   );
-                } else {
-                  // بالنسبة لجميع الأزرار الأخرى، حافظ على السلوك الأصلي
+                }
+                // التحقق إذا كان الزر هو "Transkript"
+                else if (item['label'] == 'Transkript') {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      // الانتقال إلى الصفحة الجديدة التي أنشأناها
+                      builder: (context) => const TranskriptEkrani(),
+                    ),
+                  );
+                }
+                // لجميع الأزرار الأخرى
+                else {
+                  // الحفاظ على السلوك الأصلي وفتح WebView
                   Navigator.push(
                     context,
                     MaterialPageRoute(
@@ -772,7 +784,7 @@ class _DesignedHomePageState extends State<DesignedHomePage>
                   );
                 }
               },
-              //  ***** هنا ينتهي التعديل *****
+              // ***** نهاية التعديل *****
               borderRadius: BorderRadius.circular(16),
               child: Column(
                 mainAxisSize: MainAxisSize.min,
