@@ -140,7 +140,7 @@ class ProfilePage extends StatelessWidget {
                         const SizedBox(width: 15),
                         Expanded(
                           child: _buildStatCard(
-                            'GPA',
+                            'GNO',
                             '3.03',
                             Icons.trending_up,
                             lightUniversityColor,
