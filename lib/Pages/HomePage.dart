@@ -20,6 +20,7 @@ import 'RootPage.dart';
 import 'package:beykoz/Pages/MessengerPage.dart';
 import 'package:beykoz/Pages/demo/CourseSchedulePage.dart';
 import 'package:beykoz/Pages/demo/transcript_page.dart';
+import 'package:beykoz/Pages/demo/karne_page.dart';
 
 // Main widget containing the home screen and Bottom Navigation Bar logic
 class HomeScreen extends StatefulWidget {
@@ -769,6 +770,13 @@ class _DesignedHomePageState extends State<DesignedHomePage>
                     ),
                   );
                 }
+                // Karne için yeni sayfa aç
+                else if (item['label'] == 'Karne') {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => const KarnePage()),
+                  );
+                }
                 // لجميع الأزرار الأخرى
                 else {
                   // الحفاظ على السلوك الأصلي وفتح WebView
@@ -948,6 +956,20 @@ class _DesignedHomePageState extends State<DesignedHomePage>
             Navigator.push(
               context,
               MaterialPageRoute(builder: (context) => WebviewPageSelector()),
+            );
+          });
+        },
+      ),
+      _SidebarItem(
+        icon: Icons.grade,
+        color: Colors.deepPurple,
+        label: 'Karne',
+        onTap: () {
+          _toggleDrawer();
+          Future.delayed(const Duration(milliseconds: 250), () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => KarnePage()),
             );
           });
         },
